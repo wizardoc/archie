@@ -36,4 +36,7 @@ replace (
 	sigs.k8s.io/yaml => github.com/kubernetes-sigs/yaml v1.1.0
 )
 
-require github.com/gin-gonic/gin v1.4.0 // indirect
+require (
+	github.com/gin-gonic/gin v1.4.0 // indirect
+	github.com/lib/pq v1.1.1 // indirect
+)
