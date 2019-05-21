@@ -3,3 +3,6 @@
 
 # dependencies
 go.sum
+
+# config
+configs/**/*
