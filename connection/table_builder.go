@@ -6,7 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func crearteDataTable(db *gorm.DB, model interface{}) (hasTable bool) {
+func createDataTable(db *gorm.DB, model interface{}) (hasTable bool) {
 	hasTable = db.HasTable(model)
 
 	if !hasTable {
@@ -23,5 +23,5 @@ func InitTable() {
 	defer db.Close()
 
 	// init table
-	crearteDataTable(db, models.User{})
+	createDataTable(db, models.User{})
 }
