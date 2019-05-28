@@ -1,20 +1,45 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
+	"archie/connection"
+	"archie/models"
+	"archie/routes"
+	"archie/utils"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func main(){
-	engine := gin.Default()
+func createDataTable(db *gorm.DB, model interface{}) (hasTable bool) {
+	hasTable = db.HasTable(model)
 
-	engine.GET("/", func(context *gin.Context) {
-		context.JSON(200, gin.H{
-			"code": 200,
-			"payload": "hello gin",
-		})
-	})
+	if !hasTable {
+		db.CreateTable(model)
+	}
 
-	fmt.Println(">>> Gin Start <<<")
-	engine.Run("localhost:3000")
+	return
+}
+
+func InitTable() {
+	db, err := connection.GetDB()
+
+	utils.Check(err)
+	defer db.Close()
+
+	// init table
+	createDataTable(db, models.UserOrganization{})
+	createDataTable(db, models.User{})
+	createDataTable(db, models.Organization{})
+}
+
+func main() {
+	InitTable()
+
+	organization := models.Organization{
+		OrganizeName: "选课精灵",
+		Description:  "That's fucking awesome!",
+	}
+
+	organization.NewOrganization()
+
+	routes.Serve()
 }
