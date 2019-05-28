@@ -2,7 +2,8 @@ package models
 
 import (
 	"archie/connection"
-	"archie/utils"
+	"fmt"
+	"os"
 	"time"
 )
 
@@ -15,12 +16,18 @@ type Organization struct {
 	CreateTime   time.Time
 }
 
-func (organization *Organization) NewOrganization() (success bool) {
+type OrganizationName struct {
+	OrganizeName string
+}
+
+func (organization *Organization) New() (ok bool) {
 	db, err := connection.GetDB()
 
-	utils.Check(err, func() {
-		success = false
-	})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+
+		return false
+	}
 
 	defer db.Close()
 
@@ -29,5 +36,22 @@ func (organization *Organization) NewOrganization() (success bool) {
 
 	db.Create(organization)
 
-	return
+	return true
+}
+
+func (organization *Organization) GetAllNames() (names []OrganizationName, ok bool) {
+	db, err := connection.GetDB()
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+
+		return nil, ok
+	}
+
+	defer db.Close()
+
+	names = []OrganizationName{}
+	db.Select("organize_name").Find(organization).Scan(&names)
+
+	return names, true
 }
