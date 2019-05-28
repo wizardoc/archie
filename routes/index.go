@@ -15,6 +15,6 @@ func Serve() {
 	userRouter(router)
 	organizationRouter(router)
 
-	utils.LogInfo(fmt.Sprintf("Listing on %s", config.Port))
+	utils.Logger(fmt.Sprintf("Listing on %s", config.Port))
 	router.Run(config.GetAddress())
 }
