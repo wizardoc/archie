@@ -9,7 +9,7 @@ import (
 
 type Organization struct {
 	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	OrganizeName string  `gorm:"type:varchar(20)"`
+	OrganizeName string  `gorm:"type:varchar(20);unique;"`
 	Description  string  `gorm:"type:varchar(50)"`
 	HasValid     bool    `gorm:"type:bool;default:TRUE"`
 	Users        *[]User `gorm:"many2many:user_organizations;"`
