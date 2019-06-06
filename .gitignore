@@ -6,3 +6,6 @@ go.sum
 
 # config
 configs/**/*
+
+# build
+build/**/*
