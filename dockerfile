@@ -1,10 +1,10 @@
-FROM golang:latest
+FROM alpine:latest
 MAINTAINER younccat
 
 WORKDIR /app
 
-COPY . /app
+COPY .                          .
 
 EXPOSE 3000
 
-ENTRYPOINT ["/app/main"]
+ENTRYPOINT ["./docker/scripts/entrypoint.sh"]

@@ -1,3 +1,6 @@
 #!/bin/sh
+ENTRY_POINT="./build/archie"
 
-go run ./main.go
+chmod 777 $ENTRY_POINT;
+
+$ENTRY_POINT;
