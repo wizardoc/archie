@@ -28,7 +28,6 @@ func normalColorPrint(info string, textColor int) string {
 }
 
 func Green(info string) string {
-	fmt.Println(GREEN)
 	return normalColorPrint(info, GREEN)
 }
 
