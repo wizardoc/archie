@@ -35,16 +35,4 @@ func main() {
 	InitTable()
 
 	routes.Serve()
-
-	//claim := utils.Claims{
-	//	"younccat",
-	//	uuid.NewV4().String(),
-	//	time.Now().Unix(),
-	//	time.Now().Add(time.Hour).Unix(),
-	//	"122312312312",
-	//}
-	//
-	//jwtStr := claim.SignJWT()
-	//
-	//utils.ParseToken(jwtStr)
 }
