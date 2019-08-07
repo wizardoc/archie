@@ -1,9 +1,11 @@
 package middlewares
 
 import (
+	"archie/connection"
 	"archie/robust"
 	"archie/utils"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
 	"net/http"
@@ -30,15 +32,30 @@ func ParseToken(tokenStr string) jwt.Claims {
 	return token.Claims
 }
 
+func AddInBlackSet(userId string) (err error) {
+	connection.GetRedisConnMust(func(conn redis.Conn) {
+		_, err = conn.Do("SADD", "black_set", userId)
+	})
+
+	return
+}
+
+func IsExistInBlackSet(userId string) (isExist bool) {
+	connection.GetRedisConnMust(func(conn redis.Conn) {
+		var err error
+
+		isExist, err = redis.Bool(conn.Do("SISMEMBER", "black_set", userId))
+		utils.Check(err)
+	})
+
+	return
+}
+
 func ValidateToken(context *gin.Context) {
 	jwtString, ok := getJWTFromHeader(context.Request)
 
 	if !ok {
-		context.JSON(http.StatusOK, gin.H{
-			"data": nil,
-			"err":  robust.JWT_DOES_NOT_EXIST,
-		})
-
+		utils.Send(context, nil, robust.JWT_DOES_NOT_EXIST)
 		context.Abort()
 
 		return
@@ -48,15 +65,17 @@ func ValidateToken(context *gin.Context) {
 	err := JWTClaims.Valid()
 
 	if err != nil {
-		context.JSON(http.StatusOK, gin.H{
-			"data": nil,
-			"err":  err,
-		})
+		utils.Send(context, nil, err)
 	}
 
 	claims := utils.Claims{}
-
 	mapstructure.Decode(JWTClaims, &claims)
+
+	if IsExistInBlackSet(claims.UserId) {
+		utils.Send(context, nil, robust.JWT_NOT_ALLOWED)
+
+		return
+	}
 
 	context.Set("claims", claims)
 	context.Next()

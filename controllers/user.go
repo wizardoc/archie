@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"archie/middlewares"
 	"archie/models"
 	"archie/robust"
 	"archie/utils"
@@ -68,6 +69,13 @@ func Login(context *gin.Context) {
 	}
 
 	user.UpdateLoginTime()
+
+	// 验证是否在黑名单
+	if middlewares.IsExistInBlackSet(user.ID) {
+		utils.Send(context, nil, robust.JWT_NOT_ALLOWED)
+
+		return
+	}
 
 	claims := utils.Claims{
 		UserId: user.ID,
