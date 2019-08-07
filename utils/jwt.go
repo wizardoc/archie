@@ -3,6 +3,8 @@ package utils
 import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mitchellh/mapstructure"
+	"github.com/satori/go.uuid"
+	"time"
 )
 
 const (
@@ -20,6 +22,11 @@ type Claims struct {
 func (claims Claims) SignJWT() string {
 	jwtMap := make(map[string]interface{})
 	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims.ISS = "younccat"
+	claims.JTI = uuid.NewV4().String()
+	claims.EXP = time.Now().Add(time.Hour * time.Duration(24)).Unix()
+	claims.IAT = time.Now().Unix()
 
 	mapstructure.Decode(claims, &jwtMap)
 
