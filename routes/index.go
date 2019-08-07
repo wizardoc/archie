@@ -21,6 +21,7 @@ func Serve() {
 
 	userRouter(router)
 	organizationRouter(router)
+	DocRouter(router)
 
 	utils.Logger(fmt.Sprintf("Listing on %s", config.Port))
 	router.Run(config.GetAddress())
