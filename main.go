@@ -34,12 +34,17 @@ func InitTable() {
 func main() {
 	InitTable()
 
-	organization := models.Organization{
-		OrganizeName: "选课精灵",
-		Description:  "That's fucking awesome!",
-	}
-
-	organization.NewOrganization()
-
 	routes.Serve()
+
+	//claim := utils.Claims{
+	//	"younccat",
+	//	uuid.NewV4().String(),
+	//	time.Now().Unix(),
+	//	time.Now().Add(time.Hour).Unix(),
+	//	"122312312312",
+	//}
+	//
+	//jwtStr := claim.SignJWT()
+	//
+	//utils.ParseToken(jwtStr)
 }
