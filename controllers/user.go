@@ -59,11 +59,8 @@ func Login(context *gin.Context) {
 	// check user is exist
 	user := models.FindOneByUsername(username)
 
-	if utils.IsEmpty(user) {
-		utils.Send(context, gin.H{
-			"data": nil,
-			"err":  robust.REGISTER_EXIST_USER,
-		}, nil)
+	if utils.IsEmpty(user) || user.ID == "" {
+		utils.Send(context, nil, robust.LOGIN_USER_DOES_NOT_EXIST)
 
 		return
 	}
