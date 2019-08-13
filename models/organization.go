@@ -2,6 +2,7 @@ package models
 
 import (
 	"archie/connection"
+	"archie/utils"
 	"fmt"
 	"os"
 	"time"
@@ -18,6 +19,15 @@ type Organization struct {
 
 type OrganizationName struct {
 	OrganizeName string
+}
+
+func (organization *Organization) FindOneByOrganizeName() {
+	db, err := connection.GetDB()
+
+	utils.Check(err)
+	defer db.Close()
+
+	db.Find(organization, "organize_name=?", organization.OrganizeName)
 }
 
 func (organization *Organization) New() (ok bool) {
