@@ -27,7 +27,7 @@ func Register(context *gin.Context) {
 
 	findUser := models.FindOneByUsername(user.Username)
 
-	if !utils.IsEmpty(findUser) {
+	if findUser.ID != "" {
 		context.JSON(http.StatusOK, gin.H{
 			"data": nil,
 			"err":  robust.REGISTER_EXIST_USER,
@@ -49,7 +49,7 @@ func Register(context *gin.Context) {
 
 	context.JSON(200, gin.H{
 		"data": user,
-		"err":  robust.REGISTER_FAILURE,
+		"err":  nil,
 	})
 }
 
