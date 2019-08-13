@@ -10,7 +10,7 @@ type UserOrganization struct {
 	UserID         string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	OrganizationID string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	IsOwner        bool   `gorm:"type:bool"`
-	JoinTime       int64
+	JoinTime       int64  `gorm:"type:bigint"`
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) {

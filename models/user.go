@@ -3,7 +3,6 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
-	"fmt"
 	"time"
 )
 
@@ -65,8 +64,6 @@ func FindOneByUsername(username string) User {
 	user := User{}
 
 	db.Find(&user, "username = ?", username)
-
-	fmt.Println(user, username)
 
 	return user
 }
