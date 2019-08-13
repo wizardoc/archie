@@ -10,4 +10,5 @@ func organizationRouter(router *gin.Engine) {
 
 	organization.GET("/name/all", controllers.GetAllOrganizationNames)
 	organization.POST("/new", controllers.NewOrganization)
+	organization.POST("/join", controllers.JoinOrganization)
 }
