@@ -1,0 +1,17 @@
+version: '3'
+services:
+  archie:
+    build: .
+    image: 'archie:v0.08'
+    labels:
+      wizard: 'wizard'
+    ports:
+      - "3000:3000"
+    networks:
+      - archie_net
+    tty: true
+
+networks:
+  webnet:
+    external:
+      name: archie_net
