@@ -12,6 +12,6 @@ services:
     tty: true
 
 networks:
-  webnet:
+  archie_net:
     external:
       name: archie_net
