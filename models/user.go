@@ -16,6 +16,7 @@ type User struct {
 	RegisterTime  int64           `gorm:"type:bigint"json:"registerTime"`
 	LoginTime     int64           `gorm:"type:bigint"json:"loginTime"`
 	Password      string          `gorm:"type:char(62)"json:"-"`
+	IsValidEmail  bool            `gorm:"type:boolean"json:"-"`
 }
 
 func (user *User) Register() (ok bool) {
@@ -27,6 +28,7 @@ func (user *User) Register() (ok bool) {
 	user.RegisterTime = time.Now().Unix()
 	// make more security password
 	user.Password = utils.Hash(user.Password)
+	user.IsValidEmail = false
 
 	db.Create(user)
 
