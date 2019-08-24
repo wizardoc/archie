@@ -55,6 +55,7 @@ func Register(context *gin.Context) {
 
 func Login(context *gin.Context) {
 	username := context.PostForm("username")
+	password := context.PostForm("password")
 
 	// check user is exist
 	user := models.FindOneByUsername(username)
@@ -65,7 +66,11 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	user.UpdateLoginTime()
+	if utils.Hash(password) != user.Password {
+		utils.Send(context, nil, robust.LOGIN_PASSWORD_NOT_VALID)
+
+		return
+	}
 
 	// 验证是否在黑名单
 	if middlewares.IsExistInBlackSet(user.ID) {
@@ -73,6 +78,8 @@ func Login(context *gin.Context) {
 
 		return
 	}
+
+	user.UpdateLoginTime()
 
 	claims := utils.Claims{
 		UserId: user.ID,
