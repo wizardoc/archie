@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"archie/utils"
+	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"os"
@@ -16,5 +17,5 @@ func WizardIntroduction(context *gin.Context) {
 
 	aboutContent := string(content)
 
-	utils.Send(context, aboutContent, nil)
+	helper.Send(context, aboutContent, nil)
 }
