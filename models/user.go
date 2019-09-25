@@ -4,7 +4,6 @@ import (
 	"archie/connection"
 	"archie/utils"
 	"fmt"
-	"time"
 )
 
 type User struct {
@@ -26,7 +25,7 @@ func (user *User) Register() (ok bool) {
 	utils.Check(err)
 	defer db.Close()
 
-	user.RegisterTime = time.Now().Unix()
+	user.RegisterTime = utils.Now()
 	// make more security password
 	user.Password = utils.Hash(user.Password)
 	user.IsValidEmail = false
@@ -42,7 +41,7 @@ func (user *User) UpdateLoginTime() {
 	utils.Check(err)
 	defer db.Close()
 
-	db.Model(&user).Where("id = ?", user.ID).Update("login_time", time.Now().Unix())
+	db.Model(&user).Where("id = ?", user.ID).Update("login_time", utils.Now())
 }
 
 func (user *User) GetUserInfoByID() User {

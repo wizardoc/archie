@@ -3,7 +3,6 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
-	"time"
 )
 
 type Organization struct {
@@ -39,7 +38,7 @@ func (organization *Organization) New(username string) (ok bool) {
 	defer db.Close()
 
 	organization.HasValid = true
-	organization.CreateTime = time.Now().Unix()
+	organization.CreateTime = utils.Now()
 	user := FindOneByUsername(username)
 	organization.Owner = user.ID
 

@@ -25,8 +25,8 @@ func (claims Claims) SignJWT() string {
 
 	claims.ISS = "younccat"
 	claims.JTI = uuid.NewV4().String()
-	claims.EXP = time.Now().Add(time.Hour * time.Duration(24)).Unix()
-	claims.IAT = time.Now().Unix()
+	claims.EXP = ParseToMillisecond(time.Now().Add(time.Hour * time.Duration(24)).UnixNano())
+	claims.IAT = Now()
 
 	mapstructure.Decode(claims, &jwtMap)
 

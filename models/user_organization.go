@@ -5,7 +5,6 @@ import (
 	"archie/utils"
 	"fmt"
 	"strings"
-	"time"
 )
 
 type UserOrganization struct {
@@ -21,15 +20,16 @@ func (userOrganization *UserOrganization) New(isOwner bool) {
 	utils.Check(err)
 	defer db.Close()
 
-	userOrganization.JoinTime = time.Now().Unix()
+	userOrganization.JoinTime = utils.Now()
 	userOrganization.IsOwner = isOwner
 
 	db.Create(userOrganization)
 }
 
 type OrganizationOwnerInfo struct {
-	OwnerInfo User
+	OwnerInfo User `json:"ownerInfo"`
 	Organization
+	JoinTime int64 `json:"joinTime"`
 }
 
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
@@ -44,7 +44,7 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 
 	db.
 		Raw(
-			"select * from organizations where id in (select organization_id from user_organizations where user_id=?)",
+			"select * from user_organizations inner join organizations on organization_id=organizations.id where user_id=?",
 			userOrganization.UserID,
 		).
 		Scan(&infos)
