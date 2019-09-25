@@ -13,6 +13,11 @@ type RedisConfig struct {
 	Port string `json:"port"`
 }
 
+type EmailConfig struct {
+	Username string `json:"username"`
+	Key      string `json:"key"`
+}
+
 /** The DB mean's primary DB */
 func LoadDBConfig() DBConfig {
 	config := DBConfig{}
@@ -25,6 +30,14 @@ func LoadDBConfig() DBConfig {
 func LoadRedisConfig() RedisConfig {
 	config := RedisConfig{}
 	configLoader("redis.json", &config)
+
+	return config
+}
+
+/** email */
+func LoadEmailConfig() EmailConfig {
+	config := EmailConfig{}
+	configLoader("email.json", &config)
 
 	return config
 }
