@@ -3,6 +3,8 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -26,24 +28,43 @@ func (userOrganization *UserOrganization) New(isOwner bool) {
 }
 
 type OrganizationOwnerInfo struct {
-	User
+	OwnerInfo User
 	Organization
 }
 
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
 	db, err := connection.GetDB()
-	var info []OrganizationOwnerInfo
+	var infos []OrganizationOwnerInfo
 
 	if err != nil {
-		return info, err
+		return infos, err
 	}
 
 	defer db.Close()
 
-	db.Raw(
-		`select * from user_organizations inner join users on users.id=user_organizations.user_id inner join organizations on organizations.id=organization_id where user_id=?`,
-		userOrganization.UserID,
-	).Scan(&info)
+	db.
+		Raw(
+			"select * from organizations where id in (select organization_id from user_organizations where user_id=?)",
+			userOrganization.UserID,
+		).
+		Scan(&infos)
 
-	return info, nil
+	if len(infos) != 0 {
+		var organizationIds []string
+		for _, info := range infos {
+			organizationIds = append(organizationIds, fmt.Sprintf("'%s'", info.Owner))
+		}
+
+		var owners []User
+
+		db.
+			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
+			Scan(&owners)
+
+		for i, ownerInfo := range owners {
+			infos[i].OwnerInfo = ownerInfo
+		}
+	}
+
+	return infos, nil
 }
