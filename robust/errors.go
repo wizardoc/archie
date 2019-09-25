@@ -13,6 +13,10 @@ var REGISTER_FAILURE = ArchieError{1003, "Register fail"}
 var REGISTER_EXIST_USER = ArchieError{1004, "The user is exist"}
 var LOGIN_USER_DOES_NOT_EXIST = ArchieError{1005, "The user does not exist"}
 var LOGIN_PASSWORD_NOT_VALID = ArchieError{1006, "The password not valid"}
+var EMAIL_DOSE_EXIST = ArchieError{1007, "The email does exist"}
+
+// Organization
+var ORGANIZATION_FIND_EMPTY = ArchieError{1008, "Cannot find organizations"}
 
 // JWT
 var JWT_DOES_NOT_EXIST = ArchieError{4001, "Jwt does not exist"}
