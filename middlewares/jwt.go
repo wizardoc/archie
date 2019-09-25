@@ -4,6 +4,7 @@ import (
 	"archie/connection"
 	"archie/robust"
 	"archie/utils"
+	"archie/utils/helper"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -55,7 +56,7 @@ func ValidateToken(context *gin.Context) {
 	jwtString, ok := getJWTFromHeader(context.Request)
 
 	if !ok {
-		utils.Send(context, nil, robust.JWT_DOES_NOT_EXIST)
+		helper.Send(context, nil, robust.JWT_DOES_NOT_EXIST)
 		context.Abort()
 
 		return
@@ -65,18 +66,35 @@ func ValidateToken(context *gin.Context) {
 	err := JWTClaims.Valid()
 
 	if err != nil {
-		utils.Send(context, nil, err)
+		helper.Send(context, nil, err)
 	}
 
 	claims := utils.Claims{}
 	mapstructure.Decode(JWTClaims, &claims)
 
 	if IsExistInBlackSet(claims.UserId) {
-		utils.Send(context, nil, robust.JWT_NOT_ALLOWED)
+		helper.Send(context, nil, robust.JWT_NOT_ALLOWED)
 
 		return
 	}
 
 	context.Set("claims", claims)
 	context.Next()
+}
+
+/** 验证获取 Token */
+func GetClaims(context *gin.Context) (utils.Claims, robust.ArchieError) {
+	claims, isExist := context.Get("claims")
+
+	if !isExist {
+		return utils.Claims{}, robust.JWT_DOES_NOT_EXIST
+	}
+
+	parsedClaims, ok := claims.(utils.Claims)
+
+	if !ok {
+		return utils.Claims{}, robust.JWT_PARSE_ERROR
+	}
+
+	return parsedClaims, robust.ArchieError{}
 }
