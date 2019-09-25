@@ -3,18 +3,17 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
-	"fmt"
-	"os"
 	"time"
 )
 
 type Organization struct {
-	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	OrganizeName string  `gorm:"type:varchar(20);unique;"`
-	Description  string  `gorm:"type:varchar(50)"`
-	HasValid     bool    `gorm:"type:bool;default:TRUE"`
-	Users        *[]User `gorm:"many2many:user_organizations;"`
-	CreateTime   time.Time
+	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	OrganizeName string  `gorm:"type:varchar(20);unique;"json:"organizeName"`
+	Description  string  `gorm:"type:varchar(50)"json:"description"`
+	HasValid     bool    `gorm:"type:bool;default:TRUE"json:"hasValid"`
+	Owner        string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	Users        *[]User `gorm:"many2many:user_organizations;"json:"-"`
+	CreateTime   int64   `gorm:"type:bigint"json:"createTime"`
 }
 
 type OrganizationName struct {
@@ -30,19 +29,19 @@ func (organization *Organization) FindOneByOrganizeName() {
 	db.Find(organization, "organize_name=?", organization.OrganizeName)
 }
 
-func (organization *Organization) New() (ok bool) {
+func (organization *Organization) New(username string) (ok bool) {
 	db, err := connection.GetDB()
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-
 		return false
 	}
 
 	defer db.Close()
 
 	organization.HasValid = true
-	organization.CreateTime = time.Now()
+	organization.CreateTime = time.Now().Unix()
+	user := FindOneByUsername(username)
+	organization.Owner = user.ID
 
 	db.Create(organization)
 
@@ -53,8 +52,6 @@ func (organization *Organization) GetAllNames() (names []OrganizationName, ok bo
 	db, err := connection.GetDB()
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-
 		return nil, ok
 	}
 
@@ -64,4 +61,19 @@ func (organization *Organization) GetAllNames() (names []OrganizationName, ok bo
 	db.Select("organize_name").Find(organization).Scan(&names)
 
 	return names, true
+}
+
+func (organization *Organization) AllByUserId(id string) ([]Organization, error) {
+	db, err := connection.GetDB()
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
+
+	var organizations []Organization
+	db.Find(&organizations).Where("id=?", id)
+
+	return organizations, nil
 }

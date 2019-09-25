@@ -3,6 +3,7 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
+	"fmt"
 	"time"
 )
 
@@ -58,14 +59,22 @@ func (user *User) GetUserInfoByID() User {
 	return result
 }
 
-func FindOneByUsername(username string) User {
+func findUser(queryKey string, queryBody string) User {
 	db, err := connection.GetDB()
 
 	utils.Check(err)
 	defer db.Close()
 	user := User{}
 
-	db.Find(&user, "username = ?", username)
+	db.Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody)
 
 	return user
+}
+
+func FindOneByUsername(username string) User {
+	return findUser("username", username)
+}
+
+func FindOneByEmail(email string) User {
+	return findUser("email", email)
 }
