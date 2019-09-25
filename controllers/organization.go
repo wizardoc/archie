@@ -3,7 +3,7 @@ package controllers
 import (
 	"archie/models"
 	"archie/robust"
-	"archie/utils"
+	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,12 +25,12 @@ func GetAllOrganizationNames(context *gin.Context) {
 	names, ok := organization.GetAllNames()
 
 	if !ok {
-		utils.Send(context, nil, robust.CANNOT_FIND_ORGANIZATION)
+		helper.Send(context, nil, robust.CANNOT_FIND_ORGANIZATION)
 
 		return
 	}
 
-	utils.Send(context, gin.H{
+	helper.Send(context, gin.H{
 		"organizeNames": names,
 	}, nil)
 }
@@ -40,17 +40,17 @@ func NewOrganization(context *gin.Context) {
 	organizeDescription := context.PostForm("organizeDescription")
 	username := context.PostForm("username")
 
-	ok := CreateNewOrganization(organizeName, organizeDescription)
+	ok := CreateNewOrganization(organizeName, organizeDescription, username)
 
 	if !ok {
-		utils.Send(context, nil, robust.CONNOT_CREATE_ORGANIZATION)
+		helper.Send(context, nil, robust.CONNOT_CREATE_ORGANIZATION)
 
 		return
 	}
 
 	insertUserToOrganization(organizeName, username, true)
 
-	utils.Send(context, "success", nil)
+	helper.Send(context, "success", nil)
 }
 
 func JoinOrganization(context *gin.Context) {
@@ -59,14 +59,14 @@ func JoinOrganization(context *gin.Context) {
 
 	insertUserToOrganization(organizeName, username, false)
 
-	utils.Send(context, "success", nil)
+	helper.Send(context, "success", nil)
 }
 
-func CreateNewOrganization(name string, description string) (ok bool) {
+func CreateNewOrganization(name string, description string, username string) (ok bool) {
 	organization := models.Organization{
 		OrganizeName: name,
 		Description:  description,
 	}
 
-	return organization.New()
+	return organization.New(username)
 }
