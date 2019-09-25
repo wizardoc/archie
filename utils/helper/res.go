@@ -1,4 +1,4 @@
-package utils
+package helper
 
 import (
 	"archie/robust"
@@ -6,10 +6,6 @@ import (
 	"net/http"
 	"reflect"
 )
-
-func IsEmpty(target interface{}) bool {
-	return !reflect.ValueOf(target).IsValid()
-}
 
 // response
 func Send(context *gin.Context, data interface{}, err interface{}) {
@@ -26,4 +22,8 @@ func Send(context *gin.Context, data interface{}, err interface{}) {
 		"data": data,
 		"err":  err,
 	})
+}
+
+func IsEmpty(target interface{}) bool {
+	return !reflect.ValueOf(target).IsValid()
 }

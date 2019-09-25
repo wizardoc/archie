@@ -20,6 +20,30 @@ func (userOrganization *UserOrganization) New(isOwner bool) {
 	defer db.Close()
 
 	userOrganization.JoinTime = time.Now().Unix()
+	userOrganization.IsOwner = isOwner
 
 	db.Create(userOrganization)
+}
+
+type OrganizationOwnerInfo struct {
+	User
+	Organization
+}
+
+func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
+	db, err := connection.GetDB()
+	var info []OrganizationOwnerInfo
+
+	if err != nil {
+		return info, err
+	}
+
+	defer db.Close()
+
+	db.Raw(
+		`select * from user_organizations inner join users on users.id=user_organizations.user_id inner join organizations on organizations.id=organization_id where user_id=?`,
+		userOrganization.UserID,
+	).Scan(&info)
+
+	return info, nil
 }
