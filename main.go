@@ -34,6 +34,5 @@ func InitTable() {
 
 func main() {
 	InitTable()
-
 	routes.Serve()
 }

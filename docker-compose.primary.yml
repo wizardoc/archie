@@ -2,7 +2,7 @@ version: '3'
 services:
   archie:
     build: .
-    image: 'archie:v0.08'
+    image: 'archie'
     labels:
       wizard: 'wizard'
     ports:
