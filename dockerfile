@@ -1,9 +1,8 @@
 FROM alpine
-MAINTAINER younccat
+LABEL younccat zzhbbdbbd@163.com
 
-WORKDIR /archie
-COPY .                          /archie
+COPY . .
 
 EXPOSE 3000
 
-ENTRYPOINT ["/archie/build/archie"]
+ENTRYPOINT ["/docker/scripts/entrypoint.sh"]
