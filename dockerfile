@@ -5,6 +5,4 @@ COPY .                          .
 
 EXPOSE 3000
 
-WORKDIR /build
-
-CMD ./archie
+CMD ./build/archie
