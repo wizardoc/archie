@@ -1,8 +1,9 @@
 FROM alpine
 MAINTAINER younccat
 
-COPY .                          .
+WORKDIR /archie
+COPY .                          /archie
 
 EXPOSE 3000
 
-CMD ./build/archie
+ENTRYPOINT ["/archie/build/archie"]
