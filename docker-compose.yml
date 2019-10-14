@@ -33,10 +33,26 @@ services:
     ports:
       - "8080:80"
 
+  archie:
+    build: .
+    image: 'archie'
+    labels:
+      wizard: 'wizard'
+    depends_on: 
+      - nginx
+      - postgres
+      - redis
+      
+    ports:
+      - "3000:3000"
+    networks:
+      - archie_net
+    tty: true       
+
 networks:
   archie_net:
     external:
-      name: archie_net
+      name: archie_net   
 
 volumes:
   postgres_data:
