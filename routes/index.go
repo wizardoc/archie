@@ -4,7 +4,7 @@ import (
 	"archie/utils"
 	"archie/utils/configer"
 	"fmt"
-	//"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,7 +12,7 @@ func Serve() {
 	config := configer.LoadServeConfig()
 
 	router := gin.Default()
-	//router.Use(cors.Default())
+	router.Use(cors.Default())
 
 	userRouter(router)
 	organizationRouter(router)
