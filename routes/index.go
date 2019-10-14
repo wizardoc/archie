@@ -13,6 +13,7 @@ func Serve() {
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
 		AllowOriginFunc:  func(origin string) bool { return true },
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
 		AllowHeaders:     []string{"*"},
