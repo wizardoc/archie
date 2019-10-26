@@ -32,6 +32,16 @@ type OrganizationOwnerInfo struct {
 	JoinTime int64 `json:"joinTime"`
 }
 
+func findOwnerByID(id string, owners []User) (User, bool) {
+	for _, owner := range owners {
+		if owner.ID == id {
+			return owner, true
+		}
+	}
+
+	return User{}, false
+}
+
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
 	db, err := connection.GetDB()
 	var infos []OrganizationOwnerInfo
@@ -57,12 +67,20 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 
 		var owners []User
 
+		fmt.Println(len(organizationIds))
+
 		db.
 			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
 			Scan(&owners)
 
-		for i, ownerInfo := range owners {
-			infos[i].OwnerInfo = ownerInfo
+		for i, organization := range infos {
+			owner, ok := findOwnerByID(organization.Owner, owners)
+
+			if !ok {
+				continue
+			}
+
+			infos[i].OwnerInfo = owner
 		}
 	}
 
