@@ -10,7 +10,7 @@ type Organization struct {
 	OrganizeName string  `gorm:"type:varchar(20);unique;"json:"organizeName"`
 	Description  string  `gorm:"type:varchar(50)"json:"description"`
 	HasValid     bool    `gorm:"type:bool;default:TRUE"json:"hasValid"`
-	Owner        string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	Owner        string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"` // related userID
 	Users        *[]User `gorm:"many2many:user_organizations;"json:"-"`
 	CreateTime   int64   `gorm:"type:bigint"json:"createTime"`
 }
