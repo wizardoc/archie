@@ -76,3 +76,16 @@ func (organization *Organization) AllByUserId(id string) ([]Organization, error)
 
 	return organizations, nil
 }
+
+func (organization *Organization) RemoveOrganization() bool {
+	db, err := connection.GetDB()
+
+	if err != nil {
+		return false
+	}
+
+	defer db.Close()
+
+	db.Delete(organization)
+	return true
+}

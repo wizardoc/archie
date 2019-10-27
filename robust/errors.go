@@ -14,6 +14,8 @@ var REGISTER_EXIST_USER = ArchieError{1004, "The user is exist"}
 var LOGIN_USER_DOES_NOT_EXIST = ArchieError{1005, "The user does not exist"}
 var LOGIN_PASSWORD_NOT_VALID = ArchieError{1006, "The password not valid"}
 var EMAIL_DOSE_EXIST = ArchieError{1007, "The email does exist"}
+var REMOVE_PERMISSION = ArchieError{1008, "Remove permission error"}
+var REMOVE_ORG_FAILURE = ArchieError{1009, "Remove organization failure"}
 
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{1008, "Cannot find organizations"}
