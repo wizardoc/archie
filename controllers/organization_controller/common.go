@@ -2,7 +2,7 @@ package organization_controller
 
 import "archie/models"
 
-func CreateNewOrganization(name string, description string, username string) (ok bool) {
+func CreateNewOrganization(name string, description string, username string) error {
 	organization := models.Organization{
 		OrganizeName: name,
 		Description:  description,

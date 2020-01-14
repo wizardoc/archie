@@ -28,11 +28,11 @@ func (organization *Organization) FindOneByOrganizeName() {
 	db.Find(organization, "organize_name=?", organization.OrganizeName)
 }
 
-func (organization *Organization) New(username string) (ok bool) {
+func (organization *Organization) New(username string) error {
 	db, err := connection.GetDB()
 
 	if err != nil {
-		return false
+		return err
 	}
 
 	defer db.Close()
@@ -44,7 +44,7 @@ func (organization *Organization) New(username string) (ok bool) {
 
 	db.Create(organization)
 
-	return true
+	return db.Error
 }
 
 func (organization *Organization) GetAllNames() (names []OrganizationName, ok bool) {

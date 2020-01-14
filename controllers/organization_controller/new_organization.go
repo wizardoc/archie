@@ -4,22 +4,37 @@ import (
 	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
+type OrganizationUser struct {
+	OrganizeName        string `form:"organizeName" validate:"required"`
+	OrganizeDescription string `form:"organizeDescription" validate:"required"`
+	Username            string `form:"username" validate:"required"`
+}
+
+// 创建一个新的组织，创建组织成功后将用户插入至该组织
 func NewOrganization(context *gin.Context) {
-	organizeName := context.PostForm("organizeName")
-	organizeDescription := context.PostForm("organizeDescription")
-	username := context.PostForm("username")
+	var organizationUser OrganizationUser
+	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
-	ok := CreateNewOrganization(organizeName, organizeDescription, username)
+	if err := helper.BindWithValid(context, &organizationUser); err != nil {
+		authRes.Err = err
+		authRes.Send(context)
+		return
+	}
 
-	if !ok {
-		res.Err = robust.CONNOT_CREATE_ORGANIZATION
+	if err := CreateNewOrganization(
+		organizationUser.OrganizeName,
+		organizationUser.OrganizeDescription,
+		organizationUser.Username,
+	); err != nil {
+		res.Err = robust.DOUBLE_KEY
 		res.Send(context)
 		return
 	}
 
-	InsertUserToOrganization(organizeName, username, true)
+	InsertUserToOrganization(organizationUser.OrganizeName, organizationUser.Username, true)
 	res.Send(context)
 }
