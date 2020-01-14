@@ -22,18 +22,18 @@ func Serve() {
 	//	MaxAge:           86400,
 	//}))
 
-	router.Use(func(c *gin.Context) {
-		for k, v := range c.Request.Header {
-			fmt.Println("")
-			fmt.Println(k, v)
-			fmt.Println("")
-		}
-
-		c.JSON(200, gin.H{
-			"data": "a",
-			"err":  "err",
-		})
-	})
+	//router.Use(func(c *gin.Context) {
+	//	for k, v := range c.Request.Header {
+	//		fmt.Println("")
+	//		fmt.Println(k, v)
+	//		fmt.Println("")
+	//	}
+	//
+	//	c.JSON(200, gin.H{
+	//		"data": "a",
+	//		"err":  "err",
+	//	})
+	//})
 
 	userRouter(router)
 	organizationRouter(router)
