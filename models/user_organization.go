@@ -14,16 +14,21 @@ type UserOrganization struct {
 	JoinTime       int64  `gorm:"type:bigint"`
 }
 
-func (userOrganization *UserOrganization) New(isOwner bool) {
+func (userOrganization *UserOrganization) New(isOwner bool) error {
 	db, err := connection.GetDB()
 
-	utils.Check(err)
+	if err != nil {
+		return err
+	}
+
 	defer db.Close()
 
 	userOrganization.JoinTime = utils.Now()
 	userOrganization.IsOwner = isOwner
 
 	db.Create(userOrganization)
+
+	return db.Error
 }
 
 type OrganizationOwnerInfo struct {

@@ -11,7 +11,7 @@ func CreateNewOrganization(name string, description string, username string) (ok
 	return organization.New(username)
 }
 
-func InsertUserToOrganization(organizeName string, username string, isOwner bool) {
+func InsertUserToOrganization(organizeName string, username string, isOwner bool) error {
 	organization := models.Organization{OrganizeName: organizeName}
 	organization.FindOneByOrganizeName()
 
@@ -21,5 +21,5 @@ func InsertUserToOrganization(organizeName string, username string, isOwner bool
 		OrganizationID: organization.ID,
 	}
 
-	userOrganization.New(isOwner)
+	return userOrganization.New(isOwner)
 }
