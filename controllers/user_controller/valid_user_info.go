@@ -25,10 +25,7 @@ func ValidBaseInfo(context *gin.Context) {
 		return
 	}
 
-	email := context.PostForm("email")
-	username := context.PostForm("username")
-
-	user := models.FindOneByUsername(username)
+	user := models.FindOneByUsername(baseInfo.Username)
 
 	if user.ID != "" {
 		errRes.Err = robust.REGISTER_EXIST_USER
@@ -36,13 +33,13 @@ func ValidBaseInfo(context *gin.Context) {
 		return
 	}
 
-	if user.Email == email {
+	if user.Email == baseInfo.Email {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
 	}
 
-	if models.FindOneByEmail(email).Email == email {
+	if models.FindOneByEmail(baseInfo.Email).Email == baseInfo.Email {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
