@@ -12,6 +12,52 @@ import (
 	"net/http"
 )
 
+func ValidateToken(context *gin.Context) {
+	jwtString, ok := getJWTFromHeader(context.Request)
+	authErrRes := helper.Res{Status: http.StatusBadRequest}
+	unAuthErrRes := helper.Res{Status: http.StatusUnauthorized}
+	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
+
+	/** JWT 不存在 */
+	if !ok {
+		authErrRes.Err = robust.JWT_DOES_NOT_EXIST
+		authErrRes.Send(context)
+		context.Abort()
+
+		return
+	}
+
+	JWTClaims := ParseToken(jwtString)
+	err := JWTClaims.Valid()
+
+	/** 不合法的 Token */
+	if err != nil {
+		authErrRes.Err = err
+		authErrRes.Send(context)
+		return
+	}
+
+	claims := utils.Claims{}
+	err = mapstructure.Decode(JWTClaims, &claims)
+
+	/** 解析 Claims 失败 */
+	if err != nil {
+		serverErrRes.Err = robust.JWT_CANNOT_PARSE_CLAIMS
+		serverErrRes.Send(context)
+		return
+	}
+
+	/** 在小黑屋，JWT 不被允许 */
+	if IsExistInBlackSet(claims.UserId) {
+		unAuthErrRes.Err = robust.JWT_NOT_ALLOWED
+		unAuthErrRes.Send(context)
+		return
+	}
+
+	context.Set("claims", claims)
+	context.Next()
+}
+
 func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
 	headers := req.Header
 	auth := headers["Authentication"]
@@ -52,38 +98,8 @@ func IsExistInBlackSet(userId string) (isExist bool) {
 	return
 }
 
-func ValidateToken(context *gin.Context) {
-	jwtString, ok := getJWTFromHeader(context.Request)
-
-	if !ok {
-		helper.Send(context, nil, robust.JWT_DOES_NOT_EXIST)
-		context.Abort()
-
-		return
-	}
-
-	JWTClaims := ParseToken(jwtString)
-	err := JWTClaims.Valid()
-
-	if err != nil {
-		helper.Send(context, nil, err)
-	}
-
-	claims := utils.Claims{}
-	mapstructure.Decode(JWTClaims, &claims)
-
-	if IsExistInBlackSet(claims.UserId) {
-		helper.Send(context, nil, robust.JWT_NOT_ALLOWED)
-
-		return
-	}
-
-	context.Set("claims", claims)
-	context.Next()
-}
-
 /** 验证获取 Token */
-func GetClaims(context *gin.Context) (utils.Claims, robust.ArchieError) {
+func GetClaims(context *gin.Context) (utils.Claims, error) {
 	claims, isExist := context.Get("claims")
 
 	if !isExist {
@@ -96,5 +112,5 @@ func GetClaims(context *gin.Context) (utils.Claims, robust.ArchieError) {
 		return utils.Claims{}, robust.JWT_PARSE_ERROR
 	}
 
-	return parsedClaims, robust.ArchieError{}
+	return parsedClaims, nil
 }

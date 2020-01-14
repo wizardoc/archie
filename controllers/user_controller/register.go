@@ -3,51 +3,54 @@ package user_controller
 import (
 	"archie/models"
 	"archie/robust"
-	"archie/utils"
+	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
+type RegisterInfo struct {
+	Username    string `validate:"gt=4,lt=20"`
+	Password    string `validate:"gt=4,lt=20"`
+	Email       string `validate:"email"`
+	DisplayName string `validate:"gt=2,lt=10"`
+	//Avatar string
+}
+
 /** 用户注册 */
 func Register(context *gin.Context) {
-	organizationName := context.PostForm("organizationName")
-	organizationDescription := context.PostForm("organizationDescription")
+	//organizationName := context.PostForm("organizationName")
+	//organizationDescription := context.PostForm("organizationDescription")
+	//
+	//utils.Green(organizationName)
+	//utils.Green(organizationDescription)
+	var user = RegisterInfo{}
+	if err := context.Bind(&user); err != nil {
+		helper.Res{Status: http.StatusBadRequest, Err: robust.INVALID_PARAMS}.Send(context)
+		return
+	}
 
-	utils.Green(organizationName)
-	utils.Green(organizationDescription)
-
-	user := models.User{
-		Password:    context.PostForm("password"),
-		Avatar:      "",
-		Username:    context.PostForm("username"),
-		DisplayName: context.PostForm("displayName"),
-		Email:       context.PostForm("email"),
+	validator := robust.Validation{Target: user}
+	if err := validator.Valid(); err != nil {
+		helper.Res{Status: http.StatusBadRequest, Err: err}.Send(context)
+		return
 	}
 
 	findUser := models.FindOneByUsername(user.Username)
 
 	if findUser.ID != "" {
-		context.JSON(http.StatusOK, gin.H{
-			"data": nil,
-			"err":  robust.REGISTER_EXIST_USER,
-		})
-
+		helper.Res{Err: robust.REGISTER_EXIST_USER}.Send(context)
 		return
 	}
 
-	ok := user.Register()
+	var userValue interface{} = user
+	userModel := userValue.(models.User)
+
+	ok := userModel.Register()
 
 	if !ok {
-		context.JSON(http.StatusOK, gin.H{
-			"data": nil,
-			"err":  robust.CREATE_DATA_FAILURE,
-		})
-
+		helper.Res{Err: robust.CREATE_DATA_FAILURE}.Send(context)
 		return
 	}
 
-	context.JSON(200, gin.H{
-		"data": user,
-		"err":  nil,
-	})
+	helper.Res{Data: user}.Send(context)
 }

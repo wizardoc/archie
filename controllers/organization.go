@@ -23,43 +23,46 @@ func insertUserToOrganization(organizeName string, username string, isOwner bool
 func GetAllOrganizationNames(context *gin.Context) {
 	var organization models.Organization
 	names, ok := organization.GetAllNames()
+	res := helper.Res{}
 
 	if !ok {
-		helper.Send(context, nil, robust.CANNOT_FIND_ORGANIZATION)
-
+		res.Err = robust.CANNOT_FIND_ORGANIZATION
+		res.Send(context)
 		return
 	}
 
-	helper.Send(context, gin.H{
+	res.Data = gin.H{
 		"organizeNames": names,
-	}, nil)
+	}
+	res.Send(context)
 }
 
 func NewOrganization(context *gin.Context) {
 	organizeName := context.PostForm("organizeName")
 	organizeDescription := context.PostForm("organizeDescription")
 	username := context.PostForm("username")
+	res := helper.Res{}
 
 	ok := CreateNewOrganization(organizeName, organizeDescription, username)
 
 	if !ok {
-		helper.Send(context, nil, robust.CONNOT_CREATE_ORGANIZATION)
-
+		res.Err = robust.CONNOT_CREATE_ORGANIZATION
+		res.Send(context)
 		return
 	}
 
 	insertUserToOrganization(organizeName, username, true)
-
-	helper.Send(context, "success", nil)
+	res.Send(context)
 }
 
 func JoinOrganization(context *gin.Context) {
 	organizeName := context.PostForm("organizeName")
 	username := context.PostForm("username")
+	res := helper.Res{}
 
 	insertUserToOrganization(organizeName, username, false)
 
-	helper.Send(context, "success", nil)
+	res.Send(context)
 }
 
 func CreateNewOrganization(name string, description string, username string) (ok bool) {

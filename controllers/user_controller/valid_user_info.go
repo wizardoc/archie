@@ -5,11 +5,8 @@ import (
 	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
-
-func sendError(context *gin.Context, err robust.ArchieError) {
-	helper.Send(context, gin.H{"isValid": false}, err)
-}
 
 /** 验证用户 baseInfo */
 func ValidBaseInfo(context *gin.Context) {
@@ -17,22 +14,25 @@ func ValidBaseInfo(context *gin.Context) {
 	username := context.PostForm("username")
 
 	user := models.FindOneByUsername(username)
+	errRes := helper.Res{Status: http.StatusBadRequest}
 
 	if user.ID != "" {
-		sendError(context, robust.REGISTER_EXIST_USER)
-
+		errRes.Err = robust.REGISTER_EXIST_USER
+		errRes.Send(context)
 		return
 	}
 
 	if user.Email == email {
-		sendError(context, robust.EMAIL_DOSE_EXIST)
-
-		return
-	} else if models.FindOneByEmail(email).Email == email {
-		sendError(context, robust.EMAIL_DOSE_EXIST)
-
+		errRes.Err = robust.EMAIL_DOSE_EXIST
+		errRes.Send(context)
 		return
 	}
 
-	helper.Send(context, gin.H{"isValid": true}, nil)
+	if models.FindOneByEmail(email).Email == email {
+		errRes.Err = robust.EMAIL_DOSE_EXIST
+		errRes.Send(context)
+		return
+	}
+
+	helper.Res{Data: gin.H{"isValid": true}}.Send(context)
 }

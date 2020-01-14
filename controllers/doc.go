@@ -8,8 +8,10 @@ import (
 	"os"
 )
 
+const DOCUMENT_POSITION = "public/doc/about-wizard.md"
+
 func WizardIntroduction(context *gin.Context) {
-	file, err := os.Open("public/doc/about-wizard.md")
+	file, err := os.Open(DOCUMENT_POSITION)
 	utils.Check(err)
 
 	content, err := ioutil.ReadAll(file)
@@ -17,5 +19,6 @@ func WizardIntroduction(context *gin.Context) {
 
 	aboutContent := string(content)
 
-	helper.Send(context, aboutContent, nil)
+	res := helper.Res{Data: aboutContent}
+	res.Send(context)
 }

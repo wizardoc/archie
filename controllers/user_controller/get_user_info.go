@@ -5,35 +5,40 @@ import (
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 /** 获取用户信息 */
 func GetUserInfo(context *gin.Context) {
 	claims, isExist := context.Get("claims")
+	authRes := helper.Res{Status: http.StatusBadRequest}
+	unAuthRes := helper.Res{Status: http.StatusUnauthorized}
+	res := helper.Res{}
 
-	fmt.Println(claims)
-
+	// claims 不存在
 	if !isExist {
-		helper.Send(context, nil, robust.JWT_PARSE_ERROR)
-
+		unAuthRes.Err = robust.JWT_PARSE_ERROR
+		unAuthRes.Send(context)
 		return
 	}
 
 	parsedClaims, ok := claims.(utils.Claims)
 
+	// 解析 claims 错误
 	if !ok {
-		helper.Send(context, nil, robust.JWT_PARSE_ERROR)
-
+		authRes.Err = robust.JWT_PARSE_ERROR
+		authRes.Send(context)
 		return
 	}
 
 	user := models.User{
 		ID: parsedClaims.UserId,
 	}
+	userInfo := user.GetUserInfoByID()
 
-	helper.Send(context, gin.H{
-		"userInfo": user.GetUserInfoByID(),
-	}, nil)
+	res.Data = gin.H{
+		"userInfo": userInfo,
+	}
+	res.Send(context)
 }

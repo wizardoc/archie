@@ -5,6 +5,7 @@ import (
 	"archie/utils/configer"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 func Serve() {
@@ -21,13 +22,18 @@ func Serve() {
 	//	MaxAge:           86400,
 	//}))
 
-	//router.Use(func(c *gin.Context) {
-	//	for k, v := range c.Request.Header {
-	//		fmt.Println("")
-	//		fmt.Println(k, v)
-	//		fmt.Println("")
-	//	}
-	//})
+	router.Use(func(c *gin.Context) {
+		for k, v := range c.Request.Header {
+			fmt.Println("")
+			fmt.Println(k, v)
+			fmt.Println("")
+		}
+
+		c.JSON(200, gin.H{
+			"data": "a",
+			"err":  "err",
+		})
+	})
 
 	userRouter(router)
 	organizationRouter(router)
@@ -35,5 +41,9 @@ func Serve() {
 	TodoRouter(router)
 
 	utils.Logger(fmt.Sprintf("Listing on %s", config.Port))
-	router.Run(config.GetAddress())
+	err := router.Run(config.GetAddress())
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }

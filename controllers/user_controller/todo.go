@@ -5,15 +5,18 @@ import (
 	"archie/models"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 /** 添加待办事项 */
 func AddTodo(context *gin.Context) {
-	parsedClaims, archieErr := middlewares.GetClaims(context)
+	parsedClaims, err := middlewares.GetClaims(context)
+	authRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
-	if archieErr.Msg != "" {
-		helper.Send(context, nil, archieErr)
-
+	if err != nil {
+		authRes.Err = err
+		authRes.Send(context)
 		return
 	}
 
@@ -30,16 +33,18 @@ func AddTodo(context *gin.Context) {
 
 	todoItem.AddUserTodoItem()
 
-	helper.Send(context, nil, nil)
+	res.Send(context)
 }
 
 /** 删除待办事项 */
 func RemoveTodo(context *gin.Context) {
-	parsedClaims, archieErr := middlewares.GetClaims(context)
+	parsedClaims, err := middlewares.GetClaims(context)
+	authRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
-	if archieErr.Msg != "" {
-		helper.Send(context, nil, archieErr)
-
+	if err != nil {
+		authRes.Err = err
+		authRes.Send(context)
 		return
 	}
 
@@ -51,5 +56,5 @@ func RemoveTodo(context *gin.Context) {
 
 	todoItem.RemoveUserTodoItem()
 
-	helper.Send(context, nil, nil)
+	res.Send(context)
 }

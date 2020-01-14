@@ -6,14 +6,17 @@ import (
 	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func RemoveOwnOrganization(context *gin.Context) {
-	parsedClaims, archieErr := middlewares.GetClaims(context)
+	parsedClaims, err := middlewares.GetClaims(context)
+	authRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
-	if archieErr.Msg != "" {
-		helper.Send(context, nil, archieErr)
-
+	if err != nil {
+		authRes.Err = err
+		authRes.Send(context)
 		return
 	}
 
@@ -26,22 +29,21 @@ func RemoveOwnOrganization(context *gin.Context) {
 
 	// 检验是否有权限删除组织
 	if parsedClaims.UserId != orgModel.Owner {
-		helper.Send(context, gin.H{
+		authRes.Err = robust.REMOVE_PERMISSION
+		authRes.Data = gin.H{
 			"organizeName": "",
-		}, robust.REMOVE_PERMISSION)
-
+		}
+		authRes.Send(context)
 		return
 	}
 
 	ok := orgModel.RemoveOrganization()
 
 	if !ok {
-		helper.Send(context, nil, robust.REMOVE_ORG_FAILURE)
-
+		authRes.Err = robust.REMOVE_ORG_FAILURE
+		authRes.Send(context)
 		return
 	}
 
-	helper.Send(context, gin.H{
-		"organizeName": organizeName,
-	}, nil)
+	res.Send(context)
 }

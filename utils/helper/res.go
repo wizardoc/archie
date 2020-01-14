@@ -1,27 +1,31 @@
 package helper
 
 import (
-	"archie/robust"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
 )
 
-// response
-func Send(context *gin.Context, data interface{}, err interface{}) {
-	// valid
-	if err != nil {
-		_, ok := err.(robust.ArchieError)
+type Res struct {
+	Data   interface{}
+	Err    error
+	Status int
+}
 
-		if !ok {
-			panic("err must be a ArchieError or nil!")
-		}
+func (res Res) Send(context *gin.Context) {
+	context.JSON(getStatus(res.Status), gin.H{
+		"data": res.Data,
+		"err":  res.Err,
+	})
+}
+
+// parse status from arg
+func getStatus(status int) int {
+	if status == 0 {
+		return http.StatusOK
 	}
 
-	context.JSON(http.StatusOK, gin.H{
-		"data": data,
-		"err":  err,
-	})
+	return status
 }
 
 func IsEmpty(target interface{}) bool {

@@ -6,15 +6,18 @@ import (
 	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // 获取用户加入的所有组织
 func GetAllJoinOrganization(context *gin.Context) {
-	parsedClaims, archieErr := middlewares.GetClaims(context)
+	parsedClaims, err := middlewares.GetClaims(context)
+	authRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
-	if archieErr.Msg != "" {
-		helper.Send(context, nil, archieErr)
-
+	if err != nil {
+		authRes.Err = err
+		authRes.Send(context)
 		return
 	}
 
@@ -23,10 +26,11 @@ func GetAllJoinOrganization(context *gin.Context) {
 	organizations, err := userOrganization.FindUserJoinOrganizations()
 
 	if err != nil {
-		helper.Send(context, nil, robust.ORGANIZATION_FIND_EMPTY)
-
+		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
+		authRes.Send(context)
 		return
 	}
 
-	helper.Send(context, gin.H{"organizations": organizations}, nil)
+	res.Data = gin.H{"organizations": organizations}
+	res.Send(context)
 }

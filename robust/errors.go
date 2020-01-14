@@ -5,6 +5,10 @@ type ArchieError struct {
 	Msg  string `json:"msg"`
 }
 
+func (ae ArchieError) Error() string {
+	return ae.Msg
+}
+
 var CANNOT_FIND_ORGANIZATION = ArchieError{1001, "Cannot find organization"}
 var CONNOT_CREATE_ORGANIZATION = ArchieError{1002, "Could't create new organization"}
 
@@ -20,10 +24,14 @@ var REMOVE_ORG_FAILURE = ArchieError{1009, "Remove organization failure"}
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{1008, "Cannot find organizations"}
 
+// DB
+var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}
+
 // JWT
 var JWT_DOES_NOT_EXIST = ArchieError{4001, "Jwt does not exist"}
 var JWT_PARSE_ERROR = ArchieError{4002, "Cannot parse jwt"}
 var JWT_NOT_ALLOWED = ArchieError{4003, "The jwt is not allowed"}
+var JWT_CANNOT_PARSE_CLAIMS = ArchieError{4004, "Cannot parse the claims"}
 
-// DB
-var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}
+// Validation
+var INVALID_PARAMS = ArchieError{5001, "Invalid params"}
