@@ -1,4 +1,4 @@
-package controllers
+package doc_controller
 
 import (
 	"archie/utils"
