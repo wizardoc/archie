@@ -9,14 +9,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-func createDataTable(db *gorm.DB, model interface{}) (hasTable bool) {
-	hasTable = db.HasTable(model)
-
-	if !hasTable {
+func createDataTable(db *gorm.DB, model interface{}) {
+	if !db.HasTable(model) {
 		db.CreateTable(model)
 	}
-
-	return
 }
 
 func InitTable() {

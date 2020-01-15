@@ -7,8 +7,9 @@ import (
 )
 
 func TodoRouter(router *gin.Engine) {
-	todo := router.Group("/todo")
+	todo := router.Group("/todo", middlewares.ValidateToken)
 
-	todo.POST("/new", middlewares.ValidateToken, todo_controller.AddTodo)
-	todo.DELETE("/remove", middlewares.ValidateToken, todo_controller.RemoveTodo)
+	todo.POST("/new", todo_controller.AddTodo)
+	todo.DELETE("/remove", todo_controller.RemoveTodo)
+	todo.GET("/all", todo_controller.GetAllTodo)
 }
