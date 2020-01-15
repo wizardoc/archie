@@ -1,7 +1,6 @@
 package user_controller
 
 import (
-	"archie/middlewares"
 	"archie/models"
 	"archie/robust"
 	"archie/utils"
@@ -24,7 +23,13 @@ func Login(context *gin.Context) {
 	}
 
 	// 检查用户是否存在
-	user := models.FindOneByUsername(loginInfo.Username)
+	user, err := models.FindOneByUsername(loginInfo.Username)
+
+	if err != nil {
+		errRes.Err = robust.CANNOT_FIND_USER
+		errRes.Send(context)
+		return
+	}
 
 	if helper.IsEmpty(user) || user.ID == "" {
 		errRes.Err = robust.LOGIN_USER_DOES_NOT_EXIST
@@ -40,11 +45,11 @@ func Login(context *gin.Context) {
 	}
 
 	// 验证是否在黑名单
-	if middlewares.IsExistInBlackSet(user.ID) {
-		errRes.Err = robust.JWT_NOT_ALLOWED
-		errRes.Send(context)
-		return
-	}
+	//if middlewares.IsExistInBlackSet(user.ID) {
+	//	errRes.Err = robust.JWT_NOT_ALLOWED
+	//	errRes.Send(context)
+	//	return
+	//}
 
 	go user.UpdateLoginTime()
 

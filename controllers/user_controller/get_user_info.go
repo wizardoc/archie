@@ -14,6 +14,7 @@ func GetUserInfo(context *gin.Context) {
 	claims, isExist := context.Get("claims")
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	unAuthRes := helper.Res{Status: http.StatusUnauthorized}
+	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 	res := helper.Res{}
 
 	// claims 不存在
@@ -35,7 +36,14 @@ func GetUserInfo(context *gin.Context) {
 	user := models.User{
 		ID: parsedClaims.UserId,
 	}
-	userInfo := user.GetUserInfoByID()
+	userInfo, err := user.GetUserInfoByID()
+
+	// 找不到用户
+	if err != nil {
+		serverErrRes.Err = robust.CANNOT_FIND_USER
+		serverErrRes.Send(context)
+		return
+	}
 
 	res.Data = gin.H{
 		"userInfo": userInfo,

@@ -3,6 +3,7 @@ package models
 import (
 	"archie/connection"
 	"archie/utils"
+	"github.com/jinzhu/gorm"
 )
 
 type Organization struct {
@@ -19,73 +20,48 @@ type OrganizationName struct {
 	OrganizeName string
 }
 
-func (organization *Organization) FindOneByOrganizeName() {
-	db, err := connection.GetDB()
-
-	utils.Check(err)
-	defer db.Close()
-
-	db.Find(organization, "organize_name=?", organization.OrganizeName)
+func (organization *Organization) FindOneByOrganizeName() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(organization, "organize_name=?", organization.OrganizeName).Error
+	})
 }
 
 func (organization *Organization) New(username string) error {
-	db, err := connection.GetDB()
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		organization.HasValid = true
+		organization.CreateTime = utils.Now()
+		user, err := FindOneByUsername(username)
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			return err
+		}
 
-	defer db.Close()
+		organization.Owner = user.ID
 
-	organization.HasValid = true
-	organization.CreateTime = utils.Now()
-	user := FindOneByUsername(username)
-	organization.Owner = user.ID
-
-	db.Create(organization)
-
-	return db.Error
+		return db.Create(organization).Error
+	})
 }
 
-func (organization *Organization) GetAllNames() (names []OrganizationName, ok bool) {
-	db, err := connection.GetDB()
-
-	if err != nil {
-		return nil, ok
-	}
-
-	defer db.Close()
-
+func (organization *Organization) GetAllNames() (names []OrganizationName, err error) {
 	names = []OrganizationName{}
-	db.Select("organize_name").Find(organization).Scan(&names)
+	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Select("organize_name").Find(organization).Scan(&names).Error
+	})
 
-	return names, true
+	return
 }
 
-func (organization *Organization) AllByUserId(id string) ([]Organization, error) {
-	db, err := connection.GetDB()
+func (organization *Organization) AllByUserId(id string) (organizations []Organization, err error) {
+	organizations = []Organization{}
+	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(&organizations).Where("id=?", id).Error
+	})
 
-	if err != nil {
-		return nil, err
-	}
-
-	defer db.Close()
-
-	var organizations []Organization
-	db.Find(&organizations).Where("id=?", id)
-
-	return organizations, nil
+	return
 }
 
-func (organization *Organization) RemoveOrganization() bool {
-	db, err := connection.GetDB()
-
-	if err != nil {
-		return false
-	}
-
-	defer db.Close()
-
-	db.Delete(organization)
-	return true
+func (organization *Organization) RemoveOrganization() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Delete(organization).Error
+	})
 }

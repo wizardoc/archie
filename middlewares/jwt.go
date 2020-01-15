@@ -12,10 +12,11 @@ import (
 	"net/http"
 )
 
+// JWT 验证中间件，用于校验 token，将 claims 转发到下一个中间件
 func ValidateToken(context *gin.Context) {
 	jwtString, ok := getJWTFromHeader(context.Request)
 	authErrRes := helper.Res{Status: http.StatusBadRequest}
-	unAuthErrRes := helper.Res{Status: http.StatusUnauthorized}
+	//unAuthErrRes := helper.Res{Status: http.StatusUnauthorized}
 	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 
 	/** JWT 不存在 */
@@ -48,11 +49,11 @@ func ValidateToken(context *gin.Context) {
 	}
 
 	/** 在小黑屋，JWT 不被允许 */
-	if IsExistInBlackSet(claims.UserId) {
-		unAuthErrRes.Err = robust.JWT_NOT_ALLOWED
-		unAuthErrRes.Send(context)
-		return
-	}
+	//if IsExistInBlackSet(claims.UserId) {
+	//	unAuthErrRes.Err = robust.JWT_NOT_ALLOWED
+	//	unAuthErrRes.Send(context)
+	//	return
+	//}
 
 	context.Set("claims", claims)
 	context.Next()

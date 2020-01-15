@@ -25,7 +25,13 @@ func RemoveOwnOrganization(context *gin.Context) {
 		OrganizeName: organizeName,
 	}
 
-	orgModel.FindOneByOrganizeName()
+	err = orgModel.FindOneByOrganizeName()
+
+	if err != nil {
+		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
+		authRes.Send(context)
+		return
+	}
 
 	// 检验是否有权限删除组织
 	if parsedClaims.UserId != orgModel.Owner {
@@ -37,9 +43,9 @@ func RemoveOwnOrganization(context *gin.Context) {
 		return
 	}
 
-	ok := orgModel.RemoveOrganization()
+	err = orgModel.RemoveOrganization()
 
-	if !ok {
+	if err != nil {
 		authRes.Err = robust.REMOVE_ORG_FAILURE
 		authRes.Send(context)
 		return

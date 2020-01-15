@@ -9,6 +9,6 @@ import (
 func TodoRouter(router *gin.Engine) {
 	todo := router.Group("/todo")
 
-	todo.POST("/add", middlewares.ValidateToken, todo_controller.AddTodo)
+	todo.POST("/new", middlewares.ValidateToken, todo_controller.AddTodo)
 	todo.DELETE("/remove", middlewares.ValidateToken, todo_controller.RemoveTodo)
 }

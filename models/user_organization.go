@@ -4,6 +4,7 @@ import (
 	"archie/connection"
 	"archie/utils"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"strings"
 )
 
@@ -15,20 +16,12 @@ type UserOrganization struct {
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) error {
-	db, err := connection.GetDB()
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		userOrganization.JoinTime = utils.Now()
+		userOrganization.IsOwner = isOwner
 
-	if err != nil {
-		return err
-	}
-
-	defer db.Close()
-
-	userOrganization.JoinTime = utils.Now()
-	userOrganization.IsOwner = isOwner
-
-	db.Create(userOrganization)
-
-	return db.Error
+		return db.Create(userOrganization).Error
+	})
 }
 
 type OrganizationOwnerInfo struct {
@@ -48,23 +41,22 @@ func findOwnerByID(id string, owners []User) (User, bool) {
 }
 
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
-	db, err := connection.GetDB()
 	var infos []OrganizationOwnerInfo
 
-	if err != nil {
-		return infos, err
-	}
+	err := connection.WithPostgreConn(func(db *gorm.DB) error {
+		var result *gorm.DB
 
-	defer db.Close()
+		result = db.
+			Raw(
+				"select * from user_organizations inner join organizations on organization_id=organizations.id where user_id=?",
+				userOrganization.UserID,
+			).
+			Scan(&infos)
 
-	db.
-		Raw(
-			"select * from user_organizations inner join organizations on organization_id=organizations.id where user_id=?",
-			userOrganization.UserID,
-		).
-		Scan(&infos)
+		if len(infos) == 0 {
+			return nil
+		}
 
-	if len(infos) != 0 {
 		var organizationIds []string
 		for _, info := range infos {
 			organizationIds = append(organizationIds, fmt.Sprintf("'%s'", info.Owner))
@@ -74,7 +66,7 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 
 		fmt.Println(len(organizationIds))
 
-		db.
+		result = db.
 			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
 			Scan(&owners)
 
@@ -87,7 +79,9 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 
 			infos[i].OwnerInfo = owner
 		}
-	}
 
-	return infos, nil
+		return result.Error
+	})
+
+	return infos, err
 }

@@ -3,10 +3,15 @@ package todo_controller
 import (
 	"archie/middlewares"
 	"archie/models"
+	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
+
+type RemoveTodoPayload struct {
+	Name string `form:"name" validate:"required"`
+}
 
 /** 删除待办事项 */
 func RemoveTodo(context *gin.Context) {
@@ -20,13 +25,23 @@ func RemoveTodo(context *gin.Context) {
 		return
 	}
 
-	name := context.PostForm("name")
+	var payload RemoveTodoPayload
+	if err := helper.BindWithValid(context, &payload); err != nil {
+		authRes.Err = err
+		authRes.Send(context)
+		return
+	}
+
 	todoItem := models.UserTodo{
-		Name:   name,
+		Name:   payload.Name,
 		UserID: parsedClaims.UserId,
 	}
 
-	todoItem.RemoveUserTodoItem()
+	if err := todoItem.RemoveUserTodoItem(); err != nil {
+		authRes.Err = robust.DOUBLE_KEY
+		authRes.Send(context)
+		return
+	}
 
 	res.Send(context)
 }

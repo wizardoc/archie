@@ -4,6 +4,7 @@ import (
 	"archie/connection"
 	"archie/utils"
 	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
 type LoginInfo struct {
@@ -27,61 +28,47 @@ type User struct {
 	RegisterInfo
 }
 
-func (user *User) Register() (ok bool) {
-	db, err := connection.GetDB()
+func (user *User) Register() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		user.RegisterTime = utils.Now()
+		// make more security password
+		user.Password = utils.Hash(user.Password)
+		user.IsValidEmail = false
 
-	utils.Check(err)
-	defer db.Close()
-
-	user.RegisterTime = utils.Now()
-	// make more security password
-	user.Password = utils.Hash(user.Password)
-	user.IsValidEmail = false
-
-	db.Create(user)
-
-	return true
+		return db.Create(user).Error
+	})
 }
 
-func (user *User) UpdateLoginTime() {
-	db, err := connection.GetDB()
-
-	utils.Check(err)
-	defer db.Close()
-
-	db.Model(&user).Where("id = ?", user.ID).Update("login_time", utils.Now())
+func (user *User) UpdateLoginTime() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Model(&user).Where("id = ?", user.ID).Update("login_time", utils.Now()).Error
+	})
 }
 
-func (user *User) GetUserInfoByID() User {
-	db, err := connection.GetDB()
-
-	utils.Check(err)
-	defer db.Close()
-
+func (user *User) GetUserInfoByID() (result User, err error) {
 	userID := user.ID
-	result := User{}
+	result = User{}
 
-	db.Find(&result, "id = ?", userID)
+	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(&result, "id = ?", userID).Error
+	})
 
-	return result
+	return
 }
 
-func findUser(queryKey string, queryBody string) User {
-	db, err := connection.GetDB()
+func findUser(queryKey string, queryBody string) (user User, err error) {
+	user = User{}
+	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody).Error
+	})
 
-	utils.Check(err)
-	defer db.Close()
-	user := User{}
-
-	db.Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody)
-
-	return user
+	return
 }
 
-func FindOneByUsername(username string) User {
+func FindOneByUsername(username string) (User, error) {
 	return findUser("username", username)
 }
 
-func FindOneByEmail(email string) User {
+func FindOneByEmail(email string) (User, error) {
 	return findUser("email", email)
 }

@@ -25,7 +25,13 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	findUser := models.FindOneByUsername(user.Username)
+	findUser, err := models.FindOneByUsername(user.Username)
+
+	if err != nil {
+		errRes.Err = err
+		errRes.Send(context)
+		return
+	}
 
 	if findUser.ID != "" {
 		errRes.Err = robust.REGISTER_EXIST_USER
@@ -33,9 +39,7 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	ok := user.Register()
-
-	if !ok {
+	if err := user.Register(); err != nil {
 		errRes.Err = robust.CREATE_DATA_FAILURE
 		errRes.Send(context)
 		return

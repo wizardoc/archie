@@ -1,24 +1,25 @@
 package doc_controller
 
 import (
-	"archie/utils"
+	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
-	"os"
+	"net/http"
 )
 
-const DOCUMENT_POSITION = "public/doc/about-wizard.md"
+const DOCUMENT_PATH = "public/doc/about-wizard.md"
 
 func WizardIntroduction(context *gin.Context) {
-	file, err := os.Open(DOCUMENT_POSITION)
-	utils.Check(err)
+	io := helper.ArchieIO{Path: DOCUMENT_PATH}
+	data, err := io.ReadStringStream()
+	errRes := helper.Res{Status: http.StatusBadRequest}
 
-	content, err := ioutil.ReadAll(file)
-	utils.Check(err)
+	if err != nil {
+		errRes.Err = robust.CANNOT_FIND_FILE
+		errRes.Send(context)
+		return
+	}
 
-	aboutContent := string(content)
-
-	res := helper.Res{Data: aboutContent}
+	res := helper.Res{Data: data}
 	res.Send(context)
 }

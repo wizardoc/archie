@@ -13,9 +13,18 @@ func CreateNewOrganization(name string, description string, username string) err
 
 func InsertUserToOrganization(organizeName string, username string, isOwner bool) error {
 	organization := models.Organization{OrganizeName: organizeName}
-	organization.FindOneByOrganizeName()
+	err := organization.FindOneByOrganizeName()
 
-	user := models.FindOneByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	user, err := models.FindOneByUsername(username)
+
+	if err != nil {
+		return err
+	}
+
 	userOrganization := models.UserOrganization{
 		UserID:         user.ID,
 		OrganizationID: organization.ID,

@@ -2,7 +2,7 @@ package models
 
 import (
 	"archie/connection"
-	"archie/utils"
+	"github.com/jinzhu/gorm"
 )
 
 type UserTodo struct {
@@ -12,20 +12,14 @@ type UserTodo struct {
 	Route       string `gorm:"type:varchar(20)"`
 }
 
-func (todo *UserTodo) AddUserTodoItem() {
-	db, err := connection.GetDB()
-
-	utils.Check(err)
-	defer db.Close()
-
-	db.Create(todo)
+func (todo *UserTodo) AddUserTodoItem() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Create(todo).Error
+	})
 }
 
-func (todo *UserTodo) RemoveUserTodoItem() {
-	db, err := connection.GetDB()
-
-	utils.Check(err)
-	defer db.Close()
-
-	db.Delete(todo)
+func (todo *UserTodo) RemoveUserTodoItem() error {
+	return connection.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Delete(todo).Error
+	})
 }

@@ -9,10 +9,10 @@ import (
 
 func GetAllOrganizationNames(context *gin.Context) {
 	var organization models.Organization
-	names, ok := organization.GetAllNames()
+	names, err := organization.GetAllNames()
 	res := helper.Res{}
 
-	if !ok {
+	if err != nil {
 		res.Err = robust.CANNOT_FIND_ORGANIZATION
 		res.Send(context)
 		return

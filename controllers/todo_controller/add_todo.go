@@ -3,10 +3,17 @@ package todo_controller
 import (
 	"archie/middlewares"
 	"archie/models"
+	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
+
+type AddTodoPayload struct {
+	Name        string `form:"name" validate:"required"`
+	Description string `form:"description" validate:"required"`
+	Route       string `form:"route" validate:"required"`
+}
 
 /** 添加待办事项 */
 func AddTodo(context *gin.Context) {
@@ -20,18 +27,25 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	name := context.PostForm("name")
-	description := context.PostForm("description")
-	route := context.PostForm("route")
+	var payload AddTodoPayload
+	if err := helper.BindWithValid(context, &payload); err != nil {
+		authRes.Err = err
+		authRes.Send(context)
+		return
+	}
 
 	todoItem := models.UserTodo{
 		UserID:      parsedClaims.UserId,
-		Name:        name,
-		Description: description,
-		Route:       route,
+		Name:        payload.Name,
+		Description: payload.Description,
+		Route:       payload.Route,
 	}
 
-	todoItem.AddUserTodoItem()
+	if err := todoItem.AddUserTodoItem(); err != nil {
+		authRes.Err = robust.DOUBLE_KEY
+		authRes.Send(context)
+		return
+	}
 
 	res.Send(context)
 }
