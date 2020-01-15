@@ -8,13 +8,24 @@ import (
 	"net/http"
 )
 
+type BaseInfo struct {
+	Email    string `form:"email"`
+	Username string `form:"username"`
+}
+
 /** 验证用户 baseInfo */
 func ValidBaseInfo(context *gin.Context) {
-	email := context.PostForm("email")
-	username := context.PostForm("username")
-
-	user := models.FindOneByUsername(username)
 	errRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
+
+	var baseInfo BaseInfo
+	if err := context.Bind(&baseInfo); err != nil {
+		errRes.Err = robust.INVALID_PARAMS
+		errRes.Send(context)
+		return
+	}
+
+	user := models.FindOneByUsername(baseInfo.Username)
 
 	if user.ID != "" {
 		errRes.Err = robust.REGISTER_EXIST_USER
@@ -22,17 +33,18 @@ func ValidBaseInfo(context *gin.Context) {
 		return
 	}
 
-	if user.Email == email {
+	if user.Email == baseInfo.Email {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
 	}
 
-	if models.FindOneByEmail(email).Email == email {
+	if models.FindOneByEmail(baseInfo.Email).Email == baseInfo.Email {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
 	}
 
-	helper.Res{Data: gin.H{"isValid": true}}.Send(context)
+	res.Data = gin.H{"isValid": true}
+	res.Send(context)
 }
