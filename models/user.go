@@ -6,17 +6,25 @@ import (
 	"fmt"
 )
 
+type LoginInfo struct {
+	Username string `gorm:"type:varchar(20);unique;" json:"username" form:"username" validate:"gt=4,lt=20,required"`
+	Password string `gorm:"type:char(62)" json:"-" form:"password" validate:"required,gt=4,lt=20"`
+}
+
+type RegisterInfo struct {
+	LoginInfo
+	Email        string `gorm:"type:varchar(64)" json:"email" form:"email" validate:"email,required"`
+	DisplayName  string `gorm:"type:varchar(12)" json:"displayName" form:"displayName" validate:"required,gt=2,lt=10"`
+	RegisterTime int64  `gorm:"type:bigint"json:"registerTime"`
+	IsValidEmail bool   `gorm:"type:boolean"json:"-"`
+}
+
 type User struct {
 	ID            string          `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
-	DisplayName   string          `gorm:"type:varchar(12)"json:"displayName"`
-	Username      string          `gorm:"type:varchar(20);unique;"json:"username"`
-	Email         string          `gorm:"type:varchar(64)"json:"email"`
 	Avatar        string          `gorm:"type:varchar(200)"json:"avatar"`
 	Organizations *[]Organization `gorm:"many2many:user_organizations;"json:"-"`
-	RegisterTime  int64           `gorm:"type:bigint"json:"registerTime"`
 	LoginTime     int64           `gorm:"type:bigint"json:"loginTime"`
-	Password      string          `gorm:"type:char(62)"json:"-"`
-	IsValidEmail  bool            `gorm:"type:boolean"json:"-"`
+	RegisterInfo
 }
 
 func (user *User) Register() (ok bool) {

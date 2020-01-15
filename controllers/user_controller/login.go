@@ -10,14 +10,21 @@ import (
 	"net/http"
 )
 
-/** 用户登录 */
+// 登陆逻辑
+// 校验账号 -> 校验密码 -> 校验黑名单 -> 消息队列(更新登陆时间) -> res
 func Login(context *gin.Context) {
-	username := context.PostForm("username")
-	password := context.PostForm("password")
+	errRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
+
+	var loginInfo models.LoginInfo
+	if err := helper.BindWithValid(context, &loginInfo); err != nil {
+		errRes.Err = err
+		errRes.Send(context)
+		return
+	}
 
 	// 检查用户是否存在
-	user := models.FindOneByUsername(username)
-	errRes := helper.Res{Status: http.StatusBadRequest}
+	user := models.FindOneByUsername(loginInfo.Username)
 
 	if helper.IsEmpty(user) || user.ID == "" {
 		errRes.Err = robust.LOGIN_USER_DOES_NOT_EXIST
@@ -25,7 +32,8 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	if utils.Hash(password) != user.Password {
+	// 密码错误
+	if utils.Hash(loginInfo.Password) != user.Password {
 		errRes.Err = robust.LOGIN_PASSWORD_NOT_VALID
 		errRes.Send(context)
 		return
@@ -38,14 +46,15 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	user.UpdateLoginTime()
+	go user.UpdateLoginTime()
 
 	claims := utils.Claims{
 		UserId: user.ID,
 	}
 
-	helper.Res{Data: gin.H{
+	res.Data = gin.H{
 		"jwt":      claims.SignJWT(),
 		"userInfo": user,
-	}}.Send(context)
+	}
+	res.Send(context)
 }
