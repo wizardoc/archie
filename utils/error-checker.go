@@ -1,12 +1,13 @@
 package utils
 
 import (
-	"log"
+	"fmt"
+	"os"
 )
 
 func Check(err error, handler ...func()) {
 	if err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
 
 		if len(handler) != 0 {
 			handler[0]()

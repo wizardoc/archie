@@ -26,6 +26,7 @@ var ORGANIZATION_FIND_EMPTY = ArchieError{1008, "Cannot find organizations"}
 
 // DB
 var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}
+var DOUBLE_KEY = ArchieError{3002, "Duplicate Key"}
 
 // JWT
 var JWT_DOES_NOT_EXIST = ArchieError{4001, "Jwt does not exist"}
