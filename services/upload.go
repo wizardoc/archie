@@ -1,34 +1,44 @@
 package services
 
 import (
+	"archie/utils"
 	"archie/utils/configer"
-	"context"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
 )
 
-func genToken() string {
-	qiniuConfig := configer.LoadQiNiuConfig()
+type QiNiu struct {
+	AK     string
+	SK     string
+	Bucket string `json:"bucket"`
+}
 
+// 读取 Qiniu AK/SK
+func (qiniu *QiNiu) New() {
+	config := configer.LoadQiNiuConfig()
+	utils.CpStruct(qiniu, &config)
+}
+
+func (qiniu *QiNiu) GenToken() string {
 	putPolicy := storage.PutPolicy{
-		Scope: qiniuConfig.Bucket,
+		Scope: qiniu.Bucket,
 	}
-	mac := qbox.NewMac(qiniuConfig.AK, qiniuConfig.SK)
+	mac := qbox.NewMac(qiniu.AK, qiniu.SK)
 
 	return putPolicy.UploadToken(mac)
 }
 
-func uploadByForm(key string) {
-	token := genToken()
-
-	config := storage.Config{
-		Zone:          &storage.ZoneHuanan,
-		UseHTTPS:      false,
-		UseCdnDomains: false,
-	}
-
-	formUploader := storage.NewFormUploader(&config)
-	ret := storage.PutRet{}
-
-	formUploader.PutFile(context.Background(), &ret, token, key)
-}
+//func uploadByForm(key string) {
+//	token := genToken()
+//
+//	config := storage.Config{
+//		Zone:          &storage.ZoneHuanan,
+//		UseHTTPS:      false,
+//		UseCdnDomains: false,
+//	}
+//
+//	formUploader := storage.NewFormUploader(&config)
+//	ret := storage.PutRet{}
+//
+//	formUploader.PutFile(context.Background(), &ret, token, key)
+//}

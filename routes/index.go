@@ -36,6 +36,7 @@ func Serve() {
 	//	})
 	//})
 
+	uploadRouter(router)
 	userRouter(router)
 	organizationRouter(router)
 	DocRouter(router)
