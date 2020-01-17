@@ -3,6 +3,7 @@ package services
 import (
 	"archie/utils"
 	"archie/utils/configer"
+	"fmt"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
 )
@@ -16,10 +17,13 @@ type QiNiu struct {
 // 读取 Qiniu AK/SK
 func (qiniu *QiNiu) New() {
 	config := configer.LoadQiNiuConfig()
-	utils.CpStruct(qiniu, &config)
+
+	utils.CpStruct(&config, qiniu)
 }
 
 func (qiniu *QiNiu) GenToken() string {
+	fmt.Println(qiniu.SK, qiniu.SK, qiniu.Bucket)
+
 	putPolicy := storage.PutPolicy{
 		Scope: qiniu.Bucket,
 	}

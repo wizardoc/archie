@@ -8,7 +8,7 @@ type QiNiuConfig struct {
 
 func LoadQiNiuConfig() QiNiuConfig {
 	config := QiNiuConfig{}
-	configLoader("redis.json", &config)
+	configLoader("qiniu.json", &config)
 
 	return config
 }
