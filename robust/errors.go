@@ -30,6 +30,7 @@ var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}
 var DOUBLE_KEY = ArchieError{3002, "The key is duplicate"}
 var DB_WRITE_FAILURE = ArchieError{3003, "DB write failure"}
 var DB_READ_FAILURE = ArchieError{3004, "DB read failure"}
+var DB_UPDATE_FAILURE = ArchieError{3005, "DB update failure"}
 
 // JWT
 var JWT_DOES_NOT_EXIST = ArchieError{4001, "Jwt does not exist"}

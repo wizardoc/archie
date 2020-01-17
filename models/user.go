@@ -56,6 +56,11 @@ func (user *User) GetUserInfoByID() (result User, err error) {
 	return
 }
 
+// 更新 user model 里有值的字段
+func (user *User) UpdateAvatar() error {
+	return updateSig(user, "avatar", user.Avatar)
+}
+
 func findUser(queryKey string, queryBody string) (user User, err error) {
 	user = User{}
 	err = connection.WithPostgreConn(func(db *gorm.DB) error {

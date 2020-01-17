@@ -13,4 +13,5 @@ func userRouter(router *gin.Engine) {
 	user.POST("/register", user_controller.Register)
 	user.POST("/login", user_controller.Login)
 	user.GET("/info", middlewares.ValidateToken, user_controller.GetUserInfo)
+	user.PUT("/avatar", user_controller.UpdateAvatar)
 }
