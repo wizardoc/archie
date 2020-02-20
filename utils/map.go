@@ -1,21 +1,42 @@
 package utils
 
-func MapKeys(m interface{}) interface{} {
-	var keys []interface{}
+import (
+	"fmt"
+	"log"
+	"reflect"
+)
 
-	for k := range m.(map[interface{}]interface{}) {
-		keys = append(keys, k)
+func MapKeys(m interface{}, keys interface{}) {
+	mapKeys := ValidMap(m).MapKeys()
+	keysVal := reflect.ValueOf(keys).Elem()
+
+	for _, k := range mapKeys {
+		keysVal.Set(reflect.Append(keysVal, reflect.ValueOf(k.Interface())))
 	}
-
-	return keys
 }
 
-func MapValues(m interface{}) interface{} {
-	var values []interface{}
+func MapValues(m interface{}, values interface{}) {
+	var keys []string
+	MapKeys(m, &keys)
 
-	for _, v := range m.(map[interface{}]interface{}) {
-		v = append(values, v)
+	ArrayMap(keys, func(k interface{}) interface{} {
+		//iter := v.MapRange()
+		//values := make([]interface{}, v.Len())
+
+		//fmt.Println(k)
+
+		fmt.Println(reflect.ValueOf(m).MapIndex(reflect.ValueOf(k.(string))))
+
+		return ""
+	}, values)
+}
+
+func ValidMap(m interface{}) reflect.Value {
+	v := reflect.ValueOf(m)
+
+	if v.Kind() != reflect.Map {
+		log.Fatal("The arg must be a Map")
 	}
 
-	return values
+	return v
 }

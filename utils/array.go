@@ -5,15 +5,25 @@ import (
 	"reflect"
 )
 
-func ArrayMap(arr interface{}, cb func(item interface{}) interface{}) interface{} {
+func ArrayMap(arr interface{}, cb func(item interface{}) interface{}, result interface{}) {
 	parsedArr := ToInterfaceArray(arr)
-	result := make([]interface{}, len(parsedArr))
+	v := reflect.ValueOf(result).Elem()
 
-	for i, item := range parsedArr {
-		result[i] = cb(item)
+	for _, item := range parsedArr {
+		v.Set(reflect.Append(v, reflect.ValueOf(cb(item))))
+	}
+}
+
+func ArrayIncludes(arr interface{}, item interface{}) bool {
+	parsedArr := ToInterfaceArray(arr)
+
+	for _, e := range parsedArr {
+		if e == item {
+			return true
+		}
 	}
 
-	return result
+	return false
 }
 
 func ToInterfaceArray(arr interface{}) []interface{} {
@@ -23,10 +33,10 @@ func ToInterfaceArray(arr interface{}) []interface{} {
 		log.Fatal("The arg must be a slice")
 	}
 
-	len := v.Len()
-	result := make([]interface{}, len)
+	arrLen := v.Len()
+	result := make([]interface{}, arrLen)
 
-	for i := 0; i < len; i++ {
+	for i := 0; i < arrLen; i++ {
 		result[i] = v.Index(i).Interface()
 	}
 
