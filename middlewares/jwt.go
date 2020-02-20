@@ -5,6 +5,7 @@ import (
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -16,8 +17,6 @@ import (
 func ValidateToken(context *gin.Context) {
 	jwtString, ok := getJWTFromHeader(context.Request)
 	authErrRes := helper.Res{Status: http.StatusBadRequest}
-	//unAuthErrRes := helper.Res{Status: http.StatusUnauthorized}
-	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 
 	/** JWT 不存在 */
 	if !ok {
@@ -28,23 +27,13 @@ func ValidateToken(context *gin.Context) {
 		return
 	}
 
-	JWTClaims := ParseToken(jwtString)
-	err := JWTClaims.Valid()
+	claims, err := ParseToken2Claims(jwtString)
 
-	/** 不合法的 Token */
+	// parse jwt fail
 	if err != nil {
-		authErrRes.Err = err
+		fmt.Println(err)
+		authErrRes.Err = robust.JWT_NOT_ALLOWED
 		authErrRes.Send(context)
-		return
-	}
-
-	claims := utils.Claims{}
-	err = mapstructure.Decode(JWTClaims, &claims)
-
-	/** 解析 Claims 失败 */
-	if err != nil {
-		serverErrRes.Err = robust.JWT_CANNOT_PARSE_CLAIMS
-		serverErrRes.Send(context)
 		return
 	}
 
@@ -55,8 +44,24 @@ func ValidateToken(context *gin.Context) {
 	//	return
 	//}
 
-	context.Set("claims", claims)
+	context.Set("claims", *claims)
 	context.Next()
+}
+
+func ParseToken2Claims(token string) (*utils.Claims, error) {
+	JWTClaims := ParseToken(token)
+
+	/** 不合法的 Token */
+	if err := JWTClaims.Valid(); err != nil {
+		return nil, err
+	}
+
+	claims := utils.Claims{}
+	if err := mapstructure.Decode(JWTClaims, &claims); err != nil {
+		return nil, err
+	}
+
+	return &claims, nil
 }
 
 func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
@@ -107,6 +112,10 @@ func GetClaims(context *gin.Context) (utils.Claims, error) {
 		return utils.Claims{}, robust.JWT_DOES_NOT_EXIST
 	}
 
+	return ParseClaims(claims)
+}
+
+func ParseClaims(claims interface{}) (utils.Claims, error) {
 	parsedClaims, ok := claims.(utils.Claims)
 
 	if !ok {

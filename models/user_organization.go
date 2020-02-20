@@ -64,8 +64,6 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 
 		var owners []User
 
-		fmt.Println(len(organizationIds))
-
 		result = db.
 			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
 			Scan(&owners)

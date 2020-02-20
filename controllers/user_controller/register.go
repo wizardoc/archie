@@ -4,6 +4,7 @@ import (
 	"archie/models"
 	"archie/robust"
 	"archie/utils/helper"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -38,6 +39,8 @@ func Register(context *gin.Context) {
 		errRes.Send(context)
 		return
 	}
+
+	fmt.Println(user)
 
 	res.Data = user
 	res.Send(context)

@@ -13,7 +13,7 @@ type BaseInfo struct {
 	Username string `form:"username"`
 }
 
-/** 验证用户 baseInfo */
+// validate base info of user when register
 func ValidBaseInfo(context *gin.Context) {
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
@@ -25,25 +25,22 @@ func ValidBaseInfo(context *gin.Context) {
 		return
 	}
 
-	user, err := models.FindOneByUsername(baseInfo.Username)
-
-	if err != nil {
-		errRes.Err = robust.CANNOT_FIND_USER
-		errRes.Send(context)
-		return
-	}
-
-	if user.ID != "" {
+	// user does exist
+	if _, err := models.FindOneByUsername(baseInfo.Username); err == nil {
 		errRes.Err = robust.REGISTER_EXIST_USER
 		errRes.Send(context)
 		return
 	}
 
-	if user.Email == baseInfo.Email {
+	// the email of user does exist
+	if _, err := models.FindOneByEmail(baseInfo.Email); err == nil {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
 	}
 
+	res.Data = gin.H{
+		"isValid": true,
+	}
 	res.Send(context)
 }

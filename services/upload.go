@@ -3,7 +3,6 @@ package services
 import (
 	"archie/utils"
 	"archie/utils/configer"
-	"fmt"
 	"github.com/qiniu/api.v7/auth/qbox"
 	"github.com/qiniu/api.v7/storage"
 )
@@ -22,8 +21,6 @@ func (qiniu *QiNiu) New() {
 }
 
 func (qiniu *QiNiu) GenToken() string {
-	fmt.Println(qiniu.SK, qiniu.SK, qiniu.Bucket)
-
 	putPolicy := storage.PutPolicy{
 		Scope: qiniu.Bucket,
 	}

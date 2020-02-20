@@ -36,6 +36,7 @@ func Serve() {
 	//	})
 	//})
 
+	messageRoutes(router)
 	uploadRouter(router)
 	userRouter(router)
 	organizationRouter(router)
