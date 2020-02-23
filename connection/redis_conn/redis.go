@@ -1,4 +1,4 @@
-package connection
+package redis_conn
 
 import (
 	"archie/utils"

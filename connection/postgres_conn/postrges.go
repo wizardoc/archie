@@ -1,4 +1,4 @@
-package connection
+package postgres_conn
 
 import (
 	"archie/utils/configer"
@@ -20,4 +20,21 @@ func GetDB() (*gorm.DB, error) {
 				dbConfig.Password,
 			),
 		)
+}
+
+func Transaction(cb func(db *gorm.DB) error) error {
+	return WithPostgreConn(func(db *gorm.DB) error {
+		tx := db.Begin()
+
+		if tx.Error != nil {
+			return tx.Error
+		}
+
+		if err := cb(tx); err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		return tx.Commit().Error
+	})
 }

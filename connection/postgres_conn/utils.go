@@ -1,4 +1,4 @@
-package connection
+package postgres_conn
 
 import (
 	"archie/utils"
