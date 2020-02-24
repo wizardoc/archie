@@ -1,7 +1,7 @@
 package models
 
 import (
-	"archie/connection"
+	"archie/connection/postgres_conn"
 	"github.com/jinzhu/gorm"
 )
 
@@ -13,20 +13,20 @@ type UserTodo struct {
 }
 
 func (todo *UserTodo) AddUserTodoItem() error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Create(todo).Error
 	})
 }
 
 func (todo *UserTodo) RemoveUserTodoItem() error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Delete(todo).Error
 	})
 }
 
 func (todo *UserTodo) GetAllTodoItemsByID() (todoItems []UserTodo, err error) {
 	todoItems = []UserTodo{}
-	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+	err = postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Where("user_id = ?", todo.UserID).Find(&todoItems).Error
 	})
 

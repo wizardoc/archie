@@ -1,9 +1,9 @@
 package services
 
 import (
+	"archie/models"
 	"archie/utils"
 	"encoding/json"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 )
@@ -49,9 +49,14 @@ func (pool *WebsocketPool) Broadcast(cm *ChannelMessage) error {
 }
 
 func sendMsgMulti(conns []*websocket.Conn, cm *ChannelMessage) error {
-	fmt.Println(conns)
+	m, err := persistentMessage(cm)
+
+	if err != nil {
+		return err
+	}
+
 	// marshal msg
-	msg, err := json.Marshal(cm)
+	msg, err := json.Marshal(*m)
 
 	if len(conns) == 1 {
 		sendMsg(conns[0], msg)
@@ -67,6 +72,25 @@ func sendMsgMulti(conns []*websocket.Conn, cm *ChannelMessage) error {
 	}
 
 	return nil
+}
+
+func persistentMessage(cm *ChannelMessage) (*models.Message, error) {
+	m := models.Message{}
+	utils.CpStruct(cm, &m)
+
+	main, err := json.Marshal(cm.Main)
+
+	if err != nil {
+		return nil, err
+	}
+
+	m.Main = string(main)
+
+	if err := m.Create(cm.To); err != nil {
+		return nil, err
+	}
+
+	return &m, nil
 }
 
 func sendMsg(conn *websocket.Conn, msg []byte) {

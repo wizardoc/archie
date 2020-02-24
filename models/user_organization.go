@@ -1,7 +1,7 @@
 package models
 
 import (
-	"archie/connection"
+	"archie/connection/postgres_conn"
 	"archie/utils"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -16,7 +16,7 @@ type UserOrganization struct {
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		userOrganization.JoinTime = utils.Now()
 		userOrganization.IsOwner = isOwner
 
@@ -43,7 +43,7 @@ func findOwnerByID(id string, owners []User) (User, bool) {
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
 	var infos []OrganizationOwnerInfo
 
-	err := connection.WithPostgreConn(func(db *gorm.DB) error {
+	err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		var result *gorm.DB
 
 		result = db.

@@ -8,9 +8,8 @@ require (
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/gorilla/websocket v1.4.1
-	github.com/jinzhu/gorm v1.9.8
+	github.com/jinzhu/gorm v1.9.11
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lib/pq v1.1.1 // indirect
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect

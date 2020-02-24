@@ -18,21 +18,28 @@ const (
 	NOTIFY
 )
 
+const (
+	SYSTEM = iota
+	USER   = iota
+)
+
 type ChannelMessageMain struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
 }
 
 type ChannelMessage struct {
-	ID          string              `json:"-"`
-	Owner       string              `json:"-"`
-	Type        int                 `json:"-"`
-	From        string              `json:"from"`
-	To          []string            `json:"-"`
-	SendTime    int64               `json:"sendTime"`
-	IsRead      bool                `json:"-"`
-	MessageType int                 `json:"messageType"`
-	Main        *ChannelMessageMain `json:"main"`
+	ID            string              `json:"id"`
+	Owner         string              `json:"owner"`
+	Type          int                 `json:"-"`
+	From          string              `json:"from"`
+	To            []string            `json:"users"`
+	SendTime      int64               `json:"sendTime"`
+	IsRead        bool                `json:"isRead"`
+	IsDelete      bool                `json:"isDelete"`
+	MessageType   int                 `json:"messageType"`
+	Main          *ChannelMessageMain `json:"main"`
+	DirectionType int
 }
 
 func NewChannelMessage(owner string, from string, to []string, sendType int, messageType int, title string, body string) (*ChannelMessage, error) {

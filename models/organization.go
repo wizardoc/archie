@@ -1,7 +1,7 @@
 package models
 
 import (
-	"archie/connection"
+	"archie/connection/postgres_conn"
 	"archie/utils"
 	"github.com/jinzhu/gorm"
 )
@@ -21,13 +21,13 @@ type OrganizationName struct {
 }
 
 func (organization *Organization) FindOneByOrganizeName() error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Find(organization, "organize_name=?", organization.OrganizeName).Error
 	})
 }
 
 func (organization *Organization) New(username string) error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		organization.HasValid = true
 		organization.CreateTime = utils.Now()
 		user, err := FindOneByUsername(username)
@@ -44,7 +44,7 @@ func (organization *Organization) New(username string) error {
 
 func (organization *Organization) GetAllNames() (names []OrganizationName, err error) {
 	names = []OrganizationName{}
-	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+	err = postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Select("organize_name").Find(organization).Scan(&names).Error
 	})
 
@@ -53,7 +53,7 @@ func (organization *Organization) GetAllNames() (names []OrganizationName, err e
 
 func (organization *Organization) AllByUserId(id string) (organizations []Organization, err error) {
 	organizations = []Organization{}
-	err = connection.WithPostgreConn(func(db *gorm.DB) error {
+	err = postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Find(&organizations).Where("id=?", id).Error
 	})
 
@@ -61,7 +61,7 @@ func (organization *Organization) AllByUserId(id string) (organizations []Organi
 }
 
 func (organization *Organization) RemoveOrganization() error {
-	return connection.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Delete(organization).Error
 	})
 }

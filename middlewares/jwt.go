@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"archie/connection"
+	"archie/connection/redis_conn"
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
@@ -86,7 +86,7 @@ func ParseToken(tokenStr string) jwt.Claims {
 }
 
 func AddInBlackSet(userId string) (err error) {
-	connection.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
 		_, err = conn.Do("SADD", "black_set", userId)
 	})
 
@@ -94,7 +94,7 @@ func AddInBlackSet(userId string) (err error) {
 }
 
 func IsExistInBlackSet(userId string) (isExist bool) {
-	connection.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
 		var err error
 
 		isExist, err = redis.Bool(conn.Do("SISMEMBER", "black_set", userId))
