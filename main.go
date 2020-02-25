@@ -26,6 +26,12 @@ func InitTable() {
 	createDataTable(db, models.User{})
 	createDataTable(db, models.Organization{})
 	createDataTable(db, models.UserTodo{})
+	createDataTable(db, models.RolePermission{})
+	createDataTable(db, models.Role{})
+	createDataTable(db, models.UserRole{})
+	createDataTable(db, models.Permission{})
+	createDataTable(db, models.Category{})
+	createDataTable(db, models.DocumentContribute{})
 }
 
 func main() {

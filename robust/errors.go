@@ -24,6 +24,7 @@ var CANNOT_FIND_USER = ArchieError{1010, "Cannot find this user"}
 
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{2008, "Cannot find organizations"}
+var ORGANIZATION_CREATE_FAILURE = ArchieError{2009, "Cannot create organization"}
 
 // DB
 var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}

@@ -7,25 +7,18 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type LoginInfo struct {
-	Username string `gorm:"type:varchar(20);unique;" json:"username" form:"username" validate:"gt=4,lt=20,required"`
-	Password string `gorm:"type:char(62)" json:"-" form:"password" validate:"required,gt=4,lt=20"`
-}
-
-type RegisterInfo struct {
-	LoginInfo
-	Email        string `gorm:"type:varchar(64)" json:"email" form:"email" validate:"email,required"`
-	DisplayName  string `gorm:"type:varchar(12)" json:"displayName" form:"displayName" validate:"required,gt=2,lt=10"`
-	RegisterTime int64  `gorm:"type:bigint"json:"registerTime"`
-	IsValidEmail bool   `gorm:"type:boolean"json:"-"`
-}
-
 type User struct {
+	Username      string          `gorm:"type:varchar(20);unique;" json:"username" `
+	Password      string          `gorm:"type:char(62)" json:"-" `
 	ID            string          `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
 	Avatar        string          `gorm:"type:varchar(200)"json:"avatar"`
 	Organizations *[]Organization `gorm:"many2many:user_organizations;"json:"-"`
 	LoginTime     int64           `gorm:"type:bigint"json:"loginTime"`
-	RegisterInfo
+	Categories    []Category      `gorm:"foreign_key:CreateUser"`
+	Email         string          `gorm:"type:varchar(64)" json:"email"`
+	DisplayName   string          `gorm:"type:varchar(12)" json:"displayName"`
+	RegisterTime  int64           `gorm:"type:bigint"json:"registerTime"`
+	IsValidEmail  bool            `gorm:"type:boolean"json:"-"`
 }
 
 func (user *User) Register() error {

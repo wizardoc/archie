@@ -7,13 +7,15 @@ import (
 )
 
 type Organization struct {
-	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
-	OrganizeName string  `gorm:"type:varchar(20);unique;"json:"organizeName"`
-	Description  string  `gorm:"type:varchar(50)"json:"description"`
-	HasValid     bool    `gorm:"type:bool;default:TRUE"json:"hasValid"`
-	Owner        string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"` // related userID
-	Users        *[]User `gorm:"many2many:user_organizations;"json:"-"`
-	CreateTime   int64   `gorm:"type:bigint"json:"createTime"`
+	ID           string     `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	OrganizeName string     `gorm:"type:varchar(20);unique;"json:"organizeName"`
+	Description  string     `gorm:"type:varchar(50)"json:"description"`
+	HasValid     bool       `gorm:"type:bool;default:TRUE"json:"hasValid"`
+	Owner        string     `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"` // related userID
+	Users        *[]User    `gorm:"many2many:user_organizations;"json:"-"`
+	CreateTime   int64      `gorm:"type:bigint"json:"createTime"`
+	IsPublic     bool       `gorm:"type:bool;default:TRUE"json:"isPublic"`
+	Categories   []Category `gorm:"foreign_key:RelatedOrganization"`
 }
 
 type OrganizationName struct {
@@ -38,7 +40,16 @@ func (organization *Organization) New(username string) error {
 
 		organization.Owner = user.ID
 
-		return db.Create(organization).Error
+		if err := db.Create(organization).Error; err != nil {
+			return err
+		}
+
+		userOrganization := UserOrganization{
+			UserID:         user.ID,
+			OrganizationID: organization.ID,
+		}
+
+		return userOrganization.New(true)
 	})
 }
 

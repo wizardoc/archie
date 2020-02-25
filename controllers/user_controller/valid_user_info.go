@@ -25,25 +25,22 @@ func ValidBaseInfo(context *gin.Context) {
 		return
 	}
 
-	user, err := models.FindOneByUsername(baseInfo.Username)
+	_, err := models.FindOneByUsername(baseInfo.Username)
 
-	if err != nil {
-		errRes.Err = robust.CANNOT_FIND_USER
-		errRes.Send(context)
-		return
-	}
-
-	if user.ID != "" {
+	if err == nil {
 		errRes.Err = robust.REGISTER_EXIST_USER
 		errRes.Send(context)
 		return
 	}
 
-	if user.Email == baseInfo.Email {
+	_, err = models.FindOneByEmail(baseInfo.Email)
+
+	if err == nil {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
 		errRes.Send(context)
 		return
 	}
 
+	res.Data = gin.H{"isValid": true}
 	res.Send(context)
 }

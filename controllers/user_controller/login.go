@@ -9,13 +9,18 @@ import (
 	"net/http"
 )
 
+type LoginInfo struct {
+	Username string `json:"username" form:"username" validate:"gt=4,lt=20,required"`
+	Password string `form:"password" validate:"required,gt=4,lt=20"`
+}
+
 // 登陆逻辑
 // 校验账号 -> 校验密码 -> 校验黑名单 -> 消息队列(更新登陆时间) -> res
 func Login(context *gin.Context) {
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
-	var loginInfo models.LoginInfo
+	var loginInfo LoginInfo
 	if err := helper.BindWithValid(context, &loginInfo); err != nil {
 		errRes.Err = err
 		errRes.Send(context)
