@@ -17,6 +17,7 @@ services:
     image: redis:latest
     labels:
       wizard: 'wizard'
+    restart: always
     volumes:
       - redis_data:/var/lib/redis/data
     networks:
@@ -36,6 +37,7 @@ services:
   archie:
     build: .
     image: 'archie'
+    restart: always
     labels:
       wizard: 'wizard'
     depends_on: 
