@@ -22,6 +22,9 @@ var REMOVE_PERMISSION = ArchieError{1008, "Remove permission error"}
 var REMOVE_ORG_FAILURE = ArchieError{1009, "Remove organization failure"}
 var CANNOT_FIND_USER = ArchieError{1010, "Cannot find this user"}
 
+// Messages
+var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{1011, "The signal of message operator is not exist"}
+
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{2008, "Cannot find organizations"}
 
