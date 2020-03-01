@@ -23,9 +23,9 @@ type RegisterInfo struct {
 type User struct {
 	ID            string          `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
 	Avatar        string          `gorm:"type:varchar(200)"json:"avatar"`
-	Organizations *[]Organization `gorm:"many2many:user_organizations;"json:"-"`
+	Organizations *[]Organization `gorm:"many2many:user_organizations"json:"-"`
 	LoginTime     int64           `gorm:"type:bigint"json:"loginTime"`
-	Messages      []Message       `gorm:"many2many:user_messages"`
+	Messages      []Message       `gorm:"many2many:user_messages"json:"-"`
 	RegisterInfo
 }
 
@@ -43,6 +43,12 @@ func (user *User) Register() error {
 		user.IsValidEmail = false
 
 		return db.Create(user).Error
+	})
+}
+
+func (user *User) Find(queryKey string, queryBody string) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody).Error
 	})
 }
 

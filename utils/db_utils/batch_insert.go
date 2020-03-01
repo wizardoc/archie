@@ -28,8 +28,6 @@ func BatchInsert(table string, heads []string, values interface{}) error {
 		strings.Join(strValues, ","),
 	)
 
-	fmt.Println(sql)
-
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		return db.Exec(sql).Error
 	})
