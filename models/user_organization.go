@@ -9,8 +9,8 @@ import (
 )
 
 type UserOrganization struct {
-	UserID         string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
-	OrganizationID string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
+	UserID         string `gorm:"type:uuid;primary_key;"`
+	OrganizationID string `gorm:"type:uuid;primary_key;"`
 	IsOwner        bool   `gorm:"type:bool"`
 	JoinTime       int64  `gorm:"type:bigint"`
 }

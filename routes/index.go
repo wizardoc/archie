@@ -14,7 +14,7 @@ func Serve() {
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "User-Agent", "Referrer", "Host", "Token", "Authentication"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,

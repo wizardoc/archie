@@ -27,6 +27,7 @@ var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{1011, "The signal of message operator
 
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{2008, "Cannot find organizations"}
+var ORGANIZATION_CREATE_FAILURE = ArchieError{2009, "Cannot create organization"}
 
 // DB
 var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}
