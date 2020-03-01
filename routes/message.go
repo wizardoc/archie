@@ -7,8 +7,14 @@ import (
 )
 
 func messageRoutes(router *gin.Engine) {
-	message := router.Group("/message")
+	passedMessage := router.Group("/message")
 
-	message.GET("/all", middlewares.ValidateToken, message_controller.GetAllMessages)
-	message.GET("/connect", message_controller.ConnectWS)
+	passedMessage.GET("/connect", message_controller.ConnectWS)
+
+	message := router.Group("/message", middlewares.ValidateToken)
+
+	message.GET("/all", message_controller.GetAllMessages)
+	message.PUT("/read/:id", message_controller.ReadMessage, message_controller.ChangeMessageState)
+	message.DELETE("/delete/:id", message_controller.DeleteMessage, message_controller.ChangeMessageState)
+	message.PUT("/revoke/:id", message_controller.RevokeMessage, message_controller.ChangeMessageState)
 }

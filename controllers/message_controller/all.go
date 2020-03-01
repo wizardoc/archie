@@ -4,6 +4,7 @@ import (
 	"archie/middlewares"
 	"archie/models"
 	"archie/services"
+	"archie/utils"
 	"archie/utils/helper"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ import (
 type ParsedMessage struct {
 	models.Message
 	Main services.ChannelMessageMain `json:"main"`
+	From models.User                 `json:"from"`
 }
 
 // Get all messages by user
@@ -44,6 +46,20 @@ func GetAllMessages(context *gin.Context) {
 	notifies := []ParsedMessage{}
 	chats := []ParsedMessage{}
 
+	// fill user info
+	var fromIDs []string
+	froms := make(map[string]models.User)
+
+	utils.ArrayMap(user.Messages, func(item interface{}) interface{} {
+		return item.(models.Message).From
+	}, &fromIDs)
+
+	if err := models.FindAllUsersByFrom(froms, fromIDs); err != nil {
+		serverErrRes.Err = err
+		serverErrRes.Send(context)
+		return
+	}
+
 	for _, m := range user.Messages {
 		main := services.ChannelMessageMain{}
 
@@ -55,6 +71,7 @@ func GetAllMessages(context *gin.Context) {
 		parsedMsg := ParsedMessage{
 			Message: m,
 			Main:    main,
+			From:    froms[m.From],
 		}
 
 		// dispatch notify messages or chat messages

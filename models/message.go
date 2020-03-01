@@ -35,3 +35,23 @@ func (message *Message) Create(to []string) error {
 		return db.Create(message).Error
 	})
 }
+
+func (message *Message) Update() error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Model(message).Update(*message).Error
+	})
+}
+
+func FindAllUsersByFrom(userMap map[string]User, froms []string) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		var users []User
+
+		err := db.Model(User{}).Find(&users, "id in (?)", froms).Error
+
+		for _, user := range users {
+			userMap[user.ID] = user
+		}
+
+		return err
+	})
+}
