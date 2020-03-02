@@ -1,7 +1,7 @@
 package models
 
 import (
-	"archie/connection"
+	"archie/connection/postgres_conn"
 	permission_keys "archie/constants/permission"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -15,7 +15,7 @@ type Permission struct {
 }
 
 func init() {
-	err := connection.WithPostgreConn(func(db *gorm.DB) error {
+	err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		//permission := Permission{}
 		initRecords := []Permission{
 			{Value: permission_keys.DOCUMENT_READ, Description: "document readable"},
