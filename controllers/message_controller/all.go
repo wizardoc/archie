@@ -20,17 +20,17 @@ type ParsedMessage struct {
 }
 
 // Get all messages by user
-func GetAllMessages(context *gin.Context) {
+func GetAllMessages(ctx *gin.Context) {
 	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 	unAuthRes := helper.Res{Status: http.StatusUnauthorized}
 	res := helper.Res{}
 
 	// parse JWT
-	claims, err := middlewares.GetClaims(context)
+	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
 		unAuthRes.Err = err
-		unAuthRes.Send(context)
+		unAuthRes.Send(ctx)
 		return
 	}
 
@@ -39,7 +39,7 @@ func GetAllMessages(context *gin.Context) {
 	// cannot find all messages
 	if err := user.FindAllMessages(); err != nil && !gorm.IsRecordNotFoundError(err) {
 		serverErrRes.Err = err
-		serverErrRes.Send(context)
+		serverErrRes.Send(ctx)
 		return
 	}
 
@@ -56,7 +56,7 @@ func GetAllMessages(context *gin.Context) {
 
 	if err := models.FindAllUsersByFrom(froms, fromIDs); err != nil {
 		serverErrRes.Err = err
-		serverErrRes.Send(context)
+		serverErrRes.Send(ctx)
 		return
 	}
 
@@ -86,5 +86,5 @@ func GetAllMessages(context *gin.Context) {
 		"notifies": notifies,
 		"chats":    chats,
 	}
-	res.Send(context)
+	res.Send(ctx)
 }

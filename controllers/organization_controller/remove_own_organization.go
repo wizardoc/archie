@@ -9,18 +9,18 @@ import (
 	"net/http"
 )
 
-func RemoveOwnOrganization(context *gin.Context) {
-	parsedClaims, err := middlewares.GetClaims(context)
+func RemoveOwnOrganization(ctx *gin.Context) {
+	parsedClaims, err := middlewares.GetClaims(ctx)
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
-	organizeName := context.Params.ByName("name")
+	organizeName := ctx.Params.ByName("name")
 	orgModel := models.Organization{
 		OrganizeName: organizeName,
 	}
@@ -29,7 +29,7 @@ func RemoveOwnOrganization(context *gin.Context) {
 
 	if err != nil {
 		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -39,7 +39,7 @@ func RemoveOwnOrganization(context *gin.Context) {
 		authRes.Data = gin.H{
 			"organizeName": "",
 		}
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -47,9 +47,9 @@ func RemoveOwnOrganization(context *gin.Context) {
 
 	if err != nil {
 		authRes.Err = robust.REMOVE_ORG_FAILURE
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

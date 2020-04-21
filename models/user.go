@@ -21,11 +21,12 @@ type RegisterInfo struct {
 }
 
 type User struct {
-	ID            string          `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
-	Avatar        string          `gorm:"type:varchar(200)"json:"avatar"`
-	Organizations *[]Organization `gorm:"many2many:user_organizations"json:"-"`
-	LoginTime     int64           `gorm:"type:bigint"json:"loginTime"`
-	Messages      []Message       `gorm:"many2many:user_messages"json:"-"`
+	ID                string              `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	Avatar            string              `gorm:"type:varchar(200)"json:"avatar"`
+	Organizations     *[]Organization     `gorm:"many2many:user_organizations"json:"-"`
+	LoginTime         int64               `gorm:"type:bigint"json:"loginTime"`
+	Messages          []Message           `gorm:"many2many:user_messages"json:"-"`
+	UserOrganizations []*UserOrganization `json:"-"`
 	RegisterInfo
 }
 

@@ -41,5 +41,5 @@ func (qiniu *QiNiu) GenToken() string {
 //	formUploader := storage.NewFormUploader(&config)
 //	ret := storage.PutRet{}
 //
-//	formUploader.PutFile(context.Background(), &ret, token, key)
+//	formUploader.PutFile(ctx.Background(), &ret, token, key)
 //}

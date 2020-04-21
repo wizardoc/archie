@@ -12,22 +12,22 @@ type OrganizationJoinInfo struct {
 	Username     string `form:"username"`
 }
 
-func JoinOrganization(context *gin.Context) {
+func JoinOrganization(ctx *gin.Context) {
 	res := helper.Res{}
 	authRes := helper.Res{Status: http.StatusBadRequest}
 
 	var joinInfo OrganizationJoinInfo
-	if err := context.Bind(&joinInfo); err != nil {
+	if err := ctx.Bind(&joinInfo); err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
 	if err := InsertUserToOrganization(joinInfo.OrganizeName, joinInfo.Username, false); err != nil {
 		authRes.Err = robust.INVALID_PARAMS
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

@@ -16,14 +16,14 @@ type OrganizationUser struct {
 }
 
 // 创建一个新的组织，创建组织成功后将用户插入至该组织
-func NewOrganization(context *gin.Context) {
+func NewOrganization(ctx *gin.Context) {
 	var organizationUser OrganizationUser
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
-	if err := helper.BindWithValid(context, &organizationUser); err != nil {
+	if err := helper.BindWithValid(ctx, &organizationUser); err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -32,9 +32,9 @@ func NewOrganization(context *gin.Context) {
 
 	if err := organization.New(organizationUser.Username); err != nil {
 		authRes.Err = robust.DOUBLE_KEY
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

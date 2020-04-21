@@ -5,7 +5,6 @@ import (
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -14,15 +13,15 @@ import (
 )
 
 // JWT 验证中间件，用于校验 token，将 claims 转发到下一个中间件
-func ValidateToken(context *gin.Context) {
-	jwtString, ok := getJWTFromHeader(context.Request)
+func ValidateToken(ctx *gin.Context) {
+	jwtString, ok := getJWTFromHeader(ctx.Request)
 	authErrRes := helper.Res{Status: http.StatusBadRequest}
 
 	/** JWT 不存在 */
 	if !ok {
 		authErrRes.Err = robust.JWT_DOES_NOT_EXIST
-		authErrRes.Send(context)
-		context.Abort()
+		authErrRes.Send(ctx)
+		ctx.Abort()
 
 		return
 	}
@@ -31,21 +30,20 @@ func ValidateToken(context *gin.Context) {
 
 	// parse jwt fail
 	if err != nil {
-		fmt.Println(err)
 		authErrRes.Err = robust.JWT_NOT_ALLOWED
-		authErrRes.Send(context)
+		authErrRes.Send(ctx)
 		return
 	}
 
 	/** 在小黑屋，JWT 不被允许 */
 	//if IsExistInBlackSet(claims.UserId) {
 	//	unAuthErrRes.Err = robust.JWT_NOT_ALLOWED
-	//	unAuthErrRes.Send(context)
+	//	unAuthErrRes.Send(ctx)
 	//	return
 	//}
 
-	context.Set("claims", *claims)
-	context.Next()
+	ctx.Set("claims", *claims)
+	ctx.Next()
 }
 
 func ParseToken2Claims(token string) (*utils.Claims, error) {
@@ -105,8 +103,8 @@ func IsExistInBlackSet(userId string) (isExist bool) {
 }
 
 /** 验证获取 Token */
-func GetClaims(context *gin.Context) (utils.Claims, error) {
-	claims, isExist := context.Get("claims")
+func GetClaims(ctx *gin.Context) (utils.Claims, error) {
+	claims, isExist := ctx.Get("claims")
 
 	if !isExist {
 		return utils.Claims{}, robust.JWT_DOES_NOT_EXIST

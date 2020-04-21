@@ -14,33 +14,33 @@ type BaseInfo struct {
 }
 
 // validate base info of user when register
-func ValidBaseInfo(context *gin.Context) {
+func ValidBaseInfo(ctx *gin.Context) {
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	var baseInfo BaseInfo
-	if err := context.Bind(&baseInfo); err != nil {
+	if err := ctx.Bind(&baseInfo); err != nil {
 		errRes.Err = robust.INVALID_PARAMS
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	// user does exist
 	if _, err := models.FindOneByUsername(baseInfo.Username); err == nil {
 		errRes.Err = robust.REGISTER_EXIST_USER
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	// the email of user does exist
 	if _, err := models.FindOneByEmail(baseInfo.Email); err == nil {
 		errRes.Err = robust.EMAIL_DOSE_EXIST
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	res.Data = gin.H{
 		"isValid": true,
 	}
-	res.Send(context)
+	res.Send(ctx)
 }

@@ -5,7 +5,6 @@ import (
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -20,15 +19,15 @@ type RegisterInfo struct {
 }
 
 /** 用户注册 */
-func Register(context *gin.Context) {
+func Register(ctx *gin.Context) {
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 
 	var info = RegisterInfo{}
-	if err := helper.BindWithValid(context, &info); err != nil {
+	if err := helper.BindWithValid(ctx, &info); err != nil {
 		errRes.Err = err
-		errRes.Send(context)
-		context.Abort()
+		errRes.Send(ctx)
+		ctx.Abort()
 		return
 	}
 
@@ -36,8 +35,8 @@ func Register(context *gin.Context) {
 
 	if err == nil {
 		errRes.Err = robust.REGISTER_EXIST_USER
-		errRes.Send(context)
-		context.Abort()
+		errRes.Send(ctx)
+		ctx.Abort()
 		return
 	}
 
@@ -46,8 +45,8 @@ func Register(context *gin.Context) {
 
 	if err := user.Register(); err != nil {
 		errRes.Err = robust.CREATE_DATA_FAILURE
-		errRes.Send(context)
-		context.Abort()
+		errRes.Send(ctx)
+		ctx.Abort()
 		return
 	}
 
@@ -56,13 +55,11 @@ func Register(context *gin.Context) {
 		Description:  info.OrganizationDescription,
 	}
 	if err := organization.New(user.Username); err != nil {
-		fmt.Println(err)
-
 		serverErrRes.Err = robust.ORGANIZATION_CREATE_FAILURE
-		serverErrRes.Send(context)
-		context.Abort()
+		serverErrRes.Send(ctx)
+		ctx.Abort()
 		return
 	}
 
-	context.Next()
+	ctx.Next()
 }

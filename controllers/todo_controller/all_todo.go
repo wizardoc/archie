@@ -9,14 +9,14 @@ import (
 	"net/http"
 )
 
-func GetAllTodo(context *gin.Context) {
-	parsedClaims, err := middlewares.GetClaims(context)
+func GetAllTodo(ctx *gin.Context) {
+	parsedClaims, err := middlewares.GetClaims(ctx)
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -27,10 +27,10 @@ func GetAllTodo(context *gin.Context) {
 
 	if err != nil {
 		authRes.Err = robust.DB_READ_FAILURE
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
 	res.Data = todos
-	res.Send(context)
+	res.Send(ctx)
 }

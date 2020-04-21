@@ -29,19 +29,19 @@ type BaseMessage struct {
 	Payload interface{}
 }
 
-func ConnectWS(context *gin.Context) {
+func ConnectWS(ctx *gin.Context) {
 	//authRes := helper.Res{Status: http.StatusUnauthorized}
 
-	//parsedClaims, err := middlewares.GetClaims(context)
+	//parsedClaims, err := middlewares.GetClaims(ctx)
 	//
 	//if err != nil {
 	//	fmt.Println(err)
 	//	authRes.Err = err
-	//	authRes.Send(context)
+	//	authRes.Send(ctx)
 	//	return
 	//}
 
-	conn, err := upgrader.Upgrade(context.Writer, context.Request, nil)
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 
 	if err != nil {
 		log.Println("Unable to upgrade websocket", err)

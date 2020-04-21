@@ -17,3 +17,4 @@ RUN apk update \
 EXPOSE 3000
 
 ENTRYPOINT ["/docker/scripts/entrypoint.sh"]
+>

@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetQiNiuToken(context *gin.Context) {
+func GetQiNiuToken(ctx *gin.Context) {
 	qiniu := services.QiNiu{}
 
 	qiniu.New()
@@ -16,5 +16,5 @@ func GetQiNiuToken(context *gin.Context) {
 		Data: token,
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

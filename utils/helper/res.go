@@ -12,8 +12,8 @@ type Res struct {
 	Status int
 }
 
-func (res Res) Send(context *gin.Context) {
-	context.JSON(getStatus(res.Status), gin.H{
+func (res Res) Send(ctx *gin.Context) {
+	ctx.JSON(getStatus(res.Status), gin.H{
 		"data": res.Data,
 		"err":  res.Err,
 	})

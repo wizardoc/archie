@@ -10,14 +10,14 @@ import (
 )
 
 // 获取用户加入的所有组织
-func GetAllJoinOrganization(context *gin.Context) {
-	parsedClaims, err := middlewares.GetClaims(context)
+func GetAllJoinOrganization(ctx *gin.Context) {
+	parsedClaims, err := middlewares.GetClaims(ctx)
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -27,10 +27,10 @@ func GetAllJoinOrganization(context *gin.Context) {
 
 	if err != nil {
 		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
 	res.Data = gin.H{"organizations": organizations}
-	res.Send(context)
+	res.Send(ctx)
 }

@@ -13,9 +13,9 @@ type UserAvatar struct {
 }
 
 // 更新用户头像
-func UpdateAvatar(context *gin.Context) {
+func UpdateAvatar(ctx *gin.Context) {
 	userAvatar := UserAvatar{}
-	err := helper.BindWithValid(context, &userAvatar)
+	err := helper.BindWithValid(ctx, &userAvatar)
 
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
@@ -23,7 +23,7 @@ func UpdateAvatar(context *gin.Context) {
 
 	if err != nil {
 		errRes.Err = err
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
@@ -33,9 +33,9 @@ func UpdateAvatar(context *gin.Context) {
 
 	if err := user.UpdateAvatar(); err != nil {
 		serverErrRes.Err = robust.DB_UPDATE_FAILURE
-		serverErrRes.Send(context)
+		serverErrRes.Send(ctx)
 		return
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

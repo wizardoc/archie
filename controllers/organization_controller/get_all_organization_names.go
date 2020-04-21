@@ -7,19 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetAllOrganizationNames(context *gin.Context) {
+func GetAllOrganizationNames(ctx *gin.Context) {
 	var organization models.Organization
 	names, err := organization.GetAllNames()
 	res := helper.Res{}
 
 	if err != nil {
 		res.Err = robust.CANNOT_FIND_ORGANIZATION
-		res.Send(context)
+		res.Send(ctx)
 		return
 	}
 
 	res.Data = gin.H{
 		"organizeNames": names,
 	}
-	res.Send(context)
+	res.Send(ctx)
 }

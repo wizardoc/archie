@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func BindWithValid(context *gin.Context, target interface{}) error {
-	if err := context.Bind(target); err != nil {
+func BindWithValid(ctx *gin.Context, target interface{}) error {
+	if err := ctx.Bind(target); err != nil {
 		return robust.INVALID_PARAMS
 	}
 

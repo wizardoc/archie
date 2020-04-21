@@ -11,8 +11,29 @@ import (
 type UserOrganization struct {
 	UserID         string `gorm:"type:uuid;primary_key;"`
 	OrganizationID string `gorm:"type:uuid;primary_key;"`
-	IsOwner        bool   `gorm:"type:bool"`
-	JoinTime       int64  `gorm:"type:bigint"`
+	User           *User
+	Organization   *Organization
+	IsOwner        bool  `gorm:"type:bool"`
+	JoinTime       int64 `gorm:"type:bigint"`
+}
+
+func (userOrganization *UserOrganization) TableName() string {
+	return "user_organizations"
+}
+
+// 寻找指定 Organization ID 的 members
+func (userOrganization *UserOrganization) FindMembers(organizationID string, members *[]User) error {
+	var userOrganizations []UserOrganization
+
+	err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Model(userOrganization).Preload("User").Where("organization_id = ?", organizationID).Find(&userOrganizations).Error
+	})
+
+	utils.ArrayMap(userOrganizations, func(item interface{}) interface{} {
+		return *item.(UserOrganization).User
+	}, members)
+
+	return err
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) error {
@@ -27,6 +48,7 @@ func (userOrganization *UserOrganization) New(isOwner bool) error {
 type OrganizationOwnerInfo struct {
 	OwnerInfo User `json:"ownerInfo"`
 	Organization
+	Members  []User
 	JoinTime int64 `json:"joinTime"`
 }
 
@@ -68,11 +90,20 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
 			Scan(&owners)
 
+		// dist organizations
 		for i, organization := range infos {
 			owner, ok := findOwnerByID(organization.Owner, owners)
 
 			if !ok {
 				continue
+			}
+
+			// attach members
+			var members []User
+			if err := userOrganization.FindMembers(infos[i].ID, &members); err == nil {
+				infos[i].Members = members
+			} else {
+				infos[i].Members = []User{}
 			}
 
 			infos[i].OwnerInfo = owner

@@ -16,14 +16,14 @@ type LoginInfo struct {
 
 // 登陆逻辑
 // 校验账号 -> 校验密码 -> 校验黑名单 -> 消息队列(更新登陆时间) -> res
-func Login(context *gin.Context) {
+func Login(ctx *gin.Context) {
 	errRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	var loginInfo LoginInfo
-	if err := helper.BindWithValid(context, &loginInfo); err != nil {
+	if err := helper.BindWithValid(ctx, &loginInfo); err != nil {
 		errRes.Err = err
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
@@ -32,27 +32,27 @@ func Login(context *gin.Context) {
 
 	if err != nil {
 		errRes.Err = robust.CANNOT_FIND_USER
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	if helper.IsEmpty(user) || user.ID == "" {
 		errRes.Err = robust.LOGIN_USER_DOES_NOT_EXIST
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	// 密码错误
 	if utils.Hash(loginInfo.Password) != user.Password {
 		errRes.Err = robust.LOGIN_PASSWORD_NOT_VALID
-		errRes.Send(context)
+		errRes.Send(ctx)
 		return
 	}
 
 	// 验证是否在黑名单
 	//if middlewares.IsExistInBlackSet(user.ID) {
 	//	errRes.Err = robust.JWT_NOT_ALLOWED
-	//	errRes.Send(context)
+	//	errRes.Send(ctx)
 	//	return
 	//}
 
@@ -66,5 +66,5 @@ func Login(context *gin.Context) {
 		"jwt":      claims.SignJWT(),
 		"userInfo": user,
 	}
-	res.Send(context)
+	res.Send(ctx)
 }

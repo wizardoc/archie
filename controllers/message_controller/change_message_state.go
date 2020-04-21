@@ -17,18 +17,18 @@ const (
 	REVOKE
 )
 
-func ChangeMessageState(context *gin.Context) {
+func ChangeMessageState(ctx *gin.Context) {
 	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 	res := helper.Res{}
 
-	signal, isExist := context.Get(SIGNAL)
+	signal, isExist := ctx.Get(SIGNAL)
 	if !isExist {
 		serverErrRes.Err = robust.MESSAGE_SIGNAL_NOT_EXIST
-		serverErrRes.Send(context)
+		serverErrRes.Send(ctx)
 		return
 	}
 
-	id := context.Params.ByName("id")
+	id := ctx.Params.ByName("id")
 
 	switch signal {
 	case READ:
@@ -41,5 +41,5 @@ func ChangeMessageState(context *gin.Context) {
 		log.Println("The signal is not exist")
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }

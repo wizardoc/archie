@@ -2,7 +2,7 @@ package message_controller
 
 import "github.com/gin-gonic/gin"
 
-func RevokeMessage(context *gin.Context) {
-	context.Set(SIGNAL, REVOKE)
-	context.Next()
+func RevokeMessage(ctx *gin.Context) {
+	ctx.Set(SIGNAL, REVOKE)
+	ctx.Next()
 }

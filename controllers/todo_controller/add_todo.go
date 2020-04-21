@@ -16,21 +16,21 @@ type AddTodoPayload struct {
 }
 
 /** 添加待办事项 */
-func AddTodo(context *gin.Context) {
-	parsedClaims, err := middlewares.GetClaims(context)
+func AddTodo(ctx *gin.Context) {
+	parsedClaims, err := middlewares.GetClaims(ctx)
 	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
 	var payload AddTodoPayload
-	if err := helper.BindWithValid(context, &payload); err != nil {
+	if err := helper.BindWithValid(ctx, &payload); err != nil {
 		authRes.Err = err
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
@@ -43,9 +43,9 @@ func AddTodo(context *gin.Context) {
 
 	if err := todoItem.AddUserTodoItem(); err != nil {
 		authRes.Err = robust.DOUBLE_KEY
-		authRes.Send(context)
+		authRes.Send(ctx)
 		return
 	}
 
-	res.Send(context)
+	res.Send(ctx)
 }
