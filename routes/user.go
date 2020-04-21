@@ -14,4 +14,5 @@ func userRouter(router *gin.Engine) {
 	user.POST("/login", user_controller.Login)
 	user.GET("/info", middlewares.ValidateToken, user_controller.GetUserInfo)
 	user.PUT("/avatar", middlewares.ValidateToken, user_controller.UpdateAvatar)
+	user.GET("/name/search", user_controller.SearchName)
 }

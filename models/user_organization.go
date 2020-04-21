@@ -17,6 +17,13 @@ type UserOrganization struct {
 	JoinTime       int64 `gorm:"type:bigint"`
 }
 
+type OrganizationOwnerInfo struct {
+	OwnerInfo User `json:"ownerInfo"`
+	Organization
+	Members  []User `json:"members"`
+	JoinTime int64  `json:"joinTime"`
+}
+
 func (userOrganization *UserOrganization) TableName() string {
 	return "user_organizations"
 }
@@ -43,13 +50,6 @@ func (userOrganization *UserOrganization) New(isOwner bool) error {
 
 		return db.Create(userOrganization).Error
 	})
-}
-
-type OrganizationOwnerInfo struct {
-	OwnerInfo User `json:"ownerInfo"`
-	Organization
-	Members  []User
-	JoinTime int64 `json:"joinTime"`
 }
 
 func findOwnerByID(id string, owners []User) (User, bool) {

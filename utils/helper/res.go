@@ -12,13 +12,6 @@ type Res struct {
 	Status int
 }
 
-var (
-	AuthRes      = Res{Status: http.StatusUnauthorized}
-	BadReqRes    = Res{Status: http.StatusBadRequest}
-	ServerErrRes = Res{Status: http.StatusInternalServerError}
-	SuccessRes   = Res{Status: http.StatusOK}
-)
-
 func GenAuthRes() Res {
 	return GenRes(http.StatusUnauthorized)
 }
