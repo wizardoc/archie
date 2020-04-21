@@ -1,11 +1,12 @@
 package user_controller
 
 import (
+	"archie/middlewares"
 	"archie/models"
 	"archie/robust"
+	"archie/utils"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type UserAvatar struct {
@@ -14,21 +15,32 @@ type UserAvatar struct {
 
 // 更新用户头像
 func UpdateAvatar(ctx *gin.Context) {
-	userAvatar := UserAvatar{}
-	err := helper.BindWithValid(ctx, &userAvatar)
-
-	errRes := helper.Res{Status: http.StatusBadRequest}
-	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
-	res := helper.Res{}
+	parsedClaims, err := middlewares.GetClaims(ctx)
+	authRes := helper.GenAuthRes()
+	badReqRes := helper.GenBadReqRes()
+	successRes := helper.GenSuccessRes()
+	serverErrRes := helper.GenServerErrRes()
 
 	if err != nil {
-		errRes.Err = err
-		errRes.Send(ctx)
+		authRes.Err = err
+		authRes.Send(ctx)
+		return
+	}
+
+	utils.Green("aaaa")
+
+	userAvatar := UserAvatar{}
+	err = helper.BindWithValid(ctx, &userAvatar)
+
+	if err != nil {
+		badReqRes.Err = err
+		badReqRes.Send(ctx)
 		return
 	}
 
 	user := models.User{
 		Avatar: userAvatar.Avatar,
+		ID:     parsedClaims.UserId,
 	}
 
 	if err := user.UpdateAvatar(); err != nil {
@@ -37,5 +49,5 @@ func UpdateAvatar(ctx *gin.Context) {
 		return
 	}
 
-	res.Send(ctx)
+	successRes.Send(ctx)
 }

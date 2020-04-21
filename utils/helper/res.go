@@ -12,6 +12,33 @@ type Res struct {
 	Status int
 }
 
+var (
+	AuthRes      = Res{Status: http.StatusUnauthorized}
+	BadReqRes    = Res{Status: http.StatusBadRequest}
+	ServerErrRes = Res{Status: http.StatusInternalServerError}
+	SuccessRes   = Res{Status: http.StatusOK}
+)
+
+func GenAuthRes() Res {
+	return GenRes(http.StatusUnauthorized)
+}
+
+func GenBadReqRes() Res {
+	return GenRes(http.StatusBadRequest)
+}
+
+func GenServerErrRes() Res {
+	return GenRes(http.StatusInternalServerError)
+}
+
+func GenSuccessRes() Res {
+	return GenRes(http.StatusOK)
+}
+
+func GenRes(status int) Res {
+	return Res{Status: status}
+}
+
 func (res Res) Send(ctx *gin.Context) {
 	ctx.JSON(getStatus(res.Status), gin.H{
 		"data": res.Data,

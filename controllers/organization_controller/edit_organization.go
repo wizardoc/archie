@@ -5,6 +5,7 @@ import (
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
+	"net/http"
 )
 
 type EditOrganizationParams struct {
@@ -16,7 +17,7 @@ type EditOrganizationParams struct {
 func EditOrganization(ctx *gin.Context) {
 	var organizationInfo EditOrganizationParams
 	res := helper.Res{}
-	authRes := helper.Res{}
+	authRes := helper.Res{Status: http.StatusBadRequest}
 	err := helper.BindWithValid(ctx, &organizationInfo)
 	id := ctx.Params.ByName("id")
 
