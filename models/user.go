@@ -32,7 +32,7 @@ type User struct {
 
 func (user *User) SearchName(name string, users *[]User) error {
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Model(user).Where("username LIKE ?", fmt.Sprintf("%s%%", name)).Find(users).Error
+		return db.Model(user).Where("username LIKE ?", fmt.Sprintf("%s%%", name)).Limit(10).Find(users).Error
 	})
 }
 

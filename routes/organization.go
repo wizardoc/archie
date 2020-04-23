@@ -15,4 +15,5 @@ func organizationRouter(router *gin.Engine) {
 	organization.POST("/new", organization_controller.NewOrganization)
 	organization.POST("/join", organization_controller.JoinOrganization)
 	organization.PUT("/edit/:id", middlewares.ValidateToken, organization_controller.EditOrganization)
+	organization.POST("/invite", organization_controller.InviteUser)
 }

@@ -35,6 +35,10 @@ func SendEmail(emailInfo TargetEmailInfo) error {
 	return dialer.DialAndSend(mail)
 }
 
+func SendContent(addr string) {
+
+}
+
 func SendVerifyCode(addr string) {
 	file, err := os.Open("templates/email-valid.html")
 
