@@ -5,20 +5,39 @@ import (
 	"archie/utils"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"reflect"
 	"strings"
 )
 
 func BatchInsert(table string, heads []string, values interface{}) error {
 	ifaceValues := utils.ToInterfaceArray(values)
+
 	var strValues []string
-	var attachQuoteItem []string
 
 	for _, val := range ifaceValues {
-		utils.ArrayMap(val, func(item interface{}) interface{} {
+		resultVal := val
+		reflectVal := reflect.ValueOf(val)
+		var parsedVals []string
+		var attachQuoteItem []string
+
+		// 转 struct 到 slice
+		if reflectVal.Kind() == reflect.Struct {
+			for i := 0; i < reflectVal.NumField(); i++ {
+				parsedVals = append(parsedVals, fmt.Sprintf("%v", reflectVal.Field(i).Interface()))
+			}
+
+			resultVal = parsedVals
+		}
+
+		// 统一处理 slice 拼接 SQL
+		utils.ArrayMap(resultVal, func(item interface{}) interface{} {
 			return fmt.Sprintf("'%s'", item)
 		}, &attachQuoteItem)
+
 		tupleStr := strings.Join(attachQuoteItem, ",")
 		strValues = append(strValues, fmt.Sprintf("(%s)", tupleStr))
+
+		fmt.Println(resultVal)
 	}
 
 	sql := fmt.Sprintf(
