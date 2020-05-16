@@ -11,6 +11,7 @@ const (
 	// organization permissions
 	ORG_DELETE = iota
 	ORG_EDIT
+	ORG_INVITE
 
 	// category permissions
 	CATEGORY_CREATE
@@ -41,6 +42,28 @@ func (p *Permission) Find(result *Permission) error {
 	})
 }
 
+func (p *Permission) FindMulti(result *[]Permission, permissionVals []int) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Where("value IN (?)", permissionVals).Find(result).Error
+	})
+}
+
+func AllPermissions() []int {
+	return append(append(AllDocumentPermissions(), AllCategoryPermissions()...), AllOrganizationPermissions()...)
+}
+
+func AllCategoryPermissions() []int {
+	return []int{CATEGORY_CREATE, CATEGORY_EDIT}
+}
+
+func AllDocumentPermissions() []int {
+	return []int{DOCUMENT_DELETE, DOCUMENT_CREATE, DOCUMENT_READ, DOCUMENT_VIEW, DOCUMENT_WRITE}
+}
+
+func AllOrganizationPermissions() []int {
+	return []int{ORG_DELETE, ORG_EDIT, ORG_INVITE}
+}
+
 func InitPermissionData(isTableExist bool) {
 	// 第一次建表的时候插入数据
 	if isTableExist {
@@ -57,6 +80,7 @@ func InitPermissionData(isTableExist bool) {
 		{Value: CATEGORY_CREATE, Description: "category creatable"},
 		{Value: ORG_DELETE, Description: "organization deletable "},
 		{Value: ORG_EDIT, Description: "organization editable"},
+		{Value: ORG_INVITE, Description: "organization invitable"},
 	}
 
 	if err := db_utils.BatchInsert("permissions", []string{"value", "description"}, initRecords); err != nil {
