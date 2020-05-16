@@ -1,47 +1,34 @@
 package main
 
 import (
-	"archie/connection/postgres_conn"
 	"archie/models"
-	"archie/routes"
-	"archie/services"
-	"archie/utils"
+	"archie/utils/db_utils/db_migrate_utils"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
 )
 
-func createDataTable(db *gorm.DB, model ...interface{}) {
-	if !db.HasTable(model) {
-		db.AutoMigrate(model...)
-	}
-}
-
-func InitTable() {
-	db, err := postgres_conn.GetDB()
-
-	utils.Check(err)
-	defer func() {
-		if err := db.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	// init table
-	createDataTable(db, models.UserOrganization{})
-	createDataTable(db, models.User{}, models.Message{})
-	createDataTable(db, models.Organization{})
-	createDataTable(db, models.UserTodo{})
-	createDataTable(db, models.RolePermission{})
-	createDataTable(db, models.Role{})
-	createDataTable(db, models.UserRole{})
-	createDataTable(db, models.Permission{})
-	createDataTable(db, models.Category{})
-	createDataTable(db, models.DocumentContribute{})
+func initTable() {
+	db_migrate_utils.InitTable(func(db *gorm.DB) error {
+		return db.AutoMigrate(
+			models.UserOrganization{},
+			models.User{},
+			models.Message{},
+			models.Organization{},
+			models.RolePermission{},
+			models.Role{},
+			models.Permission{},
+			models.Category{},
+			models.DocumentContributor{},
+			models.Document{},
+			models.DocumentPermission{},
+			models.OrganizationPermission{},
+		).Error
+	})
 }
 
 func main() {
-	go services.Receiver.Run()
+	//go services.Receiver.Run()
 
 	//t := time.NewTicker(time.Duration(time.Second * 1))
 	//
@@ -57,6 +44,12 @@ func main() {
 	//	}
 	//}()
 
-	InitTable()
-	routes.Serve()
+	initTable()
+	//routes.Serve()
+
+	p := models.OrganizationPermission{UserID: "6f937ed0-a56a-4b62-bbc3-a477542fe3ce", OrganizationID: "www"}
+
+	if err := p.New(models.ORG_DELETE); err != nil {
+		log.Fatal(err)
+	}
 }

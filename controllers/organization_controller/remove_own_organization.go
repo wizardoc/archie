@@ -33,7 +33,6 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 		return
 	}
 
-	// 检验是否有权限删除组织
 	if parsedClaims.UserId != orgModel.Owner {
 		authRes.Err = robust.REMOVE_PERMISSION
 		authRes.Data = gin.H{

@@ -15,7 +15,7 @@ type Organization struct {
 	Users             *[]User             `gorm:"many2many:user_organizations;"json:"-"`
 	CreateTime        int64               `gorm:"type:bigint"json:"createTime"`
 	IsPublic          bool                `gorm:"type:bool;default:TRUE"json:"isPublic"`
-	Categories        []Category          `gorm:"foreign_key:RelatedOrganization"`
+	Categories        []Category          `json:"categories"`
 	UserOrganizations []*UserOrganization `json:"-"`
 }
 
