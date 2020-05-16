@@ -30,5 +30,17 @@ func InsertUserToOrganization(organizeName string, username string, isOwner bool
 		OrganizationID: organization.ID,
 	}
 
+	op := models.OrganizationPermission{
+		UserID:         user.ID,
+		OrganizationID: organization.ID,
+	}
+	if err := op.NewMulti([]int{
+		models.DOCUMENT_VIEW,
+		models.DOCUMENT_READ,
+		models.ORG_INVITE,
+	}); err != nil {
+		return err
+	}
+
 	return userOrganization.New(isOwner)
 }

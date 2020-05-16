@@ -44,7 +44,7 @@ func (organization *Organization) BatchUpdates(source map[string]interface{}) er
 }
 
 func (organization *Organization) New(username string) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+	return postgres_conn.Transaction(func(db *gorm.DB) error {
 		organization.HasValid = true
 		organization.CreateTime = utils.Now()
 		user, err := FindOneByUsername(username)
@@ -62,6 +62,12 @@ func (organization *Organization) New(username string) error {
 		userOrganization := UserOrganization{
 			UserID:         user.ID,
 			OrganizationID: organization.ID,
+		}
+
+		// 赋予 owner 权限
+		dp := OrganizationPermission{UserID: user.ID, OrganizationID: organization.ID}
+		if err := dp.NewMulti(AllPermissions()); err != nil {
+			return err
 		}
 
 		return userOrganization.New(true)
