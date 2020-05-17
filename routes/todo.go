@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func TodoRouter(router *gin.Engine) {
+func todoRouter(router *gin.Engine) {
 	todo := router.Group("/todo", middlewares.ValidateToken)
 
 	todo.POST("/new", todo_controller.AddTodo)

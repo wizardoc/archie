@@ -40,8 +40,9 @@ func Serve() {
 	uploadRouter(router)
 	userRouter(router)
 	organizationRouter(router)
-	DocRouter(router)
-	TodoRouter(router)
+	docRouter(router)
+	todoRouter(router)
+	permissionRouter(router)
 
 	utils.Logger(fmt.Sprintf("Listing on %s", config.Port))
 	err := router.Run(config.GetAddress())
