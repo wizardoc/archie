@@ -7,36 +7,36 @@ import (
 )
 
 type Res struct {
-	Data   interface{}
-	Err    error
-	Status int
+	Data       interface{}
+	Err        error
+	StatusCode int
 }
 
-func GenAuthRes() Res {
-	return GenRes(http.StatusUnauthorized)
-}
-
-func GenBadReqRes() Res {
-	return GenRes(http.StatusBadRequest)
-}
-
-func GenServerErrRes() Res {
-	return GenRes(http.StatusInternalServerError)
-}
-
-func GenSuccessRes() Res {
-	return GenRes(http.StatusOK)
-}
-
-func GenRes(status int) Res {
-	return Res{Status: status}
-}
-
-func (res Res) Send(ctx *gin.Context) {
-	ctx.JSON(getStatus(res.Status), gin.H{
+func (res *Res) spurt(ctx *gin.Context) {
+	ctx.JSON(getStatus(res.StatusCode), gin.H{
 		"data": res.Data,
 		"err":  res.Err,
 	})
+}
+
+func (res *Res) Error(ctx *gin.Context, err error) *Res {
+	res.Err = err
+	res.spurt(ctx)
+
+	return res
+}
+
+func (res *Res) Send(ctx *gin.Context, data interface{}) *Res {
+	res.Data = data
+	res.spurt(ctx)
+
+	return res
+}
+
+func (res *Res) Status(code int) *Res {
+	res.StatusCode = code
+
+	return res
 }
 
 // parse status from arg

@@ -2,7 +2,6 @@ package organization_controller
 
 import (
 	"archie/models"
-	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
@@ -18,12 +17,10 @@ type OrganizationUser struct {
 // 创建一个新的组织，创建组织成功后将用户插入至该组织
 func NewOrganization(ctx *gin.Context) {
 	var organizationUser OrganizationUser
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &organizationUser); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
@@ -31,10 +28,9 @@ func NewOrganization(ctx *gin.Context) {
 	utils.CpStruct(&organizationUser, &organization)
 
 	if err := organization.New(organizationUser.Username); err != nil {
-		authRes.Err = robust.DOUBLE_KEY
-		authRes.Send(ctx)
+		res.Status(http.StatusConflict).Error(ctx, err)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

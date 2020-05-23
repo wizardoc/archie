@@ -12,14 +12,12 @@ const DOCUMENT_PATH = "public/doc/about-wizard.md"
 func WizardIntroduction(ctx *gin.Context) {
 	io := helper.ArchieIO{Path: DOCUMENT_PATH}
 	data, err := io.ReadStringStream()
-	errRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
 	if err != nil {
-		errRes.Err = robust.CANNOT_FIND_FILE
-		errRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, robust.CANNOT_FIND_FILE)
 		return
 	}
 
-	res := helper.Res{Data: data}
-	res.Send(ctx)
+	res.Send(ctx, data)
 }

@@ -43,6 +43,7 @@ func Serve() {
 	docRouter(router)
 	todoRouter(router)
 	permissionRouter(router)
+	categoryRouter(router)
 
 	utils.Logger(fmt.Sprintf("Listing on %s", config.Port))
 	err := router.Run(config.GetAddress())

@@ -17,13 +17,11 @@ type EditOrganizationParams struct {
 func EditOrganization(ctx *gin.Context) {
 	var organizationInfo EditOrganizationParams
 	res := helper.Res{}
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	err := helper.BindWithValid(ctx, &organizationInfo)
 	id := ctx.Params.ByName("id")
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
@@ -33,16 +31,14 @@ func EditOrganization(ctx *gin.Context) {
 	updates := make(map[string]interface{})
 
 	if err := mapstructure.Decode(organizationInfo, &updates); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		return
 	}
 
 	if err := organization.BatchUpdates(updates); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

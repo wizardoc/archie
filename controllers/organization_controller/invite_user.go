@@ -3,6 +3,7 @@ package organization_controller
 import (
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type InviteUserParams struct {
@@ -12,15 +13,12 @@ type InviteUserParams struct {
 
 func InviteUser(ctx *gin.Context) {
 	var inviteUserParams InviteUserParams
-
-	badReqRes := helper.GenBadReqRes()
-	successRes := helper.GenSuccessRes()
+	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &inviteUserParams); err != nil {
-		badReqRes.Err = err
-		badReqRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
-	successRes.Send(ctx)
+	res.Send(ctx, nil)
 }

@@ -11,12 +11,10 @@ import (
 
 func RemoveOwnOrganization(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
@@ -28,27 +26,26 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 	err = orgModel.FindOneByOrganizeName()
 
 	if err != nil {
-		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
-		authRes.Send(ctx)
+		res.Status(http.StatusNotFound).Error(ctx, err)
+
 		return
 	}
 
 	if parsedClaims.UserId != orgModel.Owner {
-		authRes.Err = robust.REMOVE_PERMISSION
-		authRes.Data = gin.H{
+		res.Data = gin.H{
 			"organizeName": "",
 		}
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, robust.REMOVE_PERMISSION)
+
 		return
 	}
 
 	err = orgModel.RemoveOrganization()
 
 	if err != nil {
-		authRes.Err = robust.REMOVE_ORG_FAILURE
-		authRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

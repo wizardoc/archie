@@ -47,3 +47,4 @@ var CANNOT_FIND_FILE = ArchieError{5001, "Connot find this file"}
 
 // Validation
 var INVALID_PARAMS = ArchieError{10001, "Invalid params"}
+var INVALID_PERMISSION = ArchieError{10002, "Invalid permission"}

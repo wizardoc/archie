@@ -17,6 +17,11 @@ func ArrayMap(arr interface{}, cb func(item interface{}) interface{}, result int
 func ArrayIncludes(arr interface{}, item interface{}) bool {
 	parsedArr := ToInterfaceArray(arr)
 
+	// validate type of item of arr
+	if reflect.ValueOf(parsedArr[0]).Kind() != reflect.ValueOf(item).Kind() {
+		log.Fatal("ArrayIncludes: The type does not compatible")
+	}
+
 	for _, e := range parsedArr {
 		if e == item {
 			return true
@@ -30,7 +35,7 @@ func ToInterfaceArray(arr interface{}) []interface{} {
 	v := reflect.ValueOf(arr)
 
 	if v.Kind() != reflect.Slice {
-		log.Fatal("The arg must be a slice")
+		log.Fatal("ToInterfaceArray: The arg must be a slice")
 	}
 
 	arrLen := v.Len()

@@ -3,7 +3,6 @@ package todo_controller
 import (
 	"archie/middlewares"
 	"archie/models"
-	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -18,19 +17,17 @@ type AddTodoPayload struct {
 /** 添加待办事项 */
 func AddTodo(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
 	var payload AddTodoPayload
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
+
 		return
 	}
 
@@ -42,10 +39,9 @@ func AddTodo(ctx *gin.Context) {
 	}
 
 	if err := todoItem.AddUserTodoItem(); err != nil {
-		authRes.Err = robust.DOUBLE_KEY
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

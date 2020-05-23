@@ -18,13 +18,11 @@ const (
 )
 
 func ChangeMessageState(ctx *gin.Context) {
-	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 	res := helper.Res{}
 
 	signal, isExist := ctx.Get(SIGNAL)
 	if !isExist {
-		serverErrRes.Err = robust.MESSAGE_SIGNAL_NOT_EXIST
-		serverErrRes.Send(ctx)
+		res.Status(http.StatusNotFound).Error(ctx, robust.MESSAGE_SIGNAL_NOT_EXIST)
 		return
 	}
 
@@ -41,5 +39,5 @@ func ChangeMessageState(ctx *gin.Context) {
 		log.Println("The signal is not exist")
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

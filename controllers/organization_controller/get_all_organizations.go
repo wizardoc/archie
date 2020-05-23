@@ -3,7 +3,6 @@ package organization_controller
 import (
 	"archie/middlewares"
 	"archie/models"
-	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -12,12 +11,10 @@ import (
 // 获取用户加入的所有组织
 func GetAllJoinOrganization(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
@@ -26,11 +23,9 @@ func GetAllJoinOrganization(ctx *gin.Context) {
 	organizations, err := userOrganization.FindUserJoinOrganizations()
 
 	if err != nil {
-		authRes.Err = robust.ORGANIZATION_FIND_EMPTY
-		authRes.Send(ctx)
+		res.Status(http.StatusNotFound).Error(ctx, err)
 		return
 	}
 
-	res.Data = gin.H{"organizations": organizations}
-	res.Send(ctx)
+	res.Send(ctx, gin.H{"organizations": organizations})
 }

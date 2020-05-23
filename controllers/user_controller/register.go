@@ -2,7 +2,6 @@ package user_controller
 
 import (
 	"archie/models"
-	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
@@ -20,13 +19,11 @@ type RegisterInfo struct {
 
 /** 用户注册 */
 func Register(ctx *gin.Context) {
-	errRes := helper.Res{Status: http.StatusBadRequest}
-	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
+	res := helper.Res{}
 
 	var info = RegisterInfo{}
 	if err := helper.BindWithValid(ctx, &info); err != nil {
-		errRes.Err = err
-		errRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		ctx.Abort()
 		return
 	}
@@ -34,8 +31,8 @@ func Register(ctx *gin.Context) {
 	_, err := models.FindOneByUsername(info.Username)
 
 	if err == nil {
-		errRes.Err = robust.REGISTER_EXIST_USER
-		errRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
+
 		ctx.Abort()
 		return
 	}
@@ -44,8 +41,7 @@ func Register(ctx *gin.Context) {
 	utils.CpStruct(&info, &user)
 
 	if err := user.Register(); err != nil {
-		errRes.Err = robust.CREATE_DATA_FAILURE
-		errRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		ctx.Abort()
 		return
 	}
@@ -55,8 +51,7 @@ func Register(ctx *gin.Context) {
 		Description:  info.OrganizationDescription,
 	}
 	if err := organization.New(user.Username); err != nil {
-		serverErrRes.Err = robust.ORGANIZATION_CREATE_FAILURE
-		serverErrRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		ctx.Abort()
 		return
 	}

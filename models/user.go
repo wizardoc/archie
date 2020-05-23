@@ -65,15 +65,10 @@ func (user *User) UpdateLoginTime() error {
 	})
 }
 
-func (user *User) GetUserInfoByID() (result User, err error) {
-	userID := user.ID
-	result = User{}
-
-	err = postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Find(&result, "id = ?", userID).Error
+func (user *User) GetUserInfoByID() error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Find(&user, "id = ?", user.ID).Error
 	})
-
-	return
 }
 
 // 更新 user model 里有值的字段

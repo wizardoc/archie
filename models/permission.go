@@ -31,9 +31,13 @@ type PermissionRecord struct {
 }
 
 type Permission struct {
-	ID          string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
-	Value       int    `gorm:"type:int"json:"-"`
+	ID          string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"-"`
+	Value       int    `gorm:"type:int"json:"value"`
 	Description string `gorm:"type:varchar(200)"json:"-"`
+}
+
+func (p *Permission) TableName() string {
+	return "permissions"
 }
 
 func (p *Permission) Find(result *Permission) error {

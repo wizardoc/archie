@@ -2,9 +2,9 @@ package organization_controller
 
 import (
 	"archie/models"
-	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func GetAllOrganizationNames(ctx *gin.Context) {
@@ -13,13 +13,11 @@ func GetAllOrganizationNames(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Err = robust.CANNOT_FIND_ORGANIZATION
-		res.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
-	res.Data = gin.H{
+	res.Send(ctx, gin.H{
 		"organizeNames": names,
-	}
-	res.Send(ctx)
+	})
 }

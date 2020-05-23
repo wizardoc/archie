@@ -11,12 +11,10 @@ import (
 
 func GetAllTodo(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
@@ -26,11 +24,9 @@ func GetAllTodo(ctx *gin.Context) {
 	todos, err := todo.GetAllTodoItemsByID()
 
 	if err != nil {
-		authRes.Err = robust.DB_READ_FAILURE
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
 		return
 	}
 
-	res.Data = todos
-	res.Send(ctx)
+	res.Send(ctx, todos)
 }

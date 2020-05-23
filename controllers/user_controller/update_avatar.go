@@ -4,9 +4,9 @@ import (
 	"archie/middlewares"
 	"archie/models"
 	"archie/robust"
-	"archie/utils"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type UserAvatar struct {
@@ -16,25 +16,18 @@ type UserAvatar struct {
 // 更新用户头像
 func UpdateAvatar(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.GenAuthRes()
-	badReqRes := helper.GenBadReqRes()
-	successRes := helper.GenSuccessRes()
-	serverErrRes := helper.GenServerErrRes()
+	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
-
-	utils.Green("aaaa")
 
 	userAvatar := UserAvatar{}
 	err = helper.BindWithValid(ctx, &userAvatar)
 
 	if err != nil {
-		badReqRes.Err = err
-		badReqRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
@@ -44,10 +37,9 @@ func UpdateAvatar(ctx *gin.Context) {
 	}
 
 	if err := user.UpdateAvatar(); err != nil {
-		serverErrRes.Err = robust.DB_UPDATE_FAILURE
-		serverErrRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, robust.DB_UPDATE_FAILURE)
 		return
 	}
 
-	successRes.Send(ctx)
+	res.Send(ctx, nil)
 }

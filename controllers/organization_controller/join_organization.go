@@ -1,7 +1,6 @@
 package organization_controller
 
 import (
-	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -14,20 +13,18 @@ type OrganizationJoinInfo struct {
 
 func JoinOrganization(ctx *gin.Context) {
 	res := helper.Res{}
-	authRes := helper.Res{Status: http.StatusBadRequest}
 
 	var joinInfo OrganizationJoinInfo
 	if err := ctx.Bind(&joinInfo); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, err)
+
 		return
 	}
 
 	if err := InsertUserToOrganization(joinInfo.OrganizeName, joinInfo.Username, false); err != nil {
-		authRes.Err = robust.INVALID_PARAMS
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

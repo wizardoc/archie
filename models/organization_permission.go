@@ -2,6 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
+	"archie/utils"
 	"archie/utils/db_utils"
 	"errors"
 	"fmt"
@@ -13,9 +14,9 @@ const (
 )
 
 type OrganizationPermission struct {
-	PermissionID   string `gorm:"primary_key"`
-	UserID         string `gorm:"primary_key"`
-	OrganizationID string `gorm:"primary_key"`
+	PermissionID   string `gorm:"type:uuid;primary_key"`
+	UserID         string `gorm:"type:uuid;primary_key"`
+	OrganizationID string `gorm:"type:uuid;primary_key"`
 }
 
 func (op *OrganizationPermission) TableName() string {
@@ -30,8 +31,6 @@ func (op *OrganizationPermission) New(permission int) error {
 		if err := p.Find(&findPermission); err != nil {
 			return err
 		}
-
-		fmt.Println(findPermission)
 
 		if findPermission.ID == "" {
 			return errors.New(CANNOT_FIND_PERMISSION_ERROR_MESSAGE)
@@ -70,10 +69,51 @@ func (op *OrganizationPermission) NewMulti(permissions []int) error {
 // 比较脏的做法，先全部删除，然后再批量写入
 func (op *OrganizationPermission) CoverPermission(permissions []int) error {
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		if err := db.Where("user_id = ? AND organization_id = ?", op.UserID, op.OrganizationID).Delete(OrganizationPermission{}).Error; err != nil {
+		if err := op.specifyPermission(db).Delete(OrganizationPermission{}).Error; err != nil {
 			return err
 		}
 
 		return op.NewMulti(permissions)
 	})
+}
+
+func (op *OrganizationPermission) All(results *[]Permission) error {
+	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		p := Permission{}
+
+		return db.Table(p.TableName()).
+			Joins(fmt.Sprintf("INNER JOIN %s ON permissions.id = CAST(organization_permissions.permission_id AS UUID)", op.TableName())).
+			Where("organization_id = ? AND user_id = ?", op.OrganizationID, op.UserID).
+			Find(results).
+			Error
+	})
+}
+
+func (op *OrganizationPermission) AllAsValue(results *[]int) error {
+	var permissions []Permission
+
+	err := op.All(&permissions)
+
+	utils.ArrayMap(permissions, func(item interface{}) interface{} {
+		return item.(Permission).Value
+	}, results)
+
+	return err
+}
+
+// 指定用户是否有此权限
+func (op *OrganizationPermission) Has(limitPermissionValue []int) (bool, error) {
+	var permissionValues []int
+	hasResult := true
+	err := op.AllAsValue(&permissionValues)
+
+	for _, lp := range limitPermissionValue {
+		hasResult = utils.ArrayIncludes(permissionValues, lp) && hasResult
+	}
+
+	return hasResult, err
+}
+
+func (op *OrganizationPermission) specifyPermission(db *gorm.DB) *gorm.DB {
+	return db.Where("user_id = ? AND organization_id = ?", op.UserID, op.OrganizationID)
 }

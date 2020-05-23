@@ -8,13 +8,10 @@ import (
 
 func GetQiNiuToken(ctx *gin.Context) {
 	qiniu := services.QiNiu{}
+	res := helper.Res{}
 
 	qiniu.New()
-
 	token := qiniu.GenToken()
-	res := helper.Res{
-		Data: token,
-	}
 
-	res.Send(ctx)
+	res.Send(ctx, token)
 }

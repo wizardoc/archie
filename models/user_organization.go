@@ -20,8 +20,9 @@ type UserOrganization struct {
 type OrganizationOwnerInfo struct {
 	OwnerInfo User `json:"ownerInfo"`
 	Organization
-	Members  []User `json:"members"`
-	JoinTime int64  `json:"joinTime"`
+	Members     []User `json:"members"`
+	JoinTime    int64  `json:"joinTime"`
+	Permissions []int  `json:"permissions"`
 }
 
 func (userOrganization *UserOrganization) TableName() string {
@@ -65,12 +66,12 @@ func findOwnerByID(id string, owners []User) (User, bool) {
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
 	var infos []OrganizationOwnerInfo
 
-	err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+	err := postgres_conn.Transaction(func(db *gorm.DB) error {
 		var result *gorm.DB
 
 		result = db.
 			Raw(
-				"select * from user_organizations inner join organizations on organization_id=organizations.id where user_id=?",
+				"SELECT * FROM user_organizations INNER JOIN organizations ON organization_id=organizations.id WHERE user_id=?",
 				userOrganization.UserID,
 			).
 			Scan(&infos)
@@ -87,7 +88,7 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 		var owners []User
 
 		result = db.
-			Raw(fmt.Sprintf("select * from users where id in (%s)", strings.Join(organizationIds, ","))).
+			Raw(fmt.Sprintf("SELECT * FROM users WHERE id IN (%s)", strings.Join(organizationIds, ","))).
 			Scan(&owners)
 
 		// dist organizations
@@ -106,6 +107,14 @@ func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]Organiz
 				infos[i].Members = []User{}
 			}
 
+			// attach permission info
+			var permissionValues []int
+			op := OrganizationPermission{UserID: userOrganization.UserID, OrganizationID: organization.ID}
+			if err := op.AllAsValue(&permissionValues); err != nil {
+				return err
+			}
+
+			infos[i].Permissions = permissionValues
 			infos[i].OwnerInfo = owner
 		}
 

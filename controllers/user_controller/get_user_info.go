@@ -3,7 +3,6 @@ package user_controller
 import (
 	"archie/middlewares"
 	"archie/models"
-	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,33 +10,28 @@ import (
 
 /** 获取用户信息 */
 func GetUserInfo(ctx *gin.Context) {
-	unAuthRes := helper.Res{Status: http.StatusUnauthorized}
-	serverErrRes := helper.Res{Status: http.StatusInternalServerError}
 	res := helper.Res{}
 
 	claims, err := middlewares.GetClaims(ctx)
 
 	// claims 不存在
 	if err != nil {
-		unAuthRes.Err = err
-		unAuthRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, err)
 		return
 	}
 
 	user := models.User{
 		ID: claims.UserId,
 	}
-	userInfo, err := user.GetUserInfoByID()
 
 	// 找不到用户
-	if err != nil {
-		serverErrRes.Err = robust.CANNOT_FIND_USER
-		serverErrRes.Send(ctx)
+	if err := user.GetUserInfoByID(); err != nil {
+		res.Status(http.StatusNotFound).Error(ctx, err)
 		return
 	}
 
 	res.Data = gin.H{
-		"userInfo": userInfo,
+		"userInfo": user,
 	}
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

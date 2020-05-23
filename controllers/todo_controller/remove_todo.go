@@ -16,19 +16,16 @@ type RemoveTodoPayload struct {
 /** 删除待办事项 */
 func RemoveTodo(ctx *gin.Context) {
 	parsedClaims, err := middlewares.GetClaims(ctx)
-	authRes := helper.Res{Status: http.StatusBadRequest}
 	res := helper.Res{}
 
 	if err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, robust.DB_READ_FAILURE)
 		return
 	}
 
 	var payload RemoveTodoPayload
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		authRes.Err = err
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
 		return
 	}
 
@@ -38,10 +35,9 @@ func RemoveTodo(ctx *gin.Context) {
 	}
 
 	if err := todoItem.RemoveUserTodoItem(); err != nil {
-		authRes.Err = robust.DOUBLE_KEY
-		authRes.Send(ctx)
+		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
 		return
 	}
 
-	res.Send(ctx)
+	res.Send(ctx, nil)
 }

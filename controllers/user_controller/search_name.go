@@ -4,28 +4,24 @@ import (
 	"archie/models"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func SearchName(ctx *gin.Context) {
 	var results []models.User
-
-	serverErrRes := helper.GenServerErrRes()
-	successRes := helper.GenSuccessRes()
 	searchName := ctx.Query("username")
+	res := helper.Res{}
 	user := models.User{}
 
 	if searchName == "" {
-		successRes.Data = []models.User{}
-		successRes.Send(ctx)
+		res.Send(ctx, []models.User{})
 		return
 	}
 
 	if err := user.SearchName(searchName, &results); err != nil {
-		serverErrRes.Err = err
-		serverErrRes.Send(ctx)
+		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		return
 	}
 
-	successRes.Data = results
-	successRes.Send(ctx)
+	res.Send(ctx, results)
 }

@@ -15,12 +15,11 @@ import (
 // JWT 验证中间件，用于校验 token，将 claims 转发到下一个中间件
 func ValidateToken(ctx *gin.Context) {
 	jwtString, ok := getJWTFromHeader(ctx.Request)
-	authErrRes := helper.Res{Status: http.StatusBadRequest}
+	res := helper.Res{}
 
 	/** JWT 不存在 */
 	if !ok {
-		authErrRes.Err = robust.JWT_DOES_NOT_EXIST
-		authErrRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_DOES_NOT_EXIST)
 		ctx.Abort()
 
 		return
@@ -30,8 +29,7 @@ func ValidateToken(ctx *gin.Context) {
 
 	// parse jwt fail
 	if err != nil {
-		authErrRes.Err = robust.JWT_NOT_ALLOWED
-		authErrRes.Send(ctx)
+		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_NOT_ALLOWED)
 		return
 	}
 
