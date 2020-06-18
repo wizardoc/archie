@@ -36,12 +36,12 @@ func main() {
 	//go func() {
 	//	for {
 	//		<-t.C
-	//		_, err := services.NewChannelMessage("471bd6a4-15bf-4097-8b75-39987e06c1d7", "471bd6a4-15bf-4097-8b75-39987e06c1d7", []string{"471bd6a4-15bf-4097-8b75-39987e06c1d7"}, services.BROADCAST, services.NOTIFY, "ssss", "sddasdasdas")
+	//		data, err := services.NewChannelMessage("471bd6a4-15bf-4097-8b75-39987e06c1d7", "471bd6a4-15bf-4097-8b75-39987e06c1d7", []string{"471bd6a4-15bf-4097-8b75-39987e06c1d7"}, services.BROADCAST, services.NOTIFY, "ssss", "sddasdasdas")
 	//
 	//		if err != nil {
 	//			log.Fatal(err)
 	//		}
-	//		//services.NewPublisher(data).Publish()
+	//		services.NewPublisher(data).Publish()
 	//	}
 	//}()
 

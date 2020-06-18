@@ -36,8 +36,6 @@ func BatchInsert(table string, heads []string, values interface{}) error {
 
 		tupleStr := strings.Join(attachQuoteItem, ",")
 		strValues = append(strValues, fmt.Sprintf("(%s)", tupleStr))
-
-		fmt.Println(resultVal)
 	}
 
 	sql := fmt.Sprintf(

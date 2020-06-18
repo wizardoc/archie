@@ -19,9 +19,21 @@ type ParsedMessage struct {
 	From models.User                 `json:"from"`
 }
 
+type GetAllMessageParams struct {
+	utils.PageInfo
+}
+
 // Get all messages by user
 func GetAllMessages(ctx *gin.Context) {
 	res := helper.Res{}
+
+	var params GetAllMessageParams
+	if err := helper.BindWithValid(ctx, &params); err != nil {
+		res.Status(http.StatusBadRequest).Error(ctx, err)
+		return
+	}
+
+	params.ParsePageInfo()
 
 	// parse JWT
 	claims, err := middlewares.GetClaims(ctx)
@@ -31,10 +43,10 @@ func GetAllMessages(ctx *gin.Context) {
 		return
 	}
 
-	user := models.User{ID: claims.UserId}
+	user := models.User{ID: claims.User.ID}
 
 	// cannot find all messages
-	if err := user.FindAllMessages(); err != nil && !gorm.IsRecordNotFoundError(err) {
+	if err := user.FindAllMessages(params.Page, params.PageSize); err != nil && !gorm.IsRecordNotFoundError(err) {
 		res.Status(http.StatusNotFound).Error(ctx, err)
 		return
 	}

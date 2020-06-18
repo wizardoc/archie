@@ -2,23 +2,37 @@ package user_controller
 
 import (
 	"archie/models"
+	"archie/utils"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
+type SearchNameParams struct {
+	SearchName string `validate:"required" json:"searchName" form:"searchName"`
+	utils.PageInfo
+}
+
 func SearchName(ctx *gin.Context) {
 	var results []models.User
-	searchName := ctx.Query("username")
 	res := helper.Res{}
 	user := models.User{}
 
-	if searchName == "" {
+	var params SearchNameParams
+
+	if err := helper.BindWithValid(ctx, &params); err != nil {
+		res.Status(http.StatusBadRequest).Error(ctx, err)
+		return
+	}
+
+	if params.SearchName == "" {
 		res.Send(ctx, []models.User{})
 		return
 	}
 
-	if err := user.SearchName(searchName, &results); err != nil {
+	params.ParsePageInfo()
+
+	if err := user.SearchName(params.SearchName, params.Page, params.PageSize, &results); err != nil {
 		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		return
 	}

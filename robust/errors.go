@@ -24,10 +24,16 @@ var CANNOT_FIND_USER = ArchieError{1010, "Cannot find this user"}
 
 // Messages
 var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{1011, "The signal of message operator is not exist"}
+var MESSAGE_SEND_FAILURE = ArchieError{1012, "Send message failure"}
+var MESSAGE_CANNOT_FIND_TO = ArchieError{1013, "The user does not exist"}
+var MESSAGE_SEND_TO_YOURSELF = ArchieError{1014, "Cannot send message to yourself"}
 
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{2008, "Cannot find organizations"}
 var ORGANIZATION_CREATE_FAILURE = ArchieError{2009, "Cannot create organization"}
+var ORGANIZATION_INVITE_YOURSELF = ArchieError{2010, "Cannot invite yourself"}
+var ORGANIZATION_INVITE_EXIST = ArchieError{2011, "The user does exist in the organization"}
+var ORGANIZATION_INVITE_ERROR = ArchieError{2012, "Invite Error"}
 
 // DB
 var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}

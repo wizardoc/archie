@@ -3,6 +3,7 @@ package permission_validators
 import (
 	"archie/middlewares"
 	"archie/models"
+	"archie/robust"
 	"archie/utils/helper"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -20,6 +21,7 @@ func OrganizationPermission(limitPermissionValues []int) gin.HandlerFunc {
 
 		if err := helper.BindWithValid(ctx, &payload); err != nil {
 			res.Status(http.StatusBadRequest).Error(ctx, err)
+			ctx.Abort()
 			return
 		}
 
@@ -27,23 +29,26 @@ func OrganizationPermission(limitPermissionValues []int) gin.HandlerFunc {
 
 		if err != nil {
 			res.Status(http.StatusBadRequest).Error(ctx, err)
+			ctx.Abort()
 			return
 		}
 
 		// 验证权限
 		op := models.OrganizationPermission{
 			OrganizationID: payload.OrganizationID,
-			UserID:         claims.UserId,
+			UserID:         claims.User.ID,
 		}
 		hasPermission, err := op.Has(limitPermissionValues)
 
 		if err != nil {
 			res.Status(http.StatusInternalServerError).Error(ctx, err)
+			ctx.Abort()
 			return
 		}
 
 		if !hasPermission {
-			res.Status(http.StatusForbidden).Error(ctx, err)
+			res.Status(http.StatusForbidden).Error(ctx, robust.INVALID_PERMISSION)
+			ctx.Abort()
 			return
 		}
 

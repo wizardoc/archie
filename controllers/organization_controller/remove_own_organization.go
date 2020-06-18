@@ -31,7 +31,7 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 		return
 	}
 
-	if parsedClaims.UserId != orgModel.Owner {
+	if parsedClaims.User.ID != orgModel.Owner {
 		res.Data = gin.H{
 			"organizeName": "",
 		}

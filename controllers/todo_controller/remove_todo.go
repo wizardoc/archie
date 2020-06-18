@@ -31,7 +31,7 @@ func RemoveTodo(ctx *gin.Context) {
 
 	todoItem := models.UserTodo{
 		Name:   payload.Name,
-		UserID: parsedClaims.UserId,
+		UserID: parsedClaims.User.ID,
 	}
 
 	if err := todoItem.RemoveUserTodoItem(); err != nil {

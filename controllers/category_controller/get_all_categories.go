@@ -30,6 +30,5 @@ func GetAllCategories(ctx *gin.Context) {
 		return
 	}
 
-	res.Data = results
-	res.Send(ctx, nil)
+	res.Send(ctx, results)
 }

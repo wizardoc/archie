@@ -94,7 +94,6 @@ func (receiver *RedisReceiver) messageDispatch() {
 
 // put connection of websocket in conn pool
 func (receiver *RedisReceiver) Register(userID string, conn *websocket.Conn) {
-	//fmt.Println(userID, conn)
 	receiver.pool.AddConn(userID, conn)
 }
 

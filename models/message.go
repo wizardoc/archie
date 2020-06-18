@@ -2,6 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
+	"fmt"
 	"github.com/jinzhu/gorm"
 )
 
@@ -12,6 +13,7 @@ type Message struct {
 	From        string `gorm:"type:varchar(100)"json:"from"`
 	Users       []User `gorm:"many2many:user_messages;"json:"-"`
 	SendTime    int64  `gorm:"type:bigint"json:"sendTime"`
+	Tag         int    `gorm:"type:int"json:"tag"`
 	MessageType int    `gorm:"type:int"json:"messageType"`
 	IsRead      bool   `gorm:"bool;default:FALSE"json:"isRead"`
 	IsDelete    bool   `gorm:"bool;default:FALSE"json:"isDelete"`
@@ -45,6 +47,8 @@ func (message *Message) Update() error {
 func FindAllUsersByFrom(userMap map[string]User, froms []string) error {
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
 		var users []User
+
+		fmt.Println(froms)
 
 		err := db.Model(User{}).Find(&users, "id in (?)", froms).Error
 

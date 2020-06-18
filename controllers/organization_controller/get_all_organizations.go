@@ -19,7 +19,7 @@ func GetAllJoinOrganization(ctx *gin.Context) {
 	}
 
 	userOrganization := models.UserOrganization{}
-	userOrganization.UserID = parsedClaims.UserId
+	userOrganization.UserID = parsedClaims.User.ID
 	organizations, err := userOrganization.FindUserJoinOrganizations()
 
 	if err != nil {

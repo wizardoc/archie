@@ -48,7 +48,7 @@ func ConnectWS(ctx *gin.Context) {
 		return
 	}
 
-	//services.Receiver.Register(parsedClaims.UserId, conn)
+	//services.Receiver.Register(parsedClaims.UserID, conn)
 	go messageDispatcher(conn)
 	go readMessage(conn)
 }

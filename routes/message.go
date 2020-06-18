@@ -17,4 +17,5 @@ func messageRoutes(router *gin.Engine) {
 	message.PUT("/read/:id", message_controller.ReadMessage, message_controller.ChangeMessageState)
 	message.DELETE("/delete/:id", message_controller.DeleteMessage, message_controller.ChangeMessageState)
 	message.PUT("/revoke/:id", message_controller.RevokeMessage, message_controller.ChangeMessageState)
+	message.POST("/send", message_controller.SendMessage)
 }

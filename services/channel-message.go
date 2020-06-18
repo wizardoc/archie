@@ -20,18 +20,21 @@ const (
 
 const (
 	SYSTEM = iota
-	USER   = iota
+	PERSONAL
+	INVITE
 )
 
 type ChannelMessageMain struct {
-	Title string `json:"title"`
-	Body  string `json:"body"`
+	Title   string      `json:"title"`
+	Body    string      `json:"body"`
+	Payload interface{} `json:"payload"`
 }
 
 type ChannelMessage struct {
 	ID            string              `json:"id"`
 	Owner         string              `json:"owner"`
-	Type          int                 `json:"-"`
+	Type          int                 `json:"type"`
+	Tag           int                 `json:"tag"`
 	From          string              `json:"from"`
 	To            []string            `json:"users"`
 	SendTime      int64               `json:"sendTime"`
@@ -42,7 +45,7 @@ type ChannelMessage struct {
 	DirectionType int
 }
 
-func NewChannelMessage(owner string, from string, to []string, sendType int, messageType int, title string, body string) (*ChannelMessage, error) {
+func NewChannelMessage(owner string, from string, to []string, sendType int, messageType int, tag int, title string, body string, payload interface{}) (*ChannelMessage, error) {
 	msgID := uuid.NewV4().String()
 
 	if err := validType(sendTypes(), sendType, "This sendType is invalid"); err != nil {
@@ -58,13 +61,15 @@ func NewChannelMessage(owner string, from string, to []string, sendType int, mes
 		Owner:       owner,
 		From:        from,
 		To:          to,
+		Tag:         tag,
 		Type:        sendType,
 		MessageType: messageType,
 		SendTime:    utils.Now(),
 		IsRead:      false,
 		Main: &ChannelMessageMain{
-			Title: title,
-			Body:  body,
+			Title:   title,
+			Body:    body,
+			Payload: payload,
 		},
 	}, nil
 }

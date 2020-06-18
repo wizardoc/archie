@@ -4,6 +4,7 @@ import (
 	"archie/models"
 	"archie/utils"
 	"archie/utils/helper"
+	"archie/utils/jwt_utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -54,12 +55,12 @@ func Login(ctx *gin.Context) {
 
 	go user.UpdateLoginTime()
 
-	claims := utils.Claims{
-		UserId: user.ID,
+	claims := jwt_utils.LoginClaims{
+		User: user,
 	}
 
 	res.Send(ctx, gin.H{
-		"jwt":      claims.SignJWT(),
+		"jwt":      claims.SignJWT(24),
 		"userInfo": user,
 	})
 }

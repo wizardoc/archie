@@ -32,7 +32,7 @@ func AddTodo(ctx *gin.Context) {
 	}
 
 	todoItem := models.UserTodo{
-		UserID:      parsedClaims.UserId,
+		UserID:      parsedClaims.User.ID,
 		Name:        payload.Name,
 		Description: payload.Description,
 		Route:       payload.Route,

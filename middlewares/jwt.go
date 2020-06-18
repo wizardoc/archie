@@ -5,6 +5,7 @@ import (
 	"archie/robust"
 	"archie/utils"
 	"archie/utils/helper"
+	"archie/utils/jwt_utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -25,39 +26,38 @@ func ValidateToken(ctx *gin.Context) {
 		return
 	}
 
-	claims, err := ParseToken2Claims(jwtString)
+	claims := jwt_utils.LoginClaims{}
 
 	// parse jwt fail
-	if err != nil {
+	if err := ParseToken2Claims(jwtString, &claims); err != nil {
 		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_NOT_ALLOWED)
 		return
 	}
 
 	/** 在小黑屋，JWT 不被允许 */
-	//if IsExistInBlackSet(claims.UserId) {
+	//if IsExistInBlackSet(claims.UserID) {
 	//	unAuthErrRes.Err = robust.JWT_NOT_ALLOWED
 	//	unAuthErrRes.Send(ctx)
 	//	return
 	//}
 
-	ctx.Set("claims", *claims)
+	ctx.Set("claims", claims)
 	ctx.Next()
 }
 
-func ParseToken2Claims(token string) (*utils.Claims, error) {
+func ParseToken2Claims(token string, targetClaims interface{}) error {
 	JWTClaims := ParseToken(token)
 
 	/** 不合法的 Token */
 	if err := JWTClaims.Valid(); err != nil {
-		return nil, err
+		return err
 	}
 
-	claims := utils.Claims{}
-	if err := mapstructure.Decode(JWTClaims, &claims); err != nil {
-		return nil, err
+	if err := mapstructure.Decode(JWTClaims, &targetClaims); err != nil {
+		return err
 	}
 
-	return &claims, nil
+	return nil
 }
 
 func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
@@ -73,7 +73,7 @@ func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
 
 func ParseToken(tokenStr string) jwt.Claims {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		return utils.GetSecretKey(), nil
+		return jwt_utils.GetSecretKey(), nil
 	})
 
 	utils.Check(err)
@@ -101,21 +101,21 @@ func IsExistInBlackSet(userId string) (isExist bool) {
 }
 
 /** 验证获取 Token */
-func GetClaims(ctx *gin.Context) (utils.Claims, error) {
+func GetClaims(ctx *gin.Context) (jwt_utils.LoginClaims, error) {
 	claims, isExist := ctx.Get("claims")
 
 	if !isExist {
-		return utils.Claims{}, robust.JWT_DOES_NOT_EXIST
+		return jwt_utils.LoginClaims{}, robust.JWT_DOES_NOT_EXIST
 	}
 
 	return ParseClaims(claims)
 }
 
-func ParseClaims(claims interface{}) (utils.Claims, error) {
-	parsedClaims, ok := claims.(utils.Claims)
+func ParseClaims(claims interface{}) (jwt_utils.LoginClaims, error) {
+	parsedClaims, ok := claims.(jwt_utils.LoginClaims)
 
 	if !ok {
-		return utils.Claims{}, robust.JWT_PARSE_ERROR
+		return jwt_utils.LoginClaims{}, robust.JWT_PARSE_ERROR
 	}
 
 	return parsedClaims, nil

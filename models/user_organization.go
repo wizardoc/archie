@@ -29,6 +29,18 @@ func (userOrganization *UserOrganization) TableName() string {
 	return "user_organizations"
 }
 
+func (userOrganization *UserOrganization) IsExist() (bool, error) {
+	userOrganizations := []UserOrganization{}
+
+	if err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
+		return db.Where("user_id = ? AND organization_id = ?", userOrganization.UserID, userOrganization.OrganizationID).Find(&userOrganizations).Error
+	}); err != nil {
+		return false, err
+	}
+
+	return len(userOrganizations) != 0, nil
+}
+
 // 寻找指定 Organization ID 的 members
 func (userOrganization *UserOrganization) FindMembers(organizationID string, members *[]User) error {
 	var userOrganizations []UserOrganization

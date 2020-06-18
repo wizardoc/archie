@@ -21,7 +21,7 @@ func GetOrganizationPermission(ctx *gin.Context) {
 
 	// 权限值的集合
 	var permissionValues []int
-	op := models.OrganizationPermission{UserID: claims.UserId, OrganizationID: id}
+	op := models.OrganizationPermission{UserID: claims.User.ID, OrganizationID: id}
 
 	if err := op.AllAsValue(&permissionValues); err != nil {
 		res.Status(http.StatusInternalServerError).Error(ctx, err)

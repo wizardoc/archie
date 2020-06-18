@@ -21,7 +21,7 @@ func GetUserInfo(ctx *gin.Context) {
 	}
 
 	user := models.User{
-		ID: claims.UserId,
+		ID: claims.User.ID,
 	}
 
 	// 找不到用户
@@ -30,8 +30,7 @@ func GetUserInfo(ctx *gin.Context) {
 		return
 	}
 
-	res.Data = gin.H{
+	res.Send(ctx, gin.H{
 		"userInfo": user,
-	}
-	res.Send(ctx, nil)
+	})
 }

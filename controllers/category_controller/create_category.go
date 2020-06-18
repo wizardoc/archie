@@ -35,7 +35,7 @@ func CreateCategory(ctx *gin.Context) {
 		Name:           payload.Name,
 		Description:    payload.Description,
 		Cover:          payload.Cover,
-		UserID:         claims.UserId,
+		UserID:         claims.User.ID,
 		OrganizationID: payload.OrganizationID,
 	}
 

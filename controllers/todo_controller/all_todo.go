@@ -19,7 +19,7 @@ func GetAllTodo(ctx *gin.Context) {
 	}
 
 	todo := models.UserTodo{
-		UserID: parsedClaims.UserId,
+		UserID: parsedClaims.User.ID,
 	}
 	todos, err := todo.GetAllTodoItemsByID()
 

@@ -33,7 +33,7 @@ func UpdateAvatar(ctx *gin.Context) {
 
 	user := models.User{
 		Avatar: userAvatar.Avatar,
-		ID:     parsedClaims.UserId,
+		ID:     parsedClaims.User.ID,
 	}
 
 	if err := user.UpdateAvatar(); err != nil {

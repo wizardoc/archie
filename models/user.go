@@ -30,15 +30,17 @@ type User struct {
 	RegisterInfo
 }
 
-func (user *User) SearchName(name string, users *[]User) error {
+func (user *User) SearchName(name string, page int, pageSize int, users *[]User) error {
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Model(user).Where("username LIKE ?", fmt.Sprintf("%s%%", name)).Limit(10).Find(users).Error
+		return db.Model(user).Where("username LIKE ?", fmt.Sprintf("%s%%", name)).Offset((page - 1) * pageSize).Limit(pageSize).Find(users).Error
 	})
 }
 
-func (user *User) FindAllMessages() error {
+func (user *User) FindAllMessages(page int, pageSize int) error {
 	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Model(user).Preload("Messages").Where("id = ?", user.ID).Find(user).Error
+		return db.Model(user).Where("id = ?", user.ID).Preload("Messages", func(db *gorm.DB) *gorm.DB {
+			return db.Offset((page - 1) * pageSize).Limit(pageSize).Order("send_time desc")
+		}).Find(user).Error
 	})
 }
 
@@ -85,6 +87,13 @@ func findUser(queryKey string, queryBody string) (user User, err error) {
 	})
 
 	return
+}
+
+func (user *User) FindByUsername(username string) error {
+	findUser, err := findUser("username", username)
+	*user = findUser
+
+	return err
 }
 
 func FindOneByUsername(username string) (User, error) {

@@ -4,9 +4,15 @@ import (
 	"archie/models"
 	"archie/utils"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 )
+
+type ParsedMessage struct {
+	models.Message
+	From models.User `json:"from"`
+}
 
 // websocket connection pool that is used to push some data into the connection
 // and provide CURD interface for this connection pool
@@ -20,6 +26,7 @@ func (pool *WebsocketPool) RemoveConn(userID string) {
 
 func (pool *WebsocketPool) AddConn(userID string, targetConn *websocket.Conn) {
 	pool.conns[userID] = targetConn
+	fmt.Println("add conn")
 }
 
 func (pool *WebsocketPool) Conns() []*websocket.Conn {
@@ -34,11 +41,24 @@ func (pool *WebsocketPool) Conns() []*websocket.Conn {
 
 // send msg to a specify user or multi users
 func (pool *WebsocketPool) SendDirectionalMsg(cm *ChannelMessage, userIDs ...string) error {
-	conns := make([]*websocket.Conn, len(userIDs))
+	var conns []*websocket.Conn
 
-	utils.ArrayMap(userIDs, func(item interface{}) interface{} {
-		return pool.conns[item.(string)]
-	}, &conns)
+	//utils.ArrayMap(userIDs, func(id interface{}) interface{} {
+	//	return pool.conns[id.(string)]
+	//}, &conns)
+
+	for _, userID := range userIDs {
+		fmt.Println(pool.conns, userID)
+		conn := pool.conns[userID]
+
+		if conn == nil {
+			continue
+		}
+
+		conns = append(conns, conn)
+	}
+
+	fmt.Println(conns)
 
 	return sendMsgMulti(conns, cm)
 }
@@ -55,13 +75,18 @@ func sendMsgMulti(conns []*websocket.Conn, cm *ChannelMessage) error {
 		return err
 	}
 
-	// marshal msg
-	msg, err := json.Marshal(*m)
-
-	if len(conns) == 1 {
-		sendMsg(conns[0], msg)
-		return nil
+	user := models.User{}
+	if err := user.Find("id", m.From); err != nil {
+		return err
 	}
+
+	pm := ParsedMessage{
+		Message: *m,
+		From:    user,
+	}
+
+	// marshal msg
+	msg, err := json.Marshal(pm)
 
 	if err != nil {
 		return err
@@ -97,8 +122,10 @@ func sendMsg(conn *websocket.Conn, msg []byte) {
 	if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 		log.Println("send message error", err)
 
-		if err := conn.Close(); err != nil {
-			log.Println("close websocket connection error", err)
+		if err == websocket.ErrCloseSent {
+			if err := conn.Close(); err != nil {
+				log.Println("close websocket connection error", err)
+			}
 		}
 	}
 }
