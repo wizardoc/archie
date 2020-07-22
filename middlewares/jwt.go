@@ -15,7 +15,7 @@ import (
 
 // JWT 验证中间件，用于校验 token，将 claims 转发到下一个中间件
 func ValidateToken(ctx *gin.Context) {
-	jwtString, ok := getJWTFromHeader(ctx.Request)
+	jwtString, ok := GetJWTFromHeader(ctx.Request)
 	res := helper.Res{}
 
 	/** JWT 不存在 */
@@ -31,6 +31,8 @@ func ValidateToken(ctx *gin.Context) {
 	// parse jwt fail
 	if err := ParseToken2Claims(jwtString, &claims); err != nil {
 		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_NOT_ALLOWED)
+		ctx.Abort()
+
 		return
 	}
 
@@ -40,7 +42,6 @@ func ValidateToken(ctx *gin.Context) {
 	//	unAuthErrRes.Send(ctx)
 	//	return
 	//}
-
 	ctx.Set("claims", claims)
 	ctx.Next()
 }
@@ -60,7 +61,7 @@ func ParseToken2Claims(token string, targetClaims interface{}) error {
 	return nil
 }
 
-func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
+func GetJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
 	headers := req.Header
 	auth := headers["Authentication"]
 

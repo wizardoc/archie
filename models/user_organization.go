@@ -4,7 +4,7 @@ import (
 	"archie/connection/postgres_conn"
 	"archie/utils"
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"strings"
 )
 
@@ -18,9 +18,9 @@ type UserOrganization struct {
 }
 
 type OrganizationOwnerInfo struct {
-	OwnerInfo User `json:"ownerInfo"`
 	Organization
-	Members     []User `json:"members"`
+	OwnerInfo   User   `json:"ownerInfo" gorm:"-"`
+	Members     []User `json:"members" gorm:"-"`
 	JoinTime    int64  `json:"joinTime"`
 	Permissions []int  `json:"permissions"`
 }
@@ -32,9 +32,7 @@ func (userOrganization *UserOrganization) TableName() string {
 func (userOrganization *UserOrganization) IsExist() (bool, error) {
 	userOrganizations := []UserOrganization{}
 
-	if err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Where("user_id = ? AND organization_id = ?", userOrganization.UserID, userOrganization.OrganizationID).Find(&userOrganizations).Error
-	}); err != nil {
+	if err := postgres_conn.DB.Instance().Where("user_id = ? AND organization_id = ?", userOrganization.UserID, userOrganization.OrganizationID).Find(&userOrganizations).Error; err != nil {
 		return false, err
 	}
 
@@ -45,9 +43,7 @@ func (userOrganization *UserOrganization) IsExist() (bool, error) {
 func (userOrganization *UserOrganization) FindMembers(organizationID string, members *[]User) error {
 	var userOrganizations []UserOrganization
 
-	err := postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Model(userOrganization).Preload("User").Where("organization_id = ?", organizationID).Find(&userOrganizations).Error
-	})
+	err := postgres_conn.DB.Instance().Model(userOrganization).Preload("User").Where("organization_id = ?", organizationID).Find(&userOrganizations).Error
 
 	utils.ArrayMap(userOrganizations, func(item interface{}) interface{} {
 		return *item.(UserOrganization).User
@@ -57,12 +53,10 @@ func (userOrganization *UserOrganization) FindMembers(organizationID string, mem
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		userOrganization.JoinTime = utils.Now()
-		userOrganization.IsOwner = isOwner
+	userOrganization.JoinTime = utils.Now()
+	userOrganization.IsOwner = isOwner
 
-		return db.Create(userOrganization).Error
-	})
+	return postgres_conn.DB.Instance().Create(userOrganization).Error
 }
 
 func findOwnerByID(id string, owners []User) (User, bool) {
@@ -78,12 +72,12 @@ func findOwnerByID(id string, owners []User) (User, bool) {
 func (userOrganization *UserOrganization) FindUserJoinOrganizations() ([]OrganizationOwnerInfo, error) {
 	var infos []OrganizationOwnerInfo
 
-	err := postgres_conn.Transaction(func(db *gorm.DB) error {
+	err := postgres_conn.DB.Transaction(func(db *gorm.DB) error {
 		var result *gorm.DB
 
 		result = db.
 			Raw(
-				"SELECT * FROM user_organizations INNER JOIN organizations ON organization_id=organizations.id WHERE user_id=?",
+				"SELECT * FROM user_organizations INNER JOIN organizations ON organization_id=organizations.id WHERE user_id = ?",
 				userOrganization.UserID,
 			).
 			Scan(&infos)

@@ -4,7 +4,6 @@ import (
 	"archie/connection/postgres_conn"
 	"archie/utils"
 	"fmt"
-	"github.com/jinzhu/gorm"
 	"reflect"
 	"strings"
 )
@@ -45,7 +44,5 @@ func BatchInsert(table string, heads []string, values interface{}) error {
 		strings.Join(strValues, ","),
 	)
 
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Exec(sql).Error
-	})
+	return postgres_conn.DB.Instance().Exec(sql).Error
 }

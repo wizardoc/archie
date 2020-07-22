@@ -6,7 +6,7 @@ import (
 	"archie/utils/db_utils"
 	"errors"
 	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 const (
@@ -24,69 +24,61 @@ func (op *OrganizationPermission) TableName() string {
 }
 
 func (op *OrganizationPermission) New(permission int) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		p := Permission{Value: permission}
-		findPermission := Permission{}
+	p := Permission{Value: permission}
+	findPermission := Permission{}
 
-		if err := p.Find(&findPermission); err != nil {
-			return err
-		}
+	if err := p.Find(&findPermission); err != nil {
+		return err
+	}
 
-		if findPermission.ID == "" {
-			return errors.New(CANNOT_FIND_PERMISSION_ERROR_MESSAGE)
-		}
+	if findPermission.ID == "" {
+		return errors.New(CANNOT_FIND_PERMISSION_ERROR_MESSAGE)
+	}
 
-		op.PermissionID = findPermission.ID
+	op.PermissionID = findPermission.ID
 
-		return db.Create(op).Error
-	})
+	return postgres_conn.DB.Instance().Create(op).Error
 }
 
 func (op *OrganizationPermission) NewMulti(permissions []int) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		var findPermissions []Permission
-		p := Permission{}
+	var findPermissions []Permission
+	p := Permission{}
 
-		if err := p.FindMulti(&findPermissions, permissions); err != nil {
-			return err
-		}
+	if err := p.FindMulti(&findPermissions, permissions); err != nil {
+		return err
+	}
 
-		if len(findPermissions) == 0 {
-			return errors.New(CANNOT_FIND_PERMISSION_ERROR_MESSAGE)
-		}
+	if len(findPermissions) == 0 {
+		return errors.New(CANNOT_FIND_PERMISSION_ERROR_MESSAGE)
+	}
 
-		var records []OrganizationPermission
+	var records []OrganizationPermission
 
-		for _, p := range findPermissions {
-			records = append(records, OrganizationPermission{PermissionID: p.ID, UserID: op.UserID, OrganizationID: op.OrganizationID})
-		}
+	for _, p := range findPermissions {
+		records = append(records, OrganizationPermission{PermissionID: p.ID, UserID: op.UserID, OrganizationID: op.OrganizationID})
+	}
 
-		return db_utils.BatchInsert(op.TableName(), []string{"permission_id", "user_id", "organization_id"}, records)
-	})
+	return db_utils.BatchInsert(op.TableName(), []string{"permission_id", "user_id", "organization_id"}, records)
 }
 
 // 覆盖之前的权限
 // 比较脏的做法，先全部删除，然后再批量写入
 func (op *OrganizationPermission) CoverPermission(permissions []int) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		if err := op.specifyPermission(db).Delete(OrganizationPermission{}).Error; err != nil {
-			return err
-		}
+	if err := op.specifyPermission(postgres_conn.DB.Instance()).Delete(OrganizationPermission{}).Error; err != nil {
+		return err
+	}
 
-		return op.NewMulti(permissions)
-	})
+	return op.NewMulti(permissions)
 }
 
 func (op *OrganizationPermission) All(results *[]Permission) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		p := Permission{}
+	p := Permission{}
 
-		return db.Table(p.TableName()).
-			Joins(fmt.Sprintf("INNER JOIN %s ON permissions.id = CAST(organization_permissions.permission_id AS UUID)", op.TableName())).
-			Where("organization_id = ? AND user_id = ?", op.OrganizationID, op.UserID).
-			Find(results).
-			Error
-	})
+	return postgres_conn.DB.Instance().Table(p.TableName()).
+		Joins(fmt.Sprintf("INNER JOIN %s ON permissions.id = CAST(organization_permissions.permission_id AS UUID)", op.TableName())).
+		Where("organization_id = ? AND user_id = ?", op.OrganizationID, op.UserID).
+		Find(results).
+		Error
 }
 
 func (op *OrganizationPermission) AllAsValue(results *[]int) error {

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"archie/connection/postgres_conn"
 	"archie/models"
+	"archie/models/focus_models"
 	"archie/routes"
 	"archie/services"
 	"archie/utils/db_utils/db_migrate_utils"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func initTable() {
@@ -24,11 +26,18 @@ func initTable() {
 			models.Document{},
 			models.DocumentPermission{},
 			models.OrganizationPermission{},
-		).Error
+			models.Comment{},
+			models.CommentStatus{},
+			focus_models.FocusOrganization{},
+			focus_models.FocusUser{},
+		)
 	})
 }
 
 func main() {
+	// init database
+	postgres_conn.DB.InitDB()
+
 	go services.Receiver.Run()
 
 	//t := time.NewTicker(time.Duration(time.Second * 1))

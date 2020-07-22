@@ -8,7 +8,6 @@ import (
 	"archie/utils/helper"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"log"
 	"net/http"
 )
@@ -46,7 +45,7 @@ func GetAllMessages(ctx *gin.Context) {
 	user := models.User{ID: claims.User.ID}
 
 	// cannot find all messages
-	if err := user.FindAllMessages(params.Page, params.PageSize); err != nil && !gorm.IsRecordNotFoundError(err) {
+	if err := user.FindAllMessages(params.Page, params.PageSize); err != nil {
 		res.Status(http.StatusNotFound).Error(ctx, err)
 		return
 	}

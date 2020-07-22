@@ -30,7 +30,7 @@ func Register(ctx *gin.Context) {
 
 	_, err := models.FindOneByUsername(info.Username)
 
-	if err == nil {
+	if err != nil {
 		res.Status(http.StatusUnauthorized).Error(ctx, err)
 
 		ctx.Abort()

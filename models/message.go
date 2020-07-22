@@ -2,8 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
-	"fmt"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Message struct {
@@ -21,7 +20,7 @@ type Message struct {
 }
 
 func (message *Message) Create(to []string) error {
-	return postgres_conn.Transaction(func(db *gorm.DB) error {
+	return postgres_conn.DB.Transaction(func(db *gorm.DB) error {
 		query := db.Model(User{})
 		var users []User
 
@@ -39,23 +38,17 @@ func (message *Message) Create(to []string) error {
 }
 
 func (message *Message) Update() error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Model(message).Update(*message).Error
-	})
+	return postgres_conn.DB.Instance().Model(message).Updates(*message).Error
 }
 
 func FindAllUsersByFrom(userMap map[string]User, froms []string) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		var users []User
+	var users []User
 
-		fmt.Println(froms)
+	err := postgres_conn.DB.Instance().Model(User{}).Find(&users, "id in (?)", froms).Error
 
-		err := db.Model(User{}).Find(&users, "id in (?)", froms).Error
+	for _, user := range users {
+		userMap[user.ID] = user
+	}
 
-		for _, user := range users {
-			userMap[user.ID] = user
-		}
-
-		return err
-	})
+	return err
 }

@@ -3,7 +3,7 @@ package models
 import (
 	"archie/connection/postgres_conn"
 	"archie/utils"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 type Category struct {
@@ -27,15 +27,13 @@ func (category *Category) New() error {
 	category.CreateTime = utils.Now()
 	category.LastModifyTime = utils.Now()
 
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Create(category).Error
-	})
+	return postgres_conn.DB.Instance().Create(category).Error
 }
 
 func (category *Category) All(resCategories *[]ResCategory) error {
 	var categories []Category
 
-	return postgres_conn.Transaction(func(db *gorm.DB) error {
+	return postgres_conn.DB.Transaction(func(db *gorm.DB) error {
 		if err := db.Where("organization_id = ?", category.OrganizationID).Find(&categories).Error; err != nil {
 			return err
 		}

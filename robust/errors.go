@@ -21,12 +21,15 @@ var EMAIL_DOSE_EXIST = ArchieError{1007, "The email does exist"}
 var REMOVE_PERMISSION = ArchieError{1008, "Remove permission error"}
 var REMOVE_ORG_FAILURE = ArchieError{1009, "Remove organization failure"}
 var CANNOT_FIND_USER = ArchieError{1010, "Cannot find this user"}
+var CONNOT_FOLLOW_YOURSELF = ArchieError{1011, "Cannot follow ur self"}
+var REPEAT_FOLLOW_USER = ArchieError{1012, "Repeat follow"}
+var CANNOT_UPDATE_USERINFO = ArchieError{1013, "Cannot update userInfo"}
 
 // Messages
-var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{1011, "The signal of message operator is not exist"}
-var MESSAGE_SEND_FAILURE = ArchieError{1012, "Send message failure"}
-var MESSAGE_CANNOT_FIND_TO = ArchieError{1013, "The user does not exist"}
-var MESSAGE_SEND_TO_YOURSELF = ArchieError{1014, "Cannot send message to yourself"}
+var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{6001, "The signal of message operator is not exist"}
+var MESSAGE_SEND_FAILURE = ArchieError{6002, "Send message failure"}
+var MESSAGE_CANNOT_FIND_TO = ArchieError{6003, "The user does not exist"}
+var MESSAGE_SEND_TO_YOURSELF = ArchieError{6004, "Cannot send message to yourself"}
 
 // Organization
 var ORGANIZATION_FIND_EMPTY = ArchieError{2008, "Cannot find organizations"}

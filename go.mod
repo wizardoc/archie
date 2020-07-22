@@ -8,9 +8,8 @@ require (
 	github.com/go-gomail/gomail v0.0.0-20160411212932-81ebce5c23df
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/gorilla/websocket v1.4.1
-	github.com/jinzhu/gorm v1.9.11
 	github.com/leodido/go-urn v1.2.0 // indirect
-	github.com/lib/pq v1.1.1
+	github.com/lib/pq v1.3.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/qiniu/api.v7 v7.2.5+incompatible
 	github.com/qiniu/x v7.0.8+incompatible // indirect
@@ -18,6 +17,8 @@ require (
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
+	gorm.io/driver/postgres v0.2.5
+	gorm.io/gorm v0.2.20
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
 

@@ -3,7 +3,6 @@ package models
 import (
 	"archie/connection/postgres_conn"
 	"archie/utils/db_utils"
-	"github.com/jinzhu/gorm"
 	"log"
 )
 
@@ -41,15 +40,11 @@ func (p *Permission) TableName() string {
 }
 
 func (p *Permission) Find(result *Permission) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Where(p).First(result).Error
-	})
+	return postgres_conn.DB.Instance().Where(p).First(result).Error
 }
 
 func (p *Permission) FindMulti(result *[]Permission, permissionVals []int) error {
-	return postgres_conn.WithPostgreConn(func(db *gorm.DB) error {
-		return db.Where("value IN (?)", permissionVals).Find(result).Error
-	})
+	return postgres_conn.DB.Instance().Where("value IN (?)", permissionVals).Find(result).Error
 }
 
 func AllPermissions() []int {

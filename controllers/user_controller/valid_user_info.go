@@ -8,8 +8,8 @@ import (
 )
 
 type BaseInfo struct {
-	Email    string `form:"email"`
-	Username string `form:"username"`
+	Email    string `form:"email" json:"email" validate:"required"`
+	Username string `form:"username" json:"username" validate:"required"`
 }
 
 // validate base info of user when register
@@ -23,13 +23,13 @@ func ValidBaseInfo(ctx *gin.Context) {
 	}
 
 	// user does exist
-	if _, err := models.FindOneByUsername(baseInfo.Username); err == nil {
+	if _, err := models.FindOneByUsername(baseInfo.Username); err != nil {
 		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
 
 	// the email of user does exist
-	if _, err := models.FindOneByEmail(baseInfo.Email); err == nil {
+	if _, err := models.FindOneByEmail(baseInfo.Email); err != nil {
 		res.Status(http.StatusBadRequest).Error(ctx, err)
 		return
 	}
