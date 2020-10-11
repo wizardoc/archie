@@ -1,13 +1,13 @@
-version: '3.1'
+version: "3.1"
 services:
   postgres:
-    image: 'postgres:latest'
-    labels: 
-      wizard: 'wizard'
+    image: "postgres:latest"
+    labels:
+      wizard: "wizard"
     restart: always
     environment:
       POSTGRES_USER: zzh
-      POSTGRES_PASSWORD: 123
+      POSTGRES_PASSWORD: "123"
     networks:
       - archie_net
     volumes:
@@ -16,7 +16,7 @@ services:
   redis:
     image: redis:latest
     labels:
-      wizard: 'wizard'
+      wizard: "wizard"
     restart: always
     volumes:
       - redis_data:/var/lib/redis/data
@@ -25,8 +25,8 @@ services:
 
   nginx:
     image: nginx:latest
-    labels: 
-      wizard: 'wizard'
+    labels:
+      wizard: "wizard"
     volumes:
       - ./docker/configs/nginx.conf:/etc/nginx/nginx.conf
     networks:
@@ -36,28 +36,28 @@ services:
 
   archie:
     build: .
-    image: 'archie'
+    image: "archie"
     restart: always
     labels:
-      wizard: 'wizard'
-    depends_on: 
+      wizard: "wizard"
+    depends_on:
       - nginx
       - postgres
       - redis
-      
+
     ports:
       - "3000:3000"
     networks:
       - archie_net
-    tty: true       
+    tty: true
 
 networks:
   archie_net:
     external:
-      name: archie_net   
+      name: archie_net
 
 volumes:
   postgres_data:
     external: true
   redis_data:
-    external: true  
+    external: true
