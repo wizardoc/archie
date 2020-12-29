@@ -9,12 +9,10 @@ import (
 )
 
 type RegisterInfo struct {
-	Username                string `json:"username" form:"username" validate:"gt=4,lt=20,required"`
-	Password                string `form:"password" validate:"required,gt=4,lt=20"`
-	DisplayName             string `json:"displayName" form:"displayName" validate:"required,gt=2,lt=10"`
-	Email                   string `json:"email" form:"email" validate:"email,required"`
-	OrganizationName        string `json:"organizationName" form:"organizationName" validate:"required"`
-	OrganizationDescription string `json:"organizationDescription" form:"organizationDescription" validate:"required"`
+	Username    string `json:"username" form:"username" validate:"gt=4,lt=20,required"`
+	Password    string `form:"password" validate:"required,gt=4,lt=20"`
+	DisplayName string `json:"displayName" form:"displayName" validate:"required,gt=2,lt=10"`
+	Email       string `json:"email" form:"email" validate:"email,required"`
 }
 
 /** 用户注册 */
@@ -42,16 +40,6 @@ func Register(ctx *gin.Context) {
 
 	if err := user.Register(); err != nil {
 		res.Status(http.StatusBadRequest).Error(ctx, err)
-		ctx.Abort()
-		return
-	}
-
-	organization := models.Organization{
-		OrganizeName: info.OrganizationName,
-		Description:  info.OrganizationDescription,
-	}
-	if err := organization.New(user.Username); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
 		ctx.Abort()
 		return
 	}

@@ -6,6 +6,7 @@ import (
 	"archie/utils"
 	"archie/utils/helper"
 	"archie/utils/jwt_utils"
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
@@ -65,6 +66,8 @@ func GetJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
 	headers := req.Header
 	auth := headers["Authentication"]
 
+	fmt.Println(headers["authentication"])
+
 	if len(auth) == 0 {
 		return "", false
 	}
@@ -83,19 +86,22 @@ func ParseToken(tokenStr string) jwt.Claims {
 }
 
 func AddInBlackSet(userId string) (err error) {
-	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) error {
 		_, err = conn.Do("SADD", "black_set", userId)
+
+		return err
 	})
 
 	return
 }
 
 func IsExistInBlackSet(userId string) (isExist bool) {
-	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) error {
 		var err error
 
 		isExist, err = redis.Bool(conn.Do("SISMEMBER", "black_set", userId))
-		utils.Check(err)
+
+		return err
 	})
 
 	return

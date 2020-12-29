@@ -17,7 +17,7 @@ type User struct {
 	Email              string              `gorm:"type:varchar(64)" json:"email"`
 	DisplayName        string              `gorm:"type:varchar(12)" json:"displayName"`
 	RegisterTime       int64               `gorm:"type:bigint"json:"registerTime"`
-	IsValidEmail       bool                `gorm:"type:boolean"json:"-"`
+	IsValidEmail       bool                `gorm:"type:boolean"json:"isValidEmail"`
 	Avatar             string              `gorm:"type:varchar(200)"json:"avatar"`
 	RealName           string              `gorm:"type:varchar(10)" json:"realName"`
 	Intro              string              `gorm:"type:varchar(50)" json:"intro"`        // 个人简介
@@ -69,7 +69,6 @@ func (user *User) UpdateLoginTime() error {
 
 func (user *User) GetUserInfoByID() error {
 	return postgres_conn.DB.Instance().Model(&User{}).Preload("FocusUsers").Preload("FocusOrganizations").Find(&user, "id = ?", user.ID).Error
-
 }
 
 // 更新 user model 里有值的字段
@@ -84,9 +83,7 @@ func (user *User) FindByUsername(username string) error {
 }
 
 func (user *User) UpdateUserInfo() error {
-	fmt.Printf("%+v", user)
-
-	return postgres_conn.DB.Instance().Model(user).Where("id = ?", user.ID).Updates(*user).Error
+	return postgres_conn.DB.Instance().Model(user).Where("id = ?", user.ID).Updates(*user).Find(user).Error
 }
 
 func findUser(queryKey string, queryBody string) (user User, err error) {

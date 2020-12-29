@@ -24,6 +24,15 @@ var CANNOT_FIND_USER = ArchieError{1010, "Cannot find this user"}
 var CONNOT_FOLLOW_YOURSELF = ArchieError{1011, "Cannot follow ur self"}
 var REPEAT_FOLLOW_USER = ArchieError{1012, "Repeat follow"}
 var CANNOT_UPDATE_USERINFO = ArchieError{1013, "Cannot update userInfo"}
+var INVALID_EMAIL_CODE = ArchieError{1014, "Email verify code is wrong"}
+var SEND_VERIFY_CODE_FAILURE = ArchieError{1015, "Send verify code failure"}
+var MISSING_PARAMS = ArchieError{1016, "Missing params"}
+var NO_VALID_EMAIL = ArchieError{1017, "The email has not been verify"}
+var REPEAT_EMAIL = ArchieError{1018, "Repeat email"}
+var USER_DOSE_NOT_EXIST = ArchieError{1019, "The user does not exist"}
+var ORIGIN_PASSWORD_FAILURE = ArchieError{1020, "The origin password is wrong"}
+var REPEAT_PASSWORD = ArchieError{1021, "The new password is equal to origin password"}
+var EMAIL_IS_REQUIRED = ArchieError{1022, "The email is required"}
 
 // Messages
 var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{6001, "The signal of message operator is not exist"}

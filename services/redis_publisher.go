@@ -4,7 +4,6 @@ import (
 	"archie/connection/redis_conn"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
-	"log"
 )
 
 type RedisPublisher struct {
@@ -26,15 +25,18 @@ func (publisher RedisPublisher) Publish() error {
 		return err
 	}
 
-	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) error {
 		if err := conn.Send("PUBLISH", NOTIFY_CHANNEL, data); err != nil {
-			log.Println(err)
 			conn.Close()
+
+			return err
 		}
 
 		if err := conn.Flush(); err != nil {
-			log.Println(err)
+			return err
 		}
+
+		return nil
 	})
 
 	return nil

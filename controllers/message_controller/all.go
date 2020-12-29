@@ -61,6 +61,15 @@ func GetAllMessages(ctx *gin.Context) {
 		return item.(models.Message).From
 	}, &fromIDs)
 
+	// no message
+	if len(froms) == 0 {
+		res.Send(ctx, gin.H{
+			"notifies": notifies,
+			"chats":    chats,
+		})
+		return
+	}
+
 	if err := models.FindAllUsersByFrom(froms, fromIDs); err != nil {
 		res.Status(http.StatusInternalServerError).Error(ctx, err)
 

@@ -9,6 +9,8 @@ import (
 	"archie/utils/db_utils/db_migrate_utils"
 	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"math/rand"
+	"time"
 )
 
 func initTable() {
@@ -35,6 +37,8 @@ func initTable() {
 }
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	// init database
 	postgres_conn.DB.InitDB()
 

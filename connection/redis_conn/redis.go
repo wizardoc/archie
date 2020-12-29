@@ -11,12 +11,14 @@ func GetRedis() (redis.Conn, error) {
 	return redis.Dial("tcp", getRedisURL())
 }
 
-func GetRedisConnMust(cb func(conn redis.Conn)) {
+func GetRedisConnMust(cb func(conn redis.Conn) error) {
 	conn, err := GetRedis()
 	utils.Check(err)
 
 	defer conn.Close()
-	cb(conn)
+	err = cb(conn)
+
+	utils.Check(err)
 }
 
 func getRedisURL() string {

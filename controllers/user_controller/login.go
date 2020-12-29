@@ -30,13 +30,11 @@ func Login(ctx *gin.Context) {
 
 	if err != nil {
 		res.Status(http.StatusNotFound).Error(ctx, err)
-
 		return
 	}
 
 	if helper.IsEmpty(user) || user.ID == "" {
 		res.Status(http.StatusNotFound).Error(ctx, err)
-
 		return
 	}
 

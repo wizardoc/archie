@@ -44,9 +44,10 @@ func NewRedisReceiver() RedisReceiver {
 // process msg, for example, broadcast to all user that cache in WebsocketPool
 // and send msg to a specify user or multi users
 func (receiver *RedisReceiver) Run() {
-	redis_conn.GetRedisConnMust(func(conn redis.Conn) {
+	redis_conn.GetRedisConnMust(func(conn redis.Conn) error {
 		psConn := redis.PubSubConn{Conn: conn}
-		if err := psConn.Subscribe(NOTIFY_CHANNEL); err != nil {
+		if err := psConn.
+			Subscribe(NOTIFY_CHANNEL); err != nil {
 			log.Fatal(err)
 		}
 
