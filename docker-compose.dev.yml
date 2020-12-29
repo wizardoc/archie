@@ -16,7 +16,7 @@ services:
   redis:
     image: redis:latest
     ports:
-      - "6379:6379"graogh
+      - "6379:6379"
     labels:
       wizard: 'wizard'
     restart: always
