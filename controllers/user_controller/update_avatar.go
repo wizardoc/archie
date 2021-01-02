@@ -19,7 +19,7 @@ func UpdateAvatar(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -27,7 +27,7 @@ func UpdateAvatar(ctx *gin.Context) {
 	err = helper.BindWithValid(ctx, &userAvatar)
 
 	if err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -37,9 +37,9 @@ func UpdateAvatar(ctx *gin.Context) {
 	}
 
 	if err := user.UpdateAvatar(); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, robust.DB_UPDATE_FAILURE)
+		res.Status(http.StatusInternalServerError).Error(robust.DB_UPDATE_FAILURE).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

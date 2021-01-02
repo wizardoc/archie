@@ -15,9 +15,9 @@ func WizardIntroduction(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.CANNOT_FIND_FILE)
+		res.Status(http.StatusBadRequest).Error(robust.CANNOT_FIND_FILE).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, data)
+	res.Success(data).Send(ctx)
 }

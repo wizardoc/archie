@@ -14,7 +14,7 @@ func GetAllTodo(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -24,9 +24,9 @@ func GetAllTodo(ctx *gin.Context) {
 	todos, err := todo.GetAllTodoItemsByID()
 
 	if err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
+		res.Status(http.StatusBadRequest).Error(robust.DB_READ_FAILURE).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, todos)
+	res.Success(todos).Send(ctx)
 }

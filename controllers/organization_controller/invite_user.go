@@ -21,31 +21,31 @@ func InviteUser(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &inviteUserParams); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	// 邀请自己
 	if claims.Username == inviteUserParams.Username {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.ORGANIZATION_INVITE_YOURSELF)
+		res.Status(http.StatusBadRequest).Error(robust.ORGANIZATION_INVITE_YOURSELF).Send(ctx)
 		return
 	}
 
 	targetOrg := models.Organization{OrganizeName: inviteUserParams.OrganizeName}
 	if err := targetOrg.FindOneByOrganizeName(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.ORGANIZATION_FIND_EMPTY)
+		res.Status(http.StatusBadRequest).Error(robust.ORGANIZATION_FIND_EMPTY).Send(ctx)
 		return
 	}
 
 	inviteUser := models.User{}
 	if err := inviteUser.FindByUsername(inviteUserParams.Username); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -57,12 +57,12 @@ func InviteUser(ctx *gin.Context) {
 	isExist, err := userOrganization.IsExist()
 
 	if err != nil {
-		res.Status(http.StatusInternalServerError).Send(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
 	if isExist {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.ORGANIZATION_INVITE_EXIST)
+		res.Status(http.StatusBadRequest).Error(robust.ORGANIZATION_INVITE_EXIST).Send(ctx)
 		return
 	}
 
@@ -77,9 +77,9 @@ func InviteUser(ctx *gin.Context) {
 		To:   inviteUser.ID,
 	}
 	if err := msg.SendInviteMessage(inviteToken, claims.Username, inviteUserParams.OrganizeName); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

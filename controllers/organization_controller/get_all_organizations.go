@@ -14,7 +14,7 @@ func GetAllJoinOrganization(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -23,9 +23,9 @@ func GetAllJoinOrganization(ctx *gin.Context) {
 	organizations, err := userOrganization.FindUserJoinOrganizations()
 
 	if err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, gin.H{"organizations": organizations})
+	res.Success(gin.H{"organizations": organizations}).Send(ctx)
 }

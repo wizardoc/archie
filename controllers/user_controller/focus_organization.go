@@ -17,14 +17,14 @@ func FocusOrganization(ctx *gin.Context) {
 	var params FocusOrganizationParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -33,9 +33,9 @@ func FocusOrganization(ctx *gin.Context) {
 		OrganizationID: params.OrganizationID,
 	}
 	if err := fo.New(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

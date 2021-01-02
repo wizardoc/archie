@@ -13,5 +13,5 @@ func GetQiNiuToken(ctx *gin.Context) {
 	qiniu.New()
 	token := qiniu.GenToken()
 
-	res.Send(ctx, token)
+	res.Success(token).Send(ctx)
 }

@@ -13,7 +13,7 @@ func EmailValid(ctx *gin.Context) {
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -22,9 +22,9 @@ func EmailValid(ctx *gin.Context) {
 		IsValidEmail: true,
 	}
 	if err := user.UpdateUserInfo(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, user)
+	res.Success(user).Send(ctx)
 }

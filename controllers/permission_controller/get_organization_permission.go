@@ -15,7 +15,7 @@ func GetOrganizationPermission(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -24,10 +24,10 @@ func GetOrganizationPermission(ctx *gin.Context) {
 	op := models.OrganizationPermission{UserID: claims.User.ID, OrganizationID: id}
 
 	if err := op.AllAsValue(&permissionValues); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
 	res.Data = permissionValues
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

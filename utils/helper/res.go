@@ -8,27 +8,24 @@ import (
 
 type Res struct {
 	Data       interface{}
-	Err        error
+	Err        []error
 	StatusCode int
 }
 
-func (res *Res) spurt(ctx *gin.Context) {
-	ctx.JSON(getStatus(res.StatusCode), gin.H{
-		"data": res.Data,
-		"err":  res.Err,
-	})
+func (res *Res) reset() {
+	res.Data = nil
+	res.Err = nil
+	res.StatusCode = 0
 }
 
-func (res *Res) Error(ctx *gin.Context, err error) *Res {
-	res.Err = err
-	res.spurt(ctx)
+func (res *Res) Error(err ...error) *Res {
+	res.Err = append(res.Err, err...)
 
 	return res
 }
 
-func (res *Res) Send(ctx *gin.Context, data interface{}) *Res {
+func (res *Res) Success(data interface{}) *Res {
 	res.Data = data
-	res.spurt(ctx)
 
 	return res
 }
@@ -37,6 +34,14 @@ func (res *Res) Status(code int) *Res {
 	res.StatusCode = code
 
 	return res
+}
+
+func (res *Res) Send(ctx *gin.Context) {
+	ctx.JSON(getStatus(res.StatusCode), gin.H{
+		"data": res.Data,
+		"err":  res.Err,
+	})
+	res.reset()
 }
 
 // parse status from arg

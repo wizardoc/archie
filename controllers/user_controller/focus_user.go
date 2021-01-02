@@ -18,18 +18,18 @@ func FocusUser(ctx *gin.Context) {
 	var params FocusUserParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	if claims.ID == params.UserID {
-		res.Status(http.StatusConflict).Error(ctx, robust.CONNOT_FOLLOW_YOURSELF)
+		res.Status(http.StatusConflict).Error(robust.CONNOT_FOLLOW_YOURSELF).Send(ctx)
 		return
 	}
 
@@ -39,9 +39,9 @@ func FocusUser(ctx *gin.Context) {
 	}
 
 	if err := fu.New(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, robust.REPEAT_FOLLOW_USER)
+		res.Status(http.StatusForbidden).Error(robust.REPEAT_FOLLOW_USER).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, err)
+	res.Success(err).Send(ctx)
 }

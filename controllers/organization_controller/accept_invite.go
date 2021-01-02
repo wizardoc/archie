@@ -20,31 +20,31 @@ func AcceptInvite(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	var inviteClaims jwt_utils.InviteClaims
 	if err := middlewares.ParseToken2Claims(inviteToken, &inviteClaims); err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	if inviteClaims.OrganizeName != params.OrganizeName {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.ORGANIZATION_INVITE_ERROR)
+		res.Status(http.StatusBadRequest).Error(robust.ORGANIZATION_INVITE_ERROR).Send(ctx)
 		return
 	}
 
 	targetOrg := models.Organization{OrganizeName: inviteClaims.OrganizeName}
 	if err := targetOrg.FindOneByOrganizeName(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	if err := InsertUserToOrganization(inviteClaims.OrganizeName, inviteClaims.InviteUser, false); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, targetOrg)
+	res.Success(targetOrg).Send(ctx)
 }

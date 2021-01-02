@@ -18,26 +18,26 @@ func ResetPassword(ctx *gin.Context) {
 	var res helper.Res
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	email, isExist := ctx.Get("email")
 	if !isExist {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.EMAIL_IS_REQUIRED)
+		res.Status(http.StatusBadRequest).Error(robust.EMAIL_IS_REQUIRED).Send(ctx)
 		return
 	}
 
 	// find the user by id
 	user := models.User{Email: email.(string)}
 	if err := user.Find("email", user.Email); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
 	// the user to search by email does not exist
 	if user.ID == "" {
-		res.Status(http.StatusNotFound).Error(ctx, robust.USER_DOSE_NOT_EXIST)
+		res.Status(http.StatusNotFound).Error(robust.USER_DOSE_NOT_EXIST).Send(ctx)
 		return
 	}
 
@@ -45,7 +45,7 @@ func ResetPassword(ctx *gin.Context) {
 
 	// new password can't equal to current password
 	if user.Password == hashNewPassword {
-		res.Status(http.StatusForbidden).Error(ctx, robust.REPEAT_PASSWORD)
+		res.Status(http.StatusForbidden).Error(robust.REPEAT_PASSWORD).Send(ctx)
 		return
 	}
 
@@ -54,9 +54,9 @@ func ResetPassword(ctx *gin.Context) {
 		Password: hashNewPassword,
 	}
 	if err := updatedUser.UpdateUserInfo(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

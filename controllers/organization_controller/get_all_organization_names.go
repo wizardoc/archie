@@ -13,11 +13,11 @@ func GetAllOrganizationNames(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, gin.H{
+	res.Success(gin.H{
 		"organizeNames": names,
-	})
+	}).Send(ctx)
 }

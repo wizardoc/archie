@@ -16,7 +16,7 @@ func GetAllDocuments(ctx *gin.Context) {
 
 	var params GetAllDocumentsParams
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Send(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -24,9 +24,9 @@ func GetAllDocuments(ctx *gin.Context) {
 
 	doc := models.Document{}
 	if err := doc.FindAll(&docs); err != nil {
-		res.Status(http.StatusForbidden).Send(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, docs)
+	res.Success(docs).Send(ctx)
 }

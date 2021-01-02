@@ -22,26 +22,26 @@ func SendMessage(ctx *gin.Context) {
 
 	var params SendMessageParams
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	// find user by username
 	user := models.User{}
 	if err := user.FindByUsername(params.To); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.MESSAGE_CANNOT_FIND_TO)
+		res.Status(http.StatusBadRequest).Error(robust.MESSAGE_CANNOT_FIND_TO).Send(ctx)
 		return
 	}
 
 	if user.ID == claims.User.ID {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.MESSAGE_SEND_TO_YOURSELF)
+		res.Status(http.StatusBadRequest).Error(robust.MESSAGE_SEND_TO_YOURSELF).Send(ctx)
 		return
 	}
 
@@ -53,9 +53,9 @@ func SendMessage(ctx *gin.Context) {
 	}
 
 	if err := msg.SendPersonalMessage(); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

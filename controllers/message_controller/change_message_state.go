@@ -22,7 +22,7 @@ func ChangeMessageState(ctx *gin.Context) {
 
 	signal, isExist := ctx.Get(SIGNAL)
 	if !isExist {
-		res.Status(http.StatusNotFound).Error(ctx, robust.MESSAGE_SIGNAL_NOT_EXIST)
+		res.Status(http.StatusNotFound).Error(robust.MESSAGE_SIGNAL_NOT_EXIST).Send(ctx)
 		return
 	}
 
@@ -39,5 +39,5 @@ func ChangeMessageState(ctx *gin.Context) {
 		log.Println("The signal is not exist")
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

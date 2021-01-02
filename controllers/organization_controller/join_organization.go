@@ -16,15 +16,15 @@ func JoinOrganization(ctx *gin.Context) {
 
 	var joinInfo OrganizationJoinInfo
 	if err := ctx.Bind(&joinInfo); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 
 		return
 	}
 
 	if err := InsertUserToOrganization(joinInfo.OrganizeName, joinInfo.Username, false); err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

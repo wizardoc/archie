@@ -21,21 +21,21 @@ func SearchName(ctx *gin.Context) {
 	var params SearchNameParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	if params.SearchName == "" {
-		res.Send(ctx, []models.User{})
+		res.Success([]models.User{}).Send(ctx)
 		return
 	}
 
 	params.ParsePageInfo()
 
 	if err := user.SearchName(params.SearchName, params.Page, params.PageSize, &results); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, results)
+	res.Success(results).Send(ctx)
 }

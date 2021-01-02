@@ -9,3 +9,6 @@ configs/**/*
 
 # build
 build/**/*
+
+# static files by bindata
+assets/**/*

@@ -22,12 +22,12 @@ func CreateCategory(ctx *gin.Context) {
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -40,10 +40,10 @@ func CreateCategory(ctx *gin.Context) {
 	}
 
 	if err := category.New(); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
 	res.Data = category
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

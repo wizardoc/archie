@@ -28,7 +28,7 @@ func GetAllMessages(ctx *gin.Context) {
 
 	var params GetAllMessageParams
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -38,7 +38,7 @@ func GetAllMessages(ctx *gin.Context) {
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -46,7 +46,7 @@ func GetAllMessages(ctx *gin.Context) {
 
 	// cannot find all messages
 	if err := user.FindAllMessages(params.Page, params.PageSize); err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
@@ -63,15 +63,15 @@ func GetAllMessages(ctx *gin.Context) {
 
 	// no message
 	if len(froms) == 0 {
-		res.Send(ctx, gin.H{
+		res.Success(gin.H{
 			"notifies": notifies,
 			"chats":    chats,
-		})
+		}).Send(ctx)
 		return
 	}
 
 	if err := models.FindAllUsersByFrom(froms, fromIDs); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 
 		return
 	}
@@ -98,8 +98,8 @@ func GetAllMessages(ctx *gin.Context) {
 		}
 	}
 
-	res.Send(ctx, gin.H{
+	res.Success(gin.H{
 		"notifies": notifies,
 		"chats":    chats,
-	})
+	}).Send(ctx)
 }

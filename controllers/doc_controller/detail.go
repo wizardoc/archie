@@ -15,9 +15,9 @@ func Detail(ctx *gin.Context) {
 	}
 
 	if err := doc.Detail(); err != nil {
-		res.Status(http.StatusBadRequest).Send(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, doc)
+	res.Success(doc).Send(ctx)
 }

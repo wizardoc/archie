@@ -19,7 +19,7 @@ func OrganizationDetail(ctx *gin.Context) {
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -31,24 +31,24 @@ func OrganizationDetail(ctx *gin.Context) {
 	// 成员不在依然可以查看组织详情
 	//isExist, err := userOrg.IsExist()
 	//if err != nil {
-	//	res.Status(http.StatusForbidden).Error(ctx, err)
+	//	res.Status(http.StatusForbidden).Error(err).Send(ctx)
 	//	return
 	//}
 	//
 	//if !isExist {
-	//	res.Status(http.StatusForbidden).Error(ctx, robust.INVALID_PERMISSION)
+	//	res.Status(http.StatusForbidden).Error(robust.INVALID_PERMISSION).Send(ctx)
 	//	return
 	//}
 
 	org := models.Organization{}
 	if err := org.FindOneByID(id); err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
 	var members []models.User
 	if err := userOrg.FindMembers(id, &members); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
@@ -57,5 +57,5 @@ func OrganizationDetail(ctx *gin.Context) {
 		Members:      members,
 	}
 
-	res.Send(ctx, resData)
+	res.Success(resData).Send(ctx)
 }

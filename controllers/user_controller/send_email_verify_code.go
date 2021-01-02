@@ -17,7 +17,7 @@ func SendEmailVerifyCode(ctx *gin.Context) {
 	var params SendEmailVerifyCodeParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -26,11 +26,11 @@ func SendEmailVerifyCode(ctx *gin.Context) {
 	}
 
 	if err := emailService.SendVerifyCode(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.SEND_VERIFY_CODE_FAILURE)
+		res.Status(http.StatusBadRequest).Error(robust.SEND_VERIFY_CODE_FAILURE).Send(ctx)
 		return
 	}
 
 	emailService.SaveCode()
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

@@ -21,7 +21,7 @@ func Register(ctx *gin.Context) {
 
 	var info = RegisterInfo{}
 	if err := helper.BindWithValid(ctx, &info); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		ctx.Abort()
 		return
 	}
@@ -29,7 +29,7 @@ func Register(ctx *gin.Context) {
 	_, err := models.FindOneByUsername(info.Username)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 
 		ctx.Abort()
 		return
@@ -39,7 +39,7 @@ func Register(ctx *gin.Context) {
 	utils.CpStruct(&info, &user)
 
 	if err := user.Register(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		ctx.Abort()
 		return
 	}

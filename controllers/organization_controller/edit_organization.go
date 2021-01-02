@@ -21,7 +21,7 @@ func EditOrganization(ctx *gin.Context) {
 	id := ctx.Params.ByName("id")
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -31,14 +31,14 @@ func EditOrganization(ctx *gin.Context) {
 	updates := make(map[string]interface{})
 
 	if err := mapstructure.Decode(organizationInfo, &updates); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
 	if err := organization.BatchUpdates(updates); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

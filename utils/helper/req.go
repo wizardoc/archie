@@ -17,3 +17,8 @@ func BindWithValid(ctx *gin.Context, target interface{}) error {
 
 	return nil
 }
+
+// Used to GraphQL
+func BindParameter(target interface{}) error {
+	return robust.Validation{Target: target}.Valid()
+}

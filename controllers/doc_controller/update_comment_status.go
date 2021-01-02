@@ -17,13 +17,13 @@ func UpdateCommentStatus(ctx *gin.Context) {
 	var res helper.Res
 	var params UpdateCommentStatusParams
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -35,20 +35,20 @@ func UpdateCommentStatus(ctx *gin.Context) {
 	// 无赞踩
 	if params.Operator == models.NONE {
 		if err := cs.Delete(); err != nil {
-			res.Status(http.StatusForbidden).Error(ctx, err)
+			res.Status(http.StatusForbidden).Error(err).Send(ctx)
 			return
 		}
 
-		res.Send(ctx, cs)
+		res.Success(cs).Send(ctx)
 		return
 	}
 
 	cs.IsUp = params.Operator == models.UP
 
 	if err := cs.New(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, cs)
+	res.Success(cs).Send(ctx)
 }

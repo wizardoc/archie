@@ -25,13 +25,13 @@ func NewDocument(ctx *gin.Context) {
 	claims, err := middlewares.GetClaims(ctx)
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Send(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	var params NewDocumentParams
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -41,9 +41,9 @@ func NewDocument(ctx *gin.Context) {
 	doc.UserID = claims.ID
 
 	if err := doc.New(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, doc)
+	res.Success(doc).Send(ctx)
 }

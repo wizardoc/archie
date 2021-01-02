@@ -20,7 +20,7 @@ func NewOrganization(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &organizationUser); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -28,9 +28,9 @@ func NewOrganization(ctx *gin.Context) {
 	utils.CpStruct(&organizationUser, &organization)
 
 	if err := organization.New(organizationUser.Username); err != nil {
-		res.Status(http.StatusConflict).Error(ctx, err)
+		res.Status(http.StatusConflict).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

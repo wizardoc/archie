@@ -14,7 +14,7 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -26,7 +26,7 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 	err = orgModel.FindOneByOrganizeName()
 
 	if err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 
 		return
 	}
@@ -35,7 +35,7 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 		res.Data = gin.H{
 			"organizeName": "",
 		}
-		res.Status(http.StatusUnauthorized).Error(ctx, robust.REMOVE_PERMISSION)
+		res.Status(http.StatusUnauthorized).Error(robust.REMOVE_PERMISSION).Send(ctx)
 
 		return
 	}
@@ -43,9 +43,9 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 	err = orgModel.RemoveOrganization()
 
 	if err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

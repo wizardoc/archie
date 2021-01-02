@@ -20,7 +20,7 @@ func OrganizationPermission(limitPermissionValues []int) gin.HandlerFunc {
 		res := helper.Res{}
 
 		if err := helper.BindWithValid(ctx, &payload); err != nil {
-			res.Status(http.StatusBadRequest).Error(ctx, err)
+			res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 			ctx.Abort()
 			return
 		}
@@ -28,7 +28,7 @@ func OrganizationPermission(limitPermissionValues []int) gin.HandlerFunc {
 		claims, err := middlewares.GetClaims(ctx)
 
 		if err != nil {
-			res.Status(http.StatusBadRequest).Error(ctx, err)
+			res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 			ctx.Abort()
 			return
 		}
@@ -41,13 +41,13 @@ func OrganizationPermission(limitPermissionValues []int) gin.HandlerFunc {
 		hasPermission, err := op.Has(limitPermissionValues)
 
 		if err != nil {
-			res.Status(http.StatusInternalServerError).Error(ctx, err)
+			res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 			ctx.Abort()
 			return
 		}
 
 		if !hasPermission {
-			res.Status(http.StatusForbidden).Error(ctx, robust.INVALID_PERMISSION)
+			res.Status(http.StatusForbidden).Error(robust.INVALID_PERMISSION).Send(ctx)
 			ctx.Abort()
 			return
 		}

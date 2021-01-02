@@ -19,13 +19,13 @@ func RemoveTodo(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, robust.DB_READ_FAILURE)
+		res.Status(http.StatusUnauthorized).Error(robust.DB_READ_FAILURE).Send(ctx)
 		return
 	}
 
 	var payload RemoveTodoPayload
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
+		res.Status(http.StatusBadRequest).Error(robust.DB_READ_FAILURE).Send(ctx)
 		return
 	}
 
@@ -35,9 +35,9 @@ func RemoveTodo(ctx *gin.Context) {
 	}
 
 	if err := todoItem.RemoveUserTodoItem(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.DB_READ_FAILURE)
+		res.Status(http.StatusBadRequest).Error(robust.DB_READ_FAILURE).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

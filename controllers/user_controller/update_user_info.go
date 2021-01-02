@@ -27,13 +27,13 @@ func UpdateUserInfo(ctx *gin.Context) {
 	var res helper.Res
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -43,9 +43,9 @@ func UpdateUserInfo(ctx *gin.Context) {
 	utils.CpStruct(&params, &user)
 
 	if err := user.UpdateUserInfo(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, robust.CANNOT_UPDATE_USERINFO)
+		res.Status(http.StatusForbidden).Error(robust.CANNOT_UPDATE_USERINFO).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

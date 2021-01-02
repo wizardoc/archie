@@ -20,13 +20,13 @@ func UpdatePassword(ctx *gin.Context) {
 	var params UpdatePasswordParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	claims, err := middlewares.GetClaims(ctx)
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Send(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -34,27 +34,27 @@ func UpdatePassword(ctx *gin.Context) {
 		ID: claims.ID,
 	}
 	if err := user.GetUserInfoByID(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, robust.USER_DOSE_NOT_EXIST)
+		res.Status(http.StatusForbidden).Error(robust.USER_DOSE_NOT_EXIST).Send(ctx)
 		return
 	}
 
 	// the new password is equal to origin password
 	if utils.Hash(params.NewPassword) == user.Password {
-		res.Status(http.StatusForbidden).Error(ctx, robust.REPEAT_PASSWORD)
+		res.Status(http.StatusForbidden).Error(robust.REPEAT_PASSWORD).Send(ctx)
 		return
 	}
 
 	// password is invalid
 	if utils.Hash(params.OriginPassword) != user.Password {
-		res.Status(http.StatusForbidden).Error(ctx, robust.ORIGIN_PASSWORD_FAILURE)
+		res.Status(http.StatusForbidden).Error(robust.ORIGIN_PASSWORD_FAILURE).Send(ctx)
 		return
 	}
 
 	user.Password = utils.Hash(params.NewPassword)
 	if err := user.UpdateUserInfo(); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, user)
+	res.Success(user).Send(ctx)
 }

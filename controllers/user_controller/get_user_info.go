@@ -16,7 +16,7 @@ func GetUserInfo(ctx *gin.Context) {
 
 	// claims 不存在
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -26,11 +26,11 @@ func GetUserInfo(ctx *gin.Context) {
 
 	// 找不到用户
 	if err := user.GetUserInfoByID(); err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, gin.H{
+	res.Success(gin.H{
 		"userInfo": user,
-	})
+	}).Send(ctx)
 }

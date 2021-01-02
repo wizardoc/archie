@@ -13,9 +13,9 @@ func UserDetail(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err := user.Find("id", id); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, user)
+	res.Success(user).Send(ctx)
 }

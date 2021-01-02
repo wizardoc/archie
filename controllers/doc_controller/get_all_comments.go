@@ -24,7 +24,7 @@ func GetAllComments(ctx *gin.Context) {
 	var params GetAllCommentsParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -35,7 +35,7 @@ func GetAllComments(ctx *gin.Context) {
 	if hasToken {
 		// invalidate token
 		if err := middlewares.ParseToken2Claims(token, &claims); err != nil {
-			res.Status(http.StatusUnauthorized).Error(ctx, err)
+			res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 			return
 		}
 	}
@@ -49,7 +49,7 @@ func GetAllComments(ctx *gin.Context) {
 
 	var comments []models.Comment
 	if err := comment.FindAll(params.Page, params.PageSize, &comments); err != nil {
-		res.Status(http.StatusForbidden).Error(ctx, err)
+		res.Status(http.StatusForbidden).Error(err).Send(ctx)
 		return
 	}
 
@@ -85,5 +85,5 @@ func GetAllComments(ctx *gin.Context) {
 		comments[i] = comment
 	}
 
-	res.Send(ctx, comments)
+	res.Success(comment).Send(ctx)
 }

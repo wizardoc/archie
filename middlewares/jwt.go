@@ -21,7 +21,7 @@ func ValidateToken(ctx *gin.Context) {
 
 	/** JWT 不存在 */
 	if !ok {
-		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_DOES_NOT_EXIST)
+		res.Status(http.StatusUnauthorized).Error(robust.JWT_DOES_NOT_EXIST).Send(ctx)
 		ctx.Abort()
 
 		return
@@ -31,7 +31,7 @@ func ValidateToken(ctx *gin.Context) {
 
 	// parse jwt fail
 	if err := ParseToken2Claims(jwtString, &claims); err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, robust.JWT_NOT_ALLOWED)
+		res.Status(http.StatusUnauthorized).Error(robust.JWT_NOT_ALLOWED).Send(ctx)
 		ctx.Abort()
 
 		return

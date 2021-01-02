@@ -20,13 +20,13 @@ func AddTodo(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err != nil {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
 	var payload AddTodoPayload
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 
 		return
 	}
@@ -39,9 +39,9 @@ func AddTodo(ctx *gin.Context) {
 	}
 
 	if err := todoItem.AddUserTodoItem(); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, nil)
+	res.Send(ctx)
 }

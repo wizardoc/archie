@@ -18,23 +18,23 @@ func ValidBaseInfo(ctx *gin.Context) {
 
 	var baseInfo BaseInfo
 	if err := ctx.Bind(&baseInfo); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	// user does exist
 	if _, err := models.FindOneByUsername(baseInfo.Username); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
 	// the email of user does exist
 	if _, err := models.FindOneByEmail(baseInfo.Email); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, gin.H{
+	res.Success(gin.H{
 		"isValid": true,
-	})
+	}).Send(ctx)
 }

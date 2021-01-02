@@ -21,7 +21,7 @@ func Login(ctx *gin.Context) {
 
 	var loginInfo LoginInfo
 	if err := helper.BindWithValid(ctx, &loginInfo); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -29,18 +29,18 @@ func Login(ctx *gin.Context) {
 	user, err := models.FindOneByUsername(loginInfo.Username)
 
 	if err != nil {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
 	if helper.IsEmpty(user) || user.ID == "" {
-		res.Status(http.StatusNotFound).Error(ctx, err)
+		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}
 
 	// 密码错误
 	if utils.Hash(loginInfo.Password) != user.Password {
-		res.Status(http.StatusUnauthorized).Error(ctx, err)
+		res.Status(http.StatusUnauthorized).Error(err).Send(ctx)
 		return
 	}
 
@@ -57,8 +57,8 @@ func Login(ctx *gin.Context) {
 		User: user,
 	}
 
-	res.Send(ctx, gin.H{
+	res.Success(gin.H{
 		"jwt":      claims.SignJWT(24),
 		"userInfo": user,
-	})
+	}).Send(ctx)
 }

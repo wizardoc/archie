@@ -16,7 +16,7 @@ func GetAllCategories(ctx *gin.Context) {
 	res := helper.Res{}
 
 	if err := helper.BindWithValid(ctx, &payload); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
 	}
 
@@ -26,9 +26,9 @@ func GetAllCategories(ctx *gin.Context) {
 	var results []models.ResCategory
 
 	if err := category.All(&results); err != nil {
-		res.Status(http.StatusInternalServerError).Error(ctx, err)
+		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}
 
-	res.Send(ctx, results)
+	res.Success(results).Send(ctx)
 }

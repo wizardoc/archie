@@ -19,7 +19,7 @@ func EmailValidator(ctx *gin.Context) {
 	var params EmailValidParams
 
 	if err := helper.BindWithValid(ctx, &params); err != nil {
-		res.Status(http.StatusBadRequest).Error(ctx, err)
+		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		ctx.Abort()
 		return
 	}
@@ -35,7 +35,7 @@ func EmailValidator(ctx *gin.Context) {
 	fmt.Println(emailService.Code)
 
 	if emailService.Code == "" || params.Code != emailService.Code {
-		res.Status(http.StatusBadRequest).Error(ctx, robust.INVALID_EMAIL_CODE)
+		res.Status(http.StatusBadRequest).Error(robust.INVALID_EMAIL_CODE).Send(ctx)
 		ctx.Abort()
 		return
 	}
