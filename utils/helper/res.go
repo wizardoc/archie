@@ -8,7 +8,7 @@ import (
 
 type Res struct {
 	Data       interface{}
-	Err        []error
+	Err        interface{}
 	StatusCode int
 }
 
@@ -18,8 +18,8 @@ func (res *Res) reset() {
 	res.StatusCode = 0
 }
 
-func (res *Res) Error(err ...error) *Res {
-	res.Err = append(res.Err, err...)
+func (res *Res) Error(err interface{}) *Res {
+	res.Err = err
 
 	return res
 }

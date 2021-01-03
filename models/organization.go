@@ -2,8 +2,8 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
-	"archie/utils"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Organization struct {
@@ -12,7 +12,7 @@ type Organization struct {
 	Description  string `gorm:"type:varchar(50)"json:"description"`
 	HasValid     bool   `gorm:"type:bool;default:TRUE"json:"hasValid"`
 	Owner        string `gorm:"type:uuid;default:uuid_generate_v4()"json:"-"` // related userID
-	CreateTime   int32  `gorm:"type:bigint"json:"createTime"`
+	CreateTime   string `gorm:"type:varchar(200)"json:"createTime"`
 	IsPublic     bool   `gorm:"type:bool;default:TRUE"json:"isPublic"`
 	FocusUsers   []User `gorm:"many2many:focus_organizations" json:"followUsers"`
 }
@@ -42,7 +42,7 @@ func (organization *Organization) BatchUpdates(source map[string]interface{}) er
 func (organization *Organization) New(username string) error {
 	return postgres_conn.DB.Transaction(func(db *gorm.DB) error {
 		organization.HasValid = true
-		organization.CreateTime = utils.Now()
+		organization.CreateTime = time.Now().String()
 		user, err := FindOneByUsername(username)
 
 		if err != nil {

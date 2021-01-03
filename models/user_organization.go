@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 )
 
 type UserOrganization struct {
@@ -13,8 +14,8 @@ type UserOrganization struct {
 	OrganizationID string `gorm:"type:uuid;primary_key;"`
 	User           *User
 	Organization   *Organization
-	IsOwner        bool  `gorm:"type:bool"`
-	JoinTime       int32 `gorm:"type:bigint"`
+	IsOwner        bool   `gorm:"type:bool"`
+	JoinTime       string `gorm:"type:varchar(200)"`
 }
 
 type OrganizationOwnerInfo struct {
@@ -53,7 +54,7 @@ func (userOrganization *UserOrganization) FindMembers(organizationID string, mem
 }
 
 func (userOrganization *UserOrganization) New(isOwner bool) error {
-	userOrganization.JoinTime = utils.Now()
+	userOrganization.JoinTime = time.Now().String()
 	userOrganization.IsOwner = isOwner
 
 	return postgres_conn.DB.Instance().Create(userOrganization).Error

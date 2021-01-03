@@ -48,12 +48,14 @@ func Serve() {
 
 		newCtx := context.WithValue(ctx.Request.Context(), "gin", ctx)
 
-		data := parsedSchema.Exec(newCtx, params.Query, params.OperationName, params.Variables)
+		response := parsedSchema.Exec(newCtx, params.Query, params.OperationName, params.Variables)
 
-		ctx.JSON(http.StatusOK, gin.H{
-			"data": data.Data,
-			"err":  data.Errors,
-		})
+		if len(response.Errors) != 0 {
+			res.Error(response.Errors).Send(ctx)
+			return
+		}
+
+		res.Success(response.Data).Send(ctx)
 	})
 
 	//messageRoutes(router)

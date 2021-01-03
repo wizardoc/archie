@@ -18,10 +18,10 @@ type User {
     username: String!
     email: String!
     displayName: String!
-    registerTime: Int!
+    registerTime: String!
     isValidEmail: Boolean!
     avatar:String!
-    loginTime: Int!
+    loginTime: String!
     realName: String!
     intro: String!
 #    city: String!
@@ -30,6 +30,16 @@ type User {
 #    github: String!
 #    blog: String!
 #    payQRCode: String!
+}
+
+type RegisterUser {
+    id: String!
+    username: String!
+    email: String!
+    displayName: String!
+    registerTime: String!
+    isValidEmail: Boolean!
+    avatar:String!
 }
 
 type LoginRes {

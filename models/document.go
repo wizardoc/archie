@@ -2,7 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
-	"archie/utils"
+	"time"
 )
 
 type Document struct {
@@ -11,15 +11,15 @@ type Document struct {
 	Title          string                `gorm:"type:varchar(50);" json:"title"`
 	Headings       string                `gorm:"type:varchar(500)" json:"headings"`
 	Excerpt        string                `gorm:"type:varchar(120);" json:"excerpt"`
-	Cover          string                `gorm:"type:varchar(200)"json:"cover"`       // 文档阅读时顶部图，在外部作为文档卡片的封面，在这里为封面图片的地址
-	Up             int                   `gorm:"type:int"json:"up"`                   // 👍
-	Down           int                   `gorm:"type:int"json:"down"`                 // 👎
-	ReadCount      int                   `gorm:"type:int" json:"readCount"`           // 阅读数量
-	WordsCount     int                   `gorm:"type:int" json:"words_count"`         // 文章字数
-	CreateTime     int32                 `gorm:"type:bigint"json:"createTime"`        // 创建时间
-	LastModifyTime int32                 `gorm:"type:bigint"json:"lastModifyTime"`    // 最后修改时间
-	CategoryID     string                `gorm:"type:varchar(36);" json:"categoryID"` // 隶属的分类
-	UserID         string                `gorm:"type:uuid;" json:"userID"`            // 文档创建者
+	Cover          string                `gorm:"type:varchar(200)"json:"cover"`          // 文档阅读时顶部图，在外部作为文档卡片的封面，在这里为封面图片的地址
+	Up             int                   `gorm:"type:int"json:"up"`                      // 👍
+	Down           int                   `gorm:"type:int"json:"down"`                    // 👎
+	ReadCount      int                   `gorm:"type:int" json:"readCount"`              // 阅读数量
+	WordsCount     int                   `gorm:"type:int" json:"words_count"`            // 文章字数
+	CreateTime     string                `gorm:"type:varchar(200)"json:"createTime"`     // 创建时间
+	LastModifyTime string                `gorm:"type:varchar(200)"json:"lastModifyTime"` // 最后修改时间
+	CategoryID     string                `gorm:"type:varchar(36);" json:"categoryID"`    // 隶属的分类
+	UserID         string                `gorm:"type:uuid;" json:"userID"`               // 文档创建者
 	OrganizationID string                `gorm:"type:uuid" json:"organizationID"`
 	IsPublic       bool                  `gorm:"type:bool" json:"isPublic"` // 是否公开
 	Contributors   []DocumentContributor `json:"contributors"`
@@ -36,7 +36,7 @@ type ParsedDocument struct {
 }
 
 func (doc *Document) New() error {
-	now := utils.Now()
+	now := time.Now().String()
 	doc.CreateTime = now
 	doc.LastModifyTime = now
 

@@ -4,6 +4,7 @@ import (
 	"archie/utils"
 	"errors"
 	uuid "github.com/satori/go.uuid"
+	"time"
 )
 
 const (
@@ -37,7 +38,7 @@ type ChannelMessage struct {
 	Tag           int                 `json:"tag"`
 	From          string              `json:"from"`
 	To            []string            `json:"users"`
-	SendTime      int32               `json:"sendTime"`
+	SendTime      string              `json:"sendTime"`
 	IsRead        bool                `json:"isRead"`
 	IsDelete      bool                `json:"isDelete"`
 	MessageType   int                 `json:"messageType"`
@@ -64,7 +65,7 @@ func NewChannelMessage(owner string, from string, to []string, sendType int, mes
 		Tag:         tag,
 		Type:        sendType,
 		MessageType: messageType,
-		SendTime:    utils.Now(),
+		SendTime:    time.Now().String(),
 		IsRead:      false,
 		Main: &ChannelMessageMain{
 			Title:   title,

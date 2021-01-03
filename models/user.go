@@ -6,6 +6,7 @@ import (
 	"archie/utils"
 	"fmt"
 	"gorm.io/gorm"
+	"time"
 )
 
 type RegisterInfo struct {
@@ -17,7 +18,7 @@ type User struct {
 	Password           string              `gorm:"type:char(62)" json:"-"`
 	Email              string              `gorm:"type:varchar(64)" json:"email"`
 	DisplayName        string              `gorm:"type:varchar(12)" json:"displayName"`
-	RegisterTime       int32               `gorm:"type:bigint"json:"registerTime"`
+	RegisterTime       string              `gorm:"type:varchar(200)"json:"registerTime"`
 	IsValidEmail       bool                `gorm:"type:boolean"json:"isValidEmail"`
 	Avatar             string              `gorm:"type:varchar(200)"json:"avatar"`
 	RealName           string              `gorm:"type:varchar(10)" json:"realName"`
@@ -29,7 +30,7 @@ type User struct {
 	Blog               string              `gorm:"varchar(100)" json:"blog"`             // 博客地址
 	PayQRCode          string              `gorm:"varchar(200)" json:"payQRCode"`        // 打赏支付二维码
 	Organizations      *[]Organization     `gorm:"many2many:user_organizations"json:"-"`
-	LoginTime          int32               `gorm:"type:bigint"json:"loginTime"`
+	LoginTime          string              `gorm:"type:varchar(200)"json:"loginTime"`
 	Messages           []Message           `gorm:"many2many:user_messages"json:"-"`
 	UserOrganizations  []*UserOrganization `json:"-"`
 	FocusOrganizations []Organization      `gorm:"many2many:focus_organizations" json:"followOrganizations"`
@@ -52,7 +53,7 @@ func (user *User) Follow() error {
 }
 
 func (user *User) Register() error {
-	user.RegisterTime = utils.Now()
+	user.RegisterTime = time.Now().String()
 	// make password more security
 	user.Password = utils.Hash(user.Password)
 	user.IsValidEmail = false
@@ -65,7 +66,7 @@ func (user *User) Find(queryKey string, queryBody string) error {
 }
 
 func (user *User) UpdateLoginTime() error {
-	return postgres_conn.DB.Instance().Model(user).Where("id = ?", user.ID).Update("login_time", utils.Now()).Error
+	return postgres_conn.DB.Instance().Model(user).Where("id = ?", user.ID).Update("login_time", time.Now().String()).Error
 }
 
 func (user *User) GetUserInfoByID() error {

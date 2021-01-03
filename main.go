@@ -38,12 +38,11 @@ func initTable() {
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	//
 	//// init database
 	postgres_conn.DB.InitDB()
-	//
 	go services.Receiver.Run()
-	//
+
 	initTable()
+
 	routes.Serve()
 }

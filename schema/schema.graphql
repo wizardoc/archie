@@ -8,6 +8,6 @@ type Query {
 }
 
 type Mutation {
-    createUser(userInfo: CreateUserInfo!): User
+    createUser(userInfo: CreateUserInfo!): RegisterUser
     login(username: String!, password: String!): LoginRes
 }

@@ -2,8 +2,8 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
-	"archie/utils"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Category struct {
@@ -12,8 +12,8 @@ type Category struct {
 	Description    string     `gorm:"type:varchar(200)" json:"description"`
 	Cover          string     `gorm:"type:varchar(200)"json:"cover"`
 	UserID         string     `gorm:"type:uuid;" json:"userID"` // 分类创建者
-	CreateTime     int32      `gorm:"type:bigint"json:"createTime"`
-	LastModifyTime int32      `gorm:"type:bigint"json:"lastModifyTime"`
+	CreateTime     string     `gorm:"type:varchar(200)"json:"createTime"`
+	LastModifyTime string     `gorm:"type:varchar(200)"json:"lastModifyTime"`
 	OrganizationID string     `gorm:"type:uuid;json" json:"organizationID"` // 隶属的组织
 	Documents      []Document `gorm:"foreign_key:CategoryId" json:"-"`
 }
@@ -24,8 +24,8 @@ type ResCategory struct {
 }
 
 func (category *Category) New() error {
-	category.CreateTime = utils.Now()
-	category.LastModifyTime = utils.Now()
+	category.CreateTime = time.Now().String()
+	category.LastModifyTime = time.Now().String()
 
 	return postgres_conn.DB.Instance().Create(category).Error
 }

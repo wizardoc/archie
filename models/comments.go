@@ -2,8 +2,8 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
-	"archie/utils"
 	"gorm.io/gorm"
+	"time"
 )
 
 const (
@@ -18,7 +18,7 @@ type Comment struct {
 	UserID        string          `json:"-" gorm:"type:uuid"`
 	Content       string          `json:"content" gorm:"type:varchar(1000)"`
 	Reply         string          `json:"reply" gorm:"type:char(36)"` // 被回复的用户 ID
-	CreateTime    int32           `json:"createTime" gorm:"type:bigint"`
+	CreateTime    string          `json:"createTime" gorm:"type:varchar(200)"`
 	User          User            `json:"user"`
 	CommentStatus []CommentStatus `json:"-"`
 	Up            int             `json:"up" gorm:"-"`
@@ -27,7 +27,7 @@ type Comment struct {
 }
 
 func (comment *Comment) New() error {
-	comment.CreateTime = utils.Now()
+	comment.CreateTime = time.Now().String()
 	comment.Status = NONE
 
 	return postgres_conn.DB.Instance().Create(comment).Preload("User").Find(comment).Error
