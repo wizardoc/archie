@@ -18,7 +18,7 @@ type Comment struct {
 	UserID        string          `json:"-" gorm:"type:uuid"`
 	Content       string          `json:"content" gorm:"type:varchar(1000)"`
 	Reply         string          `json:"reply" gorm:"type:char(36)"` // 被回复的用户 ID
-	CreateTime    int64           `json:"createTime" gorm:"type:bigint"`
+	CreateTime    int32           `json:"createTime" gorm:"type:bigint"`
 	User          User            `json:"user"`
 	CommentStatus []CommentStatus `json:"-"`
 	Up            int             `json:"up" gorm:"-"`

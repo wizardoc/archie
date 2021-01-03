@@ -33,6 +33,8 @@ var USER_DOSE_NOT_EXIST = ArchieError{1019, "The user does not exist"}
 var ORIGIN_PASSWORD_FAILURE = ArchieError{1020, "The origin password is wrong"}
 var REPEAT_PASSWORD = ArchieError{1021, "The new password is equal to origin password"}
 var EMAIL_IS_REQUIRED = ArchieError{1022, "The email is required"}
+var UPDATE_LOGIN_TIME_ERROR = ArchieError{1023, "Cannot update the time of login"}
+var USER_ALREADY_EXIST = ArchieError{1024, "The user does already exist"}
 
 // Messages
 var MESSAGE_SIGNAL_NOT_EXIST = ArchieError{6001, "The signal of message operator is not exist"}

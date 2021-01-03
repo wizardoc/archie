@@ -37,7 +37,7 @@ type ChannelMessage struct {
 	Tag           int                 `json:"tag"`
 	From          string              `json:"from"`
 	To            []string            `json:"users"`
-	SendTime      int64               `json:"sendTime"`
+	SendTime      int32               `json:"sendTime"`
 	IsRead        bool                `json:"isRead"`
 	IsDelete      bool                `json:"isDelete"`
 	MessageType   int                 `json:"messageType"`

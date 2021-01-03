@@ -1,6 +1,8 @@
 package resolver
 
-import "context"
+import (
+	"context"
+)
 
 func (r *Resolver) Hello(ctx context.Context) string {
 	return "hello"

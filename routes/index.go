@@ -6,6 +6,7 @@ import (
 	"archie/utils"
 	"archie/utils/configer"
 	"archie/utils/helper"
+	"context"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -34,7 +35,7 @@ func Serve() {
 		MaxAge:           86400,
 	}))
 
-	parsedSchema := gql.MustParseSchema(schema.GetRootSchema(), &resolver.Resolver{})
+	parsedSchema := gql.MustParseSchema(schema.GetRootSchema(), &resolver.Resolver{}, gql.UseFieldResolvers())
 
 	router.Any("graphql", func(ctx *gin.Context) {
 		res := helper.Res{}
@@ -45,9 +46,9 @@ func Serve() {
 			return
 		}
 
-		data := parsedSchema.Exec(ctx.Request.Context(), params.Query, params.OperationName, params.Variables)
+		newCtx := context.WithValue(ctx.Request.Context(), "gin", ctx)
 
-		fmt.Println(params)
+		data := parsedSchema.Exec(newCtx, params.Query, params.OperationName, params.Variables)
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"data": data.Data,

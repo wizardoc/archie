@@ -12,8 +12,8 @@ type Category struct {
 	Description    string     `gorm:"type:varchar(200)" json:"description"`
 	Cover          string     `gorm:"type:varchar(200)"json:"cover"`
 	UserID         string     `gorm:"type:uuid;" json:"userID"` // 分类创建者
-	CreateTime     int64      `gorm:"type:bigint"json:"createTime"`
-	LastModifyTime int64      `gorm:"type:bigint"json:"lastModifyTime"`
+	CreateTime     int32      `gorm:"type:bigint"json:"createTime"`
+	LastModifyTime int32      `gorm:"type:bigint"json:"lastModifyTime"`
 	OrganizationID string     `gorm:"type:uuid;json" json:"organizationID"` // 隶属的组织
 	Documents      []Document `gorm:"foreign_key:CategoryId" json:"-"`
 }

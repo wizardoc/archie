@@ -5,9 +5,9 @@ schema {
 
 type Query {
     hello: String!
-    login(username: String!, password: String!): User
 }
 
 type Mutation {
-
+    createUser(userInfo: CreateUserInfo!): User
+    login(username: String!, password: String!): LoginRes
 }

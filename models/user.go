@@ -2,6 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
+	"archie/robust"
 	"archie/utils"
 	"fmt"
 	"gorm.io/gorm"
@@ -16,7 +17,7 @@ type User struct {
 	Password           string              `gorm:"type:char(62)" json:"-"`
 	Email              string              `gorm:"type:varchar(64)" json:"email"`
 	DisplayName        string              `gorm:"type:varchar(12)" json:"displayName"`
-	RegisterTime       int64               `gorm:"type:bigint"json:"registerTime"`
+	RegisterTime       int32               `gorm:"type:bigint"json:"registerTime"`
 	IsValidEmail       bool                `gorm:"type:boolean"json:"isValidEmail"`
 	Avatar             string              `gorm:"type:varchar(200)"json:"avatar"`
 	RealName           string              `gorm:"type:varchar(10)" json:"realName"`
@@ -28,7 +29,7 @@ type User struct {
 	Blog               string              `gorm:"varchar(100)" json:"blog"`             // 博客地址
 	PayQRCode          string              `gorm:"varchar(200)" json:"payQRCode"`        // 打赏支付二维码
 	Organizations      *[]Organization     `gorm:"many2many:user_organizations"json:"-"`
-	LoginTime          int64               `gorm:"type:bigint"json:"loginTime"`
+	LoginTime          int32               `gorm:"type:bigint"json:"loginTime"`
 	Messages           []Message           `gorm:"many2many:user_messages"json:"-"`
 	UserOrganizations  []*UserOrganization `json:"-"`
 	FocusOrganizations []Organization      `gorm:"many2many:focus_organizations" json:"followOrganizations"`
@@ -52,11 +53,11 @@ func (user *User) Follow() error {
 
 func (user *User) Register() error {
 	user.RegisterTime = utils.Now()
-	// make more security password
+	// make password more security
 	user.Password = utils.Hash(user.Password)
 	user.IsValidEmail = false
 
-	return postgres_conn.DB.Instance().Create(user).Error
+	return postgres_conn.DB.Instance().Create(user).Find(user).Error
 }
 
 func (user *User) Find(queryKey string, queryBody string) error {
@@ -89,6 +90,10 @@ func (user *User) UpdateUserInfo() error {
 func findUser(queryKey string, queryBody string) (user User, err error) {
 	user = User{}
 	err = postgres_conn.DB.Instance().Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody).Error
+
+	if user.ID == "" {
+		err = robust.USER_DOSE_NOT_EXIST
+	}
 
 	return
 }

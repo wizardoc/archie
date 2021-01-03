@@ -21,8 +21,8 @@ type IClaims interface {
 type Claims struct {
 	ISS string // Issue
 	JTI string // JWT ID
-	IAT int64  // issued at
-	EXP int64  // expiration
+	IAT int32  // issued at
+	EXP int32  // expiration
 }
 
 func (claims Claims) SignJWT(duration int, c IClaims) string {

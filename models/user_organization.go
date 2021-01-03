@@ -14,14 +14,14 @@ type UserOrganization struct {
 	User           *User
 	Organization   *Organization
 	IsOwner        bool  `gorm:"type:bool"`
-	JoinTime       int64 `gorm:"type:bigint"`
+	JoinTime       int32 `gorm:"type:bigint"`
 }
 
 type OrganizationOwnerInfo struct {
 	Organization
 	OwnerInfo   User   `json:"ownerInfo" gorm:"-"`
 	Members     []User `json:"members" gorm:"-"`
-	JoinTime    int64  `json:"joinTime"`
+	JoinTime    int32  `json:"joinTime"`
 	Permissions []int  `json:"permissions"`
 }
 

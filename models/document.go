@@ -16,8 +16,8 @@ type Document struct {
 	Down           int                   `gorm:"type:int"json:"down"`                 // 👎
 	ReadCount      int                   `gorm:"type:int" json:"readCount"`           // 阅读数量
 	WordsCount     int                   `gorm:"type:int" json:"words_count"`         // 文章字数
-	CreateTime     int64                 `gorm:"type:bigint"json:"createTime"`        // 创建时间
-	LastModifyTime int64                 `gorm:"type:bigint"json:"lastModifyTime"`    // 最后修改时间
+	CreateTime     int32                 `gorm:"type:bigint"json:"createTime"`        // 创建时间
+	LastModifyTime int32                 `gorm:"type:bigint"json:"lastModifyTime"`    // 最后修改时间
 	CategoryID     string                `gorm:"type:varchar(36);" json:"categoryID"` // 隶属的分类
 	UserID         string                `gorm:"type:uuid;" json:"userID"`            // 文档创建者
 	OrganizationID string                `gorm:"type:uuid" json:"organizationID"`

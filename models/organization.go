@@ -12,7 +12,7 @@ type Organization struct {
 	Description  string `gorm:"type:varchar(50)"json:"description"`
 	HasValid     bool   `gorm:"type:bool;default:TRUE"json:"hasValid"`
 	Owner        string `gorm:"type:uuid;default:uuid_generate_v4()"json:"-"` // related userID
-	CreateTime   int64  `gorm:"type:bigint"json:"createTime"`
+	CreateTime   int32  `gorm:"type:bigint"json:"createTime"`
 	IsPublic     bool   `gorm:"type:bool;default:TRUE"json:"isPublic"`
 	FocusUsers   []User `gorm:"many2many:focus_organizations" json:"followUsers"`
 }

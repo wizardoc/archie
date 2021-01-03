@@ -11,7 +11,7 @@ type Message struct {
 	Type        int    `gorm:"type:int"json:"-"`
 	From        string `gorm:"type:varchar(100)"json:"from"`
 	Users       []User `gorm:"many2many:user_messages;"json:"-"`
-	SendTime    int64  `gorm:"type:bigint"json:"sendTime"`
+	SendTime    int32  `gorm:"type:bigint"json:"sendTime"`
 	Tag         int    `gorm:"type:int"json:"tag"`
 	MessageType int    `gorm:"type:int"json:"messageType"`
 	IsRead      bool   `gorm:"bool;default:FALSE"json:"isRead"`
