@@ -1,20 +1,32 @@
-FROM alpine
+# build app
+FROM golang:alpine as builder
+
 LABEL younccat zzhbbdbbd@163.com
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64 \
+    GOPROXY=https://goproxy.cn
+
+WORKDIR /build
+
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
 
 COPY . .
 
-ADD ./docker/scripts/wait-for-it.sh /usr/local/bin/
+RUN go build -o archie .
 
-RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.4/main/" > /etc/apk/repositories
+FROM alpine
 
-RUN apk update \
-        && apk upgrade \
-        && apk add --no-cache bash \
-        bash-doc \
-        bash-completion \
-        && rm -rf /var/cache/apk/* \
-        && /bin/bash
-EXPOSE 3000
+COPY ./docker/scripts/wait-for-it.sh /
 
-ENTRYPOINT ["/docker/scripts/entrypoint.sh"]
->
+COPY ./templates /templates
+COPY ./configs /configs
+
+COPY --from=builder /build/archie /
+
+RUN apk update && apk add bash
+RUN chmod 755 wait-for-it.sh
