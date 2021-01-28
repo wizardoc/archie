@@ -5,6 +5,8 @@ services:
     labels:
       wizard: "wizard"
     restart: always
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: zzh
       POSTGRES_PASSWORD: "123"
@@ -18,6 +20,8 @@ services:
     labels:
       wizard: "wizard"
     restart: always
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/var/lib/redis/data
     networks:
@@ -36,20 +40,13 @@ services:
 
   archie:
     build: .
-    image: "archie"
-    restart: always
-    labels:
-      wizard: "wizard"
-    depends_on:
-      - nginx
-      - postgres
-      - redis
-
-    ports:
-      - "3000:3000"
+    command: sh -c "./wait-for-it.sh postgres:5432 -- `RUNTIME_ENV=production ./archie`"
     networks:
       - archie_net
-    tty: true
+    depends_on:
+      - postgres
+    ports:
+      - "4000:4000"
 
 networks:
   archie_net:

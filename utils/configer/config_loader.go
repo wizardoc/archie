@@ -2,6 +2,7 @@ package configer
 
 import (
 	"archie/utils"
+	"archie/utils/env_utils"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -12,7 +13,12 @@ func configLoader(fileName string, target interface{}) {
 
 	utils.Check(err)
 
-	file, err := os.Open(filepath.Join(rootPath, "configs", fileName))
+	defaultFolder := "dev"
+	if env_utils.Env.IsProd() {
+		defaultFolder = "prod"
+	}
+
+	file, err := os.Open(filepath.Join(rootPath, "configs", defaultFolder, fileName))
 
 	utils.Check(err)
 
