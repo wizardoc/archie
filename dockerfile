@@ -17,6 +17,9 @@ RUN go mod download
 
 COPY . .
 
+RUN go get -u github.com/go-bindata/go-bindata/...
+RUN go-bindata -o=assets/asset.go -ignore=".DS_Store|README.md|schema.go" -pkg=asset schema/...
+
 RUN go build -o archie .
 
 FROM alpine
@@ -25,6 +28,7 @@ COPY ./docker/scripts/wait-for-it.sh /
 
 COPY ./templates /templates
 COPY ./configs /configs
+COPY --from=builder /build/assets /
 
 COPY --from=builder /build/archie /
 
