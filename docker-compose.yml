@@ -39,8 +39,9 @@ services:
       - "8080:8080"
 
   archie:
-    build: .
+    image: younccat/archie
     command: sh -c "./wait-for-it.sh postgres:5432 -- `RUNTIME_ENV=production ./archie`"
+    container_name: archie
     networks:
       - archie_net
     depends_on:
