@@ -1,7 +1,11 @@
 package resolver
 
-import "archie/resolver/user_resolvers"
+import (
+	"archie/resolver/organization_resolver"
+	"archie/resolver/user_resolvers"
+)
 
 type Resolver struct {
-	user_resolvers.Resolver
+	user_resolvers.UserResolver
+	organization_resolver.OrganizationResolver
 }

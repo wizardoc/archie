@@ -9,7 +9,7 @@ type FollowParams struct {
 	ID string `json:"followUserID"`
 }
 
-func (r *Resolver) FollowUser(ctx context.Context, params FollowParams) (string, error) {
+func (r *UserResolver) FollowUser(ctx context.Context, params FollowParams) (string, error) {
 	claims, err := r.Auth(ctx)
 	if err != nil {
 		return "", err

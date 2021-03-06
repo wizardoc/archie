@@ -9,7 +9,7 @@ type UnfollowUserParams struct {
 	ID string `json:"id"`
 }
 
-func (r *Resolver) UnfollowUser(ctx context.Context, params UnfollowUserParams) (string, error) {
+func (r *UserResolver) UnfollowUser(ctx context.Context, params UnfollowUserParams) (string, error) {
 	claims, err := r.Auth(ctx)
 	if err != nil {
 		return "", err

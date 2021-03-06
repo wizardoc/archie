@@ -7,22 +7,22 @@ import (
 )
 
 type Organization struct {
-	ID           string `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
-	OrganizeName string `gorm:"type:varchar(20);unique;"json:"organizeName"`
-	Description  string `gorm:"type:varchar(50)"json:"description"`
-	HasValid     bool   `gorm:"type:bool;default:TRUE"json:"hasValid"`
-	Owner        string `gorm:"type:uuid;default:uuid_generate_v4()"json:"-"` // related userID
-	CreateTime   string `gorm:"type:varchar(200)"json:"createTime"`
-	IsPublic     bool   `gorm:"type:bool;default:TRUE"json:"isPublic"`
-	FocusUsers   []User `gorm:"many2many:focus_organizations" json:"followUsers"`
+	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
+	OrganizeName string  `gorm:"type:varchar(20);unique;"json:"organizeName"`
+	Description  string  `gorm:"type:varchar(50)"json:"description"`
+	HasValid     bool    `gorm:"type:bool;default:TRUE"json:"hasValid"`
+	Owner        string  `gorm:"type:uuid;default:uuid_generate_v4()"json:"-"` // related userID
+	CreateTime   string  `gorm:"type:varchar(200)"json:"createTime"`
+	IsPublic     bool    `gorm:"type:bool;default:TRUE"json:"isPublic"`
+	FollowUsers  *[]User `gorm:"many2many:followUsers" json:"followUsers"`
 }
 
 type OrganizationName struct {
 	OrganizeName string
 }
 
-func (organization *Organization) FindOneByID(id string) error {
-	return postgres_conn.DB.Instance().Find(organization, "id = ?", id).Error
+func (organization *Organization) FindOneByID() error {
+	return postgres_conn.DB.Instance().Find(organization, "id = ?", organization.ID).Error
 }
 
 func (organization *Organization) FindOneByOrganizeName() error {
@@ -60,7 +60,6 @@ func (organization *Organization) New(username string) error {
 			OrganizationID: organization.ID,
 		}
 
-		// 赋予 owner 权限
 		dp := OrganizationPermission{UserID: user.ID, OrganizationID: organization.ID}
 		if err := dp.NewMulti(AllPermissions()); err != nil {
 			return err
@@ -75,6 +74,14 @@ func (organization *Organization) GetAllNames() (names []OrganizationName, err e
 	err = postgres_conn.DB.Instance().Select("organize_name").Find(organization).Scan(&names).Error
 
 	return
+}
+
+func (organization *Organization) DeleteAssociation(associationName string, identity interface{}) error {
+	return postgres_conn.DB.Instance().Model(organization).Association(associationName).Delete(identity)
+}
+
+func (organization *Organization) AppendAssociation(associationName string, identity interface{}) error {
+	return postgres_conn.DB.Instance().Model(organization).Association(associationName).Append(identity)
 }
 
 func (organization *Organization) AllByUserId(id string) (organizations []Organization, err error) {

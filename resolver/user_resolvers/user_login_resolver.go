@@ -18,7 +18,7 @@ type UserLoginRes struct {
 	Token string      `json:"token"`
 }
 
-func (r *Resolver) Login(ctx context.Context, params UserLoginParams) (*UserLoginRes, error) {
+func (r *UserResolver) Login(ctx context.Context, params UserLoginParams) (*UserLoginRes, error) {
 	// check user is exist
 	user, err := models.FindOneByUsername(params.Username)
 	if err != nil {

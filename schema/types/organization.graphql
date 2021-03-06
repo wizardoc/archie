@@ -1,0 +1,10 @@
+type Organization {
+    id: String!
+    organizeName: String!
+    description: String!
+    hasValid: Boolean!
+    owner: String!
+    createTime: String!
+    isPublic: Boolean!
+    followUsers: [User!]
+}
