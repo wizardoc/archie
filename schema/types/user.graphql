@@ -11,8 +11,6 @@ type CreateUserOutputInfo {
     displayName: String!
 }
 
-scalar Time
-
 type User {
     id: String!
     username: String!
@@ -24,12 +22,14 @@ type User {
     loginTime: String!
     realName: String!
     intro: String!
-#    city: String!
-#    companyName: String!
-#    companyTitle: String!
-#    github: String!
-#    blog: String!
-#    payQRCode: String!
+    city: String!
+    companyName: String!
+    companyTitle: String!
+    github: String!
+    blog: String!
+    payQRCode: String!
+    followers: [User!]!
+    followings: [User!]!
 }
 
 type RegisterUser {

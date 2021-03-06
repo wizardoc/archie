@@ -1,4 +1,4 @@
-package resolver
+package auth_resolver
 
 import (
 	"archie/constants"
@@ -12,30 +12,33 @@ import (
 	"net/http"
 )
 
-type AuthParams struct {
+type AuthResolver struct {
 }
 
-func (r *Resolver) auth(ctx context.Context) (string, error) {
+func (r *AuthResolver) Auth(ctx context.Context) (*jwt_utils.LoginClaims, error) {
 	ginCtx := ctx.Value(constants.GIN_CONTEXT).(*gin.Context)
+	token, err := getJWTFromHeader(ginCtx.Request)
 
-	token, ok := getJWTFromHeader(ginCtx.Request)
-	if !ok {
-		return "", robust.JWT_DOES_NOT_EXIST
+	if err != nil {
+		return nil, err
 	}
 
 	claims := jwt_utils.LoginClaims{}
 	if err := parseToken2Claims(token, &claims); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token, nil
+	return &claims, nil
 }
 
-func getJWTFromHeader(req *http.Request) (jwtString string, ok bool) {
-	headers := req.Header
-	auth := headers["Authentication"]
+func getJWTFromHeader(req *http.Request) (string, error) {
+	auth := req.Header["Authentication"]
 
-	return auth[0], len(auth) == 0
+	if len(auth) == 0 {
+		return "", robust.JWT_DOES_NOT_EXIST
+	}
+
+	return auth[0], nil
 }
 
 func parseToken2Claims(token string, targetClaims interface{}) error {

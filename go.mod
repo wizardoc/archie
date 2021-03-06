@@ -20,7 +20,7 @@ require (
 	gopkg.in/go-playground/validator.v9 v9.31.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df // indirect
 	gorm.io/driver/postgres v0.2.5
-	gorm.io/gorm v0.2.20
+	gorm.io/gorm v1.21.2
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
 

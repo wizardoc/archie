@@ -6,6 +6,7 @@ import (
 	"archie/utils"
 	"fmt"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -34,7 +35,8 @@ type User struct {
 	Messages           []Message           `gorm:"many2many:user_messages"json:"-"`
 	UserOrganizations  []*UserOrganization `json:"-"`
 	FocusOrganizations []Organization      `gorm:"many2many:focus_organizations" json:"followOrganizations"`
-	FocusUsers         []User              `gorm:"many2many:focus_users;association_jointable_foreignkey:focus_user_id" json:"followUsers"`
+	Followers          []*User             `gorm:"many2many:user_followers" json:"followers"`
+	Followings         []*User             `gorm:"many2many:user_followings" json:"following"`
 	RegisterInfo
 }
 
@@ -48,8 +50,24 @@ func (user *User) FindAllMessages(page int, pageSize int) error {
 	}).Find(user).Error
 }
 
-func (user *User) Follow() error {
+func (user *User) getAssociation(colName string) *gorm.Association {
+	return postgres_conn.DB.Instance().Model(user).Association(colName)
+}
+
+func (user *User) AppendAssociation(associationName string, identity interface{}) error {
+	return user.getAssociation(associationName).Append(identity)
+}
+
+func (user *User) DeleteAssociation(associationName string, identity interface{}) error {
+	return user.getAssociation(associationName).Delete(identity)
+}
+
+func (user *User) Create() error {
 	return postgres_conn.DB.Instance().Create(user).Error
+}
+
+func (user *User) Save() error {
+	return postgres_conn.DB.Instance().Save(user).Error
 }
 
 func (user *User) Register() error {
@@ -73,7 +91,6 @@ func (user *User) GetUserInfoByID() error {
 	return postgres_conn.DB.Instance().Model(&User{}).Preload("FocusUsers").Preload("FocusOrganizations").Find(&user, "id = ?", user.ID).Error
 }
 
-// 更新 user model 里有值的字段
 func (user *User) UpdateAvatar() error {
 	return postgres_conn.DB.Instance().Model(user).Where("id = ?", user.ID).Update("avatar", user.Avatar).Error
 }
@@ -90,7 +107,10 @@ func (user *User) UpdateUserInfo() error {
 
 func findUser(queryKey string, queryBody string) (user User, err error) {
 	user = User{}
-	err = postgres_conn.DB.Instance().Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody).Error
+	err = postgres_conn.DB.Instance().
+		Preload(clause.Associations).
+		Find(&user, fmt.Sprintf("%s = ?", queryKey), queryBody).
+		Error
 
 	if user.ID == "" {
 		err = robust.USER_DOSE_NOT_EXIST

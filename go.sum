@@ -235,6 +235,10 @@ gorm.io/driver/postgres v0.2.5/go.mod h1:AsPyuhKFOplSmQwOPsycVKbe0dRxF8v18KZ7p9i
 gorm.io/gorm v0.2.19/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
 gorm.io/gorm v0.2.20 h1:M7VuoIVnAqFKsQmW+afsWfKlWEug7H7yOMhTonv5Kn4=
 gorm.io/gorm v0.2.20/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
+gorm.io/gorm v1.20.12 h1:ebZ5KrSHzet+sqOCVdH9mTjW91L298nX3v5lVxAzSUY=
+gorm.io/gorm v1.20.12/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
+gorm.io/gorm v1.21.2 h1:E9FgSzS9qZneyf5MlXTJBYEZ2ZZKrB993s2v+XBu7vo=
+gorm.io/gorm v1.21.2/go.mod h1:0HFTzE/SqkGTzK6TlDPPQbAYCluiVvhzoA1+aVyzenw=
 honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt0JzvZhAg=
 qiniupkg.com/x v7.0.8+incompatible h1:Ek0ZVi5IyaWUAFkJbPRiqlh34xDM4uoKw7KqdpankvU=
 qiniupkg.com/x v7.0.8+incompatible/go.mod h1:6sLxR5IZ03vMaRAQAY/5MvzofeoBIjO4XE0Njv6V1ms=
