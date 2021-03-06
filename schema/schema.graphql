@@ -5,9 +5,12 @@ schema {
 
 type Query {
     hello: String!
+    userInfo(username: String!): User!
 }
 
 type Mutation {
+    followUser(id: String!): String!
+    unfollowUser(id: String!): String!
     createUser(userInfo: CreateUserInfo!): RegisterUser
     login(username: String!, password: String!): LoginRes
 }

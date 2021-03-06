@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"archie/constants"
 	"archie/resolver"
 	"archie/schema"
 	"archie/utils"
@@ -46,7 +47,7 @@ func Serve() {
 			return
 		}
 
-		newCtx := context.WithValue(ctx.Request.Context(), "gin", ctx)
+		newCtx := context.WithValue(ctx.Request.Context(), constants.GIN_CONTEXT, ctx)
 
 		response := parsedSchema.Exec(newCtx, params.Query, params.OperationName, params.Variables)
 
