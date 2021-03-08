@@ -6,13 +6,27 @@ import (
 )
 
 type UserInfoParams struct {
-	UserName string
+	ID *string `json:"id"`
 }
 
 func (r *Resolver) UserInfo(ctx context.Context, params UserInfoParams) (*models.User, error) {
-	user, err := models.FindOneByUsername(params.UserName)
-	if err != nil {
+	var parsedID string
+
+	if params.ID == nil {
+		claims, err := r.Auth(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		parsedID = claims.ID
+	} else {
+		parsedID = *params.ID
+	}
+
+	user := models.User{ID: parsedID}
+	if err := user.GetUserInfoByID(); err != nil {
 		return nil, err
+
 	}
 
 	return &user, nil

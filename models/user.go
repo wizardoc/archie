@@ -88,7 +88,11 @@ func (user *User) UpdateLoginTime() error {
 }
 
 func (user *User) GetUserInfoByID() error {
-	return postgres_conn.DB.Instance().Model(&User{}).Preload("FocusUsers").Preload("FocusOrganizations").Find(&user, "id = ?", user.ID).Error
+	return postgres_conn.DB.Instance().
+		Model(user).
+		Preload(clause.Associations).
+		Find(&user, "id = ?", user.ID).
+		Error
 }
 
 func (user *User) UpdateAvatar() error {
