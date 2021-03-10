@@ -20,7 +20,7 @@ func RemoveOwnOrganization(ctx *gin.Context) {
 
 	organizeName := ctx.Params.ByName("name")
 	orgModel := models.Organization{
-		OrganizeName: organizeName,
+		Name: organizeName,
 	}
 
 	err = orgModel.FindOneByOrganizeName()

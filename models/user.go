@@ -14,29 +14,29 @@ type RegisterInfo struct {
 }
 
 type User struct {
-	ID                 string              `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
-	Username           string              `gorm:"type:varchar(20);unique;" json:"username"`
-	Password           string              `gorm:"type:char(62)" json:"-"`
-	Email              string              `gorm:"type:varchar(64)" json:"email"`
-	DisplayName        string              `gorm:"type:varchar(12)" json:"displayName"`
-	RegisterTime       string              `gorm:"type:varchar(200)"json:"registerTime"`
-	IsValidEmail       bool                `gorm:"type:boolean"json:"isValidEmail"`
-	Avatar             string              `gorm:"type:varchar(200)"json:"avatar"`
-	RealName           string              `gorm:"type:varchar(10)" json:"realName"`
-	Intro              string              `gorm:"type:varchar(50)" json:"intro"`        // 个人简介
-	City               string              `gorm:"type:varchar(50)"json:"city"`          // 所在城市
-	CompanyName        string              `gorm:"type:varchar(80)" json:"companyName"`  // 公司名称
-	CompanyTitle       string              `gorm:"type:varchar(80)" json:"companyTitle"` // 职位头衔
-	Github             string              `gorm:"type:varchar(100)" json:"github"`      // GitHub 地址
-	Blog               string              `gorm:"varchar(100)" json:"blog"`             // 博客地址
-	PayQRCode          string              `gorm:"varchar(200)" json:"payQRCode"`        // 打赏支付二维码
-	Organizations      *[]Organization     `gorm:"many2many:user_organizations"json:"-"`
-	LoginTime          string              `gorm:"type:varchar(200)"json:"loginTime"`
-	Messages           []Message           `gorm:"many2many:user_messages"json:"-"`
-	UserOrganizations  []*UserOrganization `json:"-"`
-	FocusOrganizations []Organization      `gorm:"many2many:focus_organizations" json:"followOrganizations"`
-	Followers          []*User             `gorm:"many2many:user_followers" json:"followers"`
-	Followings         []*User             `gorm:"many2many:user_followings" json:"following"`
+	ID                  string              `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
+	Username            string              `gorm:"type:varchar(20);unique;" json:"username"`
+	Password            string              `gorm:"type:char(62)" json:"-"`
+	Email               string              `gorm:"type:varchar(64)" json:"email"`
+	DisplayName         string              `gorm:"type:varchar(12)" json:"displayName"`
+	RegisterTime        string              `gorm:"type:varchar(200)"json:"registerTime"`
+	IsValidEmail        bool                `gorm:"type:boolean"json:"isValidEmail"`
+	Avatar              string              `gorm:"type:varchar(200)"json:"avatar"`
+	RealName            string              `gorm:"type:varchar(10)" json:"realName"`
+	Intro               string              `gorm:"type:varchar(50)" json:"intro"`        // 个人简介
+	City                string              `gorm:"type:varchar(50)"json:"city"`          // 所在城市
+	CompanyName         string              `gorm:"type:varchar(80)" json:"companyName"`  // 公司名称
+	CompanyTitle        string              `gorm:"type:varchar(80)" json:"companyTitle"` // 职位头衔
+	Github              string              `gorm:"type:varchar(100)" json:"github"`      // GitHub 地址
+	Blog                string              `gorm:"varchar(100)" json:"blog"`             // 博客地址
+	PayQRCode           string              `gorm:"varchar(200)" json:"payQRCode"`        // 打赏支付二维码
+	Organizations       *[]Organization     `gorm:"many2many:user_organizations"json:"-"`
+	LoginTime           string              `gorm:"type:varchar(200)"json:"loginTime"`
+	Messages            []Message           `gorm:"many2many:user_messages"json:"-"`
+	UserOrganizations   []*UserOrganization `json:"-"`
+	FollowOrganizations []*Organization     `gorm:"many2many:follow_organizations"json:"followOrganizations"`
+	Followers           []*User             `gorm:"many2many:user_followers" json:"followers"`
+	Followings          []*User             `gorm:"many2many:user_followings" json:"following"`
 	RegisterInfo
 }
 
@@ -50,16 +50,12 @@ func (user *User) FindAllMessages(page int, pageSize int) error {
 	}).Find(user).Error
 }
 
-func (user *User) getAssociation(colName string) *gorm.Association {
-	return postgres_conn.DB.Instance().Model(user).Association(colName)
-}
-
 func (user *User) AppendAssociation(associationName string, identity interface{}) error {
-	return user.getAssociation(associationName).Append(identity)
+	return postgres_conn.DB.Instance().Model(user).Association(associationName).Append(identity)
 }
 
 func (user *User) DeleteAssociation(associationName string, identity interface{}) error {
-	return user.getAssociation(associationName).Delete(identity)
+	return postgres_conn.DB.Instance().Model(user).Association(associationName).Delete(identity)
 }
 
 func (user *User) Create() error {

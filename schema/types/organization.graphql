@@ -1,0 +1,18 @@
+type Organization {
+    id: String!
+    name: String!
+    description: String!
+    owner: String!
+    createTime: String!
+    isPublic: Boolean!
+    followUsers: [User!]!
+    cover: String!
+    members: [User!]!
+}
+
+input CreateOrganizationInfo {
+    name: String!
+    description: String!
+    cover: String!
+    isPublic:String!
+}

@@ -37,7 +37,7 @@ func InviteUser(ctx *gin.Context) {
 		return
 	}
 
-	targetOrg := models.Organization{OrganizeName: inviteUserParams.OrganizeName}
+	targetOrg := models.Organization{Name: inviteUserParams.OrganizeName}
 	if err := targetOrg.FindOneByOrganizeName(); err != nil {
 		res.Status(http.StatusBadRequest).Error(robust.ORGANIZATION_FIND_EMPTY).Send(ctx)
 		return

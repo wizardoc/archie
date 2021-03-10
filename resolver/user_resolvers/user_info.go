@@ -9,7 +9,7 @@ type UserInfoParams struct {
 	ID *string `json:"id"`
 }
 
-func (r *Resolver) UserInfo(ctx context.Context, params UserInfoParams) (*models.User, error) {
+func (r *UserResolver) UserInfo(ctx context.Context, params UserInfoParams) (*models.User, error) {
 	var parsedID string
 
 	if params.ID == nil {

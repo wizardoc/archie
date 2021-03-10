@@ -40,8 +40,8 @@ func OrganizationDetail(ctx *gin.Context) {
 	//	return
 	//}
 
-	org := models.Organization{}
-	if err := org.FindOneByID(id); err != nil {
+	org := models.Organization{ID: id}
+	if err := org.FindOneByID(); err != nil {
 		res.Status(http.StatusNotFound).Error(err).Send(ctx)
 		return
 	}

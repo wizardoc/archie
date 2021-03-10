@@ -19,7 +19,7 @@ type CreateUserParams struct {
 	UserInfo RegisterParams `json:"userInfo"`
 }
 
-func (r *Resolver) CreateUser(ctx context.Context, params CreateUserParams) (*models.User, error) {
+func (r *UserResolver) CreateUser(ctx context.Context, params CreateUserParams) (*models.User, error) {
 	userInfo := params.UserInfo
 
 	if err := helper.ValidParams(userInfo); err != nil {

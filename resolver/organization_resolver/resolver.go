@@ -1,7 +1,7 @@
-package user_resolvers
+package organization_resolver
 
 import "archie/resolver/auth_resolver"
 
-type UserResolver struct {
+type OrganizationResolver struct {
 	auth_resolver.AuthResolver
 }
