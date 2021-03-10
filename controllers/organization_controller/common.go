@@ -4,15 +4,15 @@ import "archie/models"
 
 func CreateNewOrganization(name string, description string, username string) error {
 	organization := models.Organization{
-		OrganizeName: name,
-		Description:  description,
+		Name:        name,
+		Description: description,
 	}
 
 	return organization.New(username)
 }
 
 func InsertUserToOrganization(organizeName string, username string, isOwner bool) error {
-	organization := models.Organization{OrganizeName: organizeName}
+	organization := models.Organization{Name: organizeName}
 	err := organization.FindOneByOrganizeName()
 
 	if err != nil {

@@ -1,19 +1,20 @@
 schema {
-    query: Query
-    mutation: Mutation
+  query: Query
+  mutation: Mutation
 }
 
 type Query {
-    hello: String!
-    userInfo(id: String): User!
-    organizationInfo(id: String!):Organization!
+  hello: String!
+  userInfo(id: String): User!
+  organizationInfo(id: String, name: String): Organization!
 }
 
 type Mutation {
-    followOrganization(id: String!): String!
-    unfollowOrganization(id: String!): String!
-    followUser(id: String!): String!
-    unfollowUser(id: String!): String!
-    createUser(userInfo: CreateUserInfo!): RegisterUser!
-    login(username: String!, password: String!): LoginRes!
+  createOrganization(organizationInfo: CreateOrganizationInfo!): Organization!
+  followOrganization(id: String!): String!
+  unfollowOrganization(id: String!): String!
+  followUser(id: String!): String!
+  unfollowUser(id: String!): String!
+  createUser(userInfo: CreateUserInfo!): RegisterUser!
+  login(username: String!, password: String!): LoginRes!
 }

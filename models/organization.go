@@ -7,14 +7,15 @@ import (
 )
 
 type Organization struct {
-	ID           string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
-	OrganizeName string  `gorm:"type:varchar(20);unique;"json:"organizeName"`
-	Description  string  `gorm:"type:varchar(50)"json:"description"`
-	HasValid     bool    `gorm:"type:bool;default:TRUE"json:"hasValid"`
-	Owner        string  `gorm:"type:uuid;default:uuid_generate_v4()"json:"-"` // related userID
-	CreateTime   string  `gorm:"type:varchar(200)"json:"createTime"`
-	IsPublic     bool    `gorm:"type:bool;default:TRUE"json:"isPublic"`
-	FollowUsers  *[]User `gorm:"many2many:followUsers" json:"followUsers"`
+	ID          string  `gorm:"type:uuid;primary_key;default:uuid_generate_v4()"json:"id"`
+	Name        string  `gorm:"type:varchar(20);unique;"json:"name"`
+	Description string  `gorm:"type:varchar(50)"json:"description"`
+	Owner       string  `gorm:"type:uuid;default:uuid_generate_v4()"json:"owner"`
+	Cover       string  `gorm:"type:varchar(200)"json:"cover"`
+	CreateTime  string  `gorm:"type:varchar(200)"json:"createTime"`
+	IsPublic    bool    `gorm:"type:bool;default:TRUE"json:"isPublic"`
+	FollowUsers []*User `gorm:"many2many:organization_follow_users" json:"followUsers"`
+	Members     []*User `gorm:"many2many:organization_members" json:"members"`
 }
 
 type OrganizationName struct {
@@ -26,7 +27,7 @@ func (organization *Organization) FindOneByID() error {
 }
 
 func (organization *Organization) FindOneByOrganizeName() error {
-	return postgres_conn.DB.Instance().Find(organization, "organize_name=?", organization.OrganizeName).Error
+	return postgres_conn.DB.Instance().Find(organization, "name=?", organization.Name).Error
 }
 
 func (organization *Organization) Update(id string) func(key string, val interface{}) error {
@@ -39,9 +40,12 @@ func (organization *Organization) BatchUpdates(source map[string]interface{}) er
 	return postgres_conn.DB.Instance().Model(Organization{}).Omit("id").Where("id = ?", organization.ID).Updates(source).Error
 }
 
+func (organization *Organization) Create() error {
+	return postgres_conn.DB.Instance().Create(organization).Find(organization).Error
+}
+
 func (organization *Organization) New(username string) error {
 	return postgres_conn.DB.Transaction(func(db *gorm.DB) error {
-		organization.HasValid = true
 		organization.CreateTime = time.Now().String()
 		user, err := FindOneByUsername(username)
 

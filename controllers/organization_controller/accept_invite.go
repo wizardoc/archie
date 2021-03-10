@@ -35,7 +35,7 @@ func AcceptInvite(ctx *gin.Context) {
 		return
 	}
 
-	targetOrg := models.Organization{OrganizeName: inviteClaims.OrganizeName}
+	targetOrg := models.Organization{Name: inviteClaims.OrganizeName}
 	if err := targetOrg.FindOneByOrganizeName(); err != nil {
 		res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 		return
