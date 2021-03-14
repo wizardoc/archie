@@ -7,7 +7,7 @@ type Organization {
     isPublic: Boolean!
     followUsers: [User!]!
     cover: String!
-    members: [User!]!
+    members: [UserWithA!]!
 }
 
 input CreateOrganizationInfo {

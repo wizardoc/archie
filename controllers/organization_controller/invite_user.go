@@ -6,7 +6,6 @@ import (
 	"archie/robust"
 	"archie/services"
 	"archie/utils/helper"
-	"archie/utils/jwt_utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -66,17 +65,17 @@ func InviteUser(ctx *gin.Context) {
 		return
 	}
 
-	inviteClaims := jwt_utils.InviteClaims{
-		InviteUser:   inviteUserParams.Username,
-		OrganizeName: inviteUserParams.OrganizeName,
-	}
-	inviteToken := inviteClaims.SignJWT(1)
+	//inviteClaims := jwt_utils.InviteClaims{
+	//	InviteUser:   inviteUserParams.Username,
+	//	OrganizeName: inviteUserParams.OrganizeName,
+	//}
+	//inviteToken := inviteClaims.SignJWT(1)
 
 	msg := services.Message{
 		From: claims.ID,
 		To:   inviteUser.ID,
 	}
-	if err := msg.SendInviteMessage(inviteToken, claims.Username, inviteUserParams.OrganizeName); err != nil {
+	if err := msg.SendInviteMessage("inviteToken", claims.Username, inviteUserParams.OrganizeName); err != nil {
 		res.Status(http.StatusInternalServerError).Error(err).Send(ctx)
 		return
 	}

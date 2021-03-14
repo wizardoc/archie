@@ -32,6 +32,28 @@ type User {
     followings: [User!]!
 }
 
+type UserWithA {
+    id: String!
+    username: String!
+    email: String!
+    displayName: String!
+    registerTime: String!
+    isValidEmail: Boolean!
+    avatar:String!
+    loginTime: String!
+    realName: String!
+    intro: String!
+    city: String!
+    companyName: String!
+    companyTitle: String!
+    github: String!
+    blog: String!
+    payQRCode: String!
+    followers: [User!]!
+    followings: [User!]!
+    role: Int!
+}
+
 type RegisterUser {
     id: String!
     username: String!

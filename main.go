@@ -3,7 +3,6 @@ package main
 import (
 	"archie/connection/postgres_conn"
 	"archie/models"
-	"archie/models/focus_models"
 	"archie/routes"
 	"archie/services"
 	"archie/utils/db_utils/db_migrate_utils"
@@ -15,7 +14,7 @@ import (
 
 func initTable() {
 	db_migrate_utils.InitTable(func(db *gorm.DB) error {
-		return db.AutoMigrate(
+		if err := db.AutoMigrate(
 			models.UserOrganization{},
 			models.User{},
 			models.Message{},
@@ -30,15 +29,18 @@ func initTable() {
 			models.OrganizationPermission{},
 			models.Comment{},
 			models.CommentStatus{},
-			focus_models.FocusOrganization{},
-			focus_models.FocusUser{},
-		)
+			models.Member{},
+		); err != nil {
+			return err
+		}
+
+		return db.SetupJoinTable(&models.Organization{}, "Members", &models.Member{})
 	})
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	//// init database
+	// init database
 	postgres_conn.DB.InitDB()
 	go services.Receiver.Run()
 

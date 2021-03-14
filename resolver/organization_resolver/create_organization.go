@@ -17,10 +17,10 @@ type CreateOrganizationResolverParams struct {
 	OrganizationInfo CreateOrganizationParams `json:"organizationInfo"`
 }
 
-func (r *OrganizationResolver) CreateOrganization(ctx context.Context, params CreateOrganizationResolverParams) (*models.Organization, error) {
+func (r *OrganizationResolver) CreateOrganization(ctx context.Context, params CreateOrganizationResolverParams) (string, error) {
 	claims, err := r.Auth(ctx)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	orgInfo := params.OrganizationInfo
@@ -33,8 +33,8 @@ func (r *OrganizationResolver) CreateOrganization(ctx context.Context, params Cr
 	}
 
 	if err := organization_service.CreateOrganization(org); err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return org, err
+	return org.ID, err
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"archie/connection/postgres_conn"
+	"fmt"
 	"gorm.io/gorm"
 	"time"
 )
@@ -13,21 +14,25 @@ type Organization struct {
 	Owner       string  `gorm:"type:uuid;default:uuid_generate_v4()"json:"owner"`
 	Cover       string  `gorm:"type:varchar(200)"json:"cover"`
 	CreateTime  string  `gorm:"type:varchar(200)"json:"createTime"`
-	IsPublic    bool    `gorm:"type:bool;default:TRUE"json:"isPublic"`
+	IsPublic    bool    `gorm:"type:bool;default:FALSE"json:"isPublic"`
 	FollowUsers []*User `gorm:"many2many:organization_follow_users" json:"followUsers"`
-	Members     []*User `gorm:"many2many:organization_members" json:"members"`
+	Members     []*User `gorm:"many2many:members" json:"members"`
 }
 
 type OrganizationName struct {
 	OrganizeName string
 }
 
+func (organization *Organization) Find(key string, val interface{}) error {
+	return postgres_conn.DB.Instance().Preload("FollowUsers").Find(organization, fmt.Sprintf("%s = ?", key), val).Error
+}
+
 func (organization *Organization) FindOneByID() error {
-	return postgres_conn.DB.Instance().Find(organization, "id = ?", organization.ID).Error
+	return organization.Find("id", organization.ID)
 }
 
 func (organization *Organization) FindOneByOrganizeName() error {
-	return postgres_conn.DB.Instance().Find(organization, "name=?", organization.Name).Error
+	return organization.Find("name", organization.Name)
 }
 
 func (organization *Organization) Update(id string) func(key string, val interface{}) error {

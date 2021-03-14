@@ -42,15 +42,16 @@ func Serve() {
 		res := helper.Res{}
 		params := Params{}
 
+		// valid params from client, and bind value in params struct
 		if err := ctx.Bind(&params); err != nil {
 			res.Status(http.StatusBadRequest).Error(err).Send(ctx)
 			return
 		}
 
 		newCtx := context.WithValue(ctx.Request.Context(), constants.GIN_CONTEXT, ctx)
-
 		response := parsedSchema.Exec(newCtx, params.Query, params.OperationName, params.Variables)
 
+		// check error from response of GraphQL
 		if len(response.Errors) != 0 {
 			res.Error(response.Errors).Send(ctx)
 			return
