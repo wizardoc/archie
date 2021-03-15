@@ -32,7 +32,7 @@ type User {
     followings: [User!]!
 }
 
-type UserWithA {
+type UserWithMember {
     id: String!
     username: String!
     email: String!
@@ -52,6 +52,7 @@ type UserWithA {
     followers: [User!]!
     followings: [User!]!
     role: Int!
+    joinTime: String!
 }
 
 type RegisterUser {

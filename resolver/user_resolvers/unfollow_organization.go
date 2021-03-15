@@ -2,6 +2,7 @@ package user_resolvers
 
 import (
 	"archie/services/user_service"
+	"archie/utils/jwt_utils"
 	"context"
 )
 
@@ -10,8 +11,8 @@ type UnfollowOrganizationParams struct {
 }
 
 func (r *UserResolver) UnfollowOrganization(ctx context.Context, params UnfollowOrganizationParams) (string, error) {
-	claims, err := r.Auth(ctx)
-	if err != nil {
+	var claims jwt_utils.LoginClaims
+	if err := r.Auth(ctx, &claims); err != nil {
 		return "", err
 	}
 

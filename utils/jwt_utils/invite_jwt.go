@@ -2,9 +2,10 @@ package jwt_utils
 
 type InviteClaims struct {
 	Claims
-	UserID string
-	OrgID  string
-	Role   int
+	InviteUserID string
+	OrgID        string
+	Role         int
+	UserID       string
 }
 
 func (claims *InviteClaims) SignJWT(duration int) string {

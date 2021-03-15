@@ -48,6 +48,7 @@ var ORGANIZATION_CREATE_FAILURE = ArchieError{2009, "Cannot create organization"
 var ORGANIZATION_INVITE_YOURSELF = ArchieError{2010, "Cannot invite yourself"}
 var ORGANIZATION_INVITE_EXIST = ArchieError{2011, "The user does exist in the organization"}
 var ORGANIZATION_INVITE_ERROR = ArchieError{2012, "Invite Error"}
+var ORGANIZATION_INVITE_AUTH = ArchieError{2013, "Auth failure"}
 
 // DB
 var CREATE_DATA_FAILURE = ArchieError{3001, "Create data to db failure"}

@@ -2,6 +2,7 @@ package organization_service
 
 import (
 	"archie/connection/postgres_conn"
+	"archie/constants/organization_rbac"
 	"archie/models"
 	"gorm.io/gorm"
 	"time"
@@ -19,6 +20,12 @@ func CreateOrganization(org *models.Organization) error {
 			return err
 		}
 
-		return org.AppendAssociation("Members", &user)
+		m := models.Member{
+			OrganizationID: org.ID,
+			UserID:         user.ID,
+			Role:           organization_rbac.OWNER,
+		}
+
+		return m.Create()
 	})
 }

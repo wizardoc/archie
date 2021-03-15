@@ -2,6 +2,7 @@ package user_resolvers
 
 import (
 	"archie/services/user_service"
+	"archie/utils/jwt_utils"
 	"context"
 )
 
@@ -10,8 +11,8 @@ type FollowParams struct {
 }
 
 func (r *UserResolver) FollowUser(ctx context.Context, params FollowParams) (string, error) {
-	claims, err := r.Auth(ctx)
-	if err != nil {
+	var claims jwt_utils.LoginClaims
+	if err := r.Auth(ctx, &claims); err != nil {
 		return "", err
 	}
 

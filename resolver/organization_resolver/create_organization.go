@@ -3,7 +3,9 @@ package organization_resolver
 import (
 	"archie/models"
 	"archie/services/organization_service"
+	"archie/utils/jwt_utils"
 	"context"
+	"fmt"
 )
 
 type CreateOrganizationParams struct {
@@ -18,8 +20,8 @@ type CreateOrganizationResolverParams struct {
 }
 
 func (r *OrganizationResolver) CreateOrganization(ctx context.Context, params CreateOrganizationResolverParams) (string, error) {
-	claims, err := r.Auth(ctx)
-	if err != nil {
+	var claims jwt_utils.LoginClaims
+	if err := r.Auth(ctx, &claims); err != nil {
 		return "", err
 	}
 
@@ -36,5 +38,7 @@ func (r *OrganizationResolver) CreateOrganization(ctx context.Context, params Cr
 		return "", err
 	}
 
-	return org.ID, err
+	fmt.Println(org.ID)
+
+	return org.ID, nil
 }

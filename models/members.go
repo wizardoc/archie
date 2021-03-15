@@ -9,12 +9,13 @@ type Member struct {
 	OrganizationID string `gorm:"primaryKey;type:uuid" json:"organizationId"`
 	UserID         string `gorm:"primaryKey;type:uuid" json:"userId"`
 	Role           int    `gorm:"type:int" json:"role"`
-	JoinTime       string `gorm:"type:varchar(200)" json:"createTime"`
+	JoinTime       string `gorm:"type:varchar(200)" json:"joinTime"`
 }
 
 type UserWithRole struct {
 	User
-	Role int32 `json:"role"`
+	Role     int32  `json:"role"`
+	JoinTime string `json:"joinTime"`
 }
 
 func (m *Member) FindUserWithRoleByOrgID(userWithRoles *[]UserWithRole) error {
@@ -28,4 +29,11 @@ func (m *Member) Create() error {
 	m.JoinTime = time.Now().String()
 
 	return postgres_conn.DB.Instance().Create(m).Find(m).Error
+}
+
+func (m *Member) Query() error {
+	return postgres_conn.DB.Instance().
+		Where("user_id = ? AND organization_id = ?", m.UserID, m.OrganizationID).
+		Find(m).
+		Error
 }
