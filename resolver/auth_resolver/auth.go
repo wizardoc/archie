@@ -15,20 +15,19 @@ import (
 type AuthResolver struct {
 }
 
-func (r *AuthResolver) Auth(ctx context.Context) (*jwt_utils.LoginClaims, error) {
+func (r *AuthResolver) Auth(ctx context.Context, claims *jwt_utils.LoginClaims) error {
 	ginCtx := ctx.Value(constants.GIN_CONTEXT).(*gin.Context)
 	token, err := getJWTFromHeader(ginCtx.Request)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	claims := jwt_utils.LoginClaims{}
 	if err := parseToken2Claims(token, &claims); err != nil {
-		return nil, err
+		return err
 	}
 
-	return &claims, nil
+	return nil
 }
 
 func getJWTFromHeader(req *http.Request) (string, error) {

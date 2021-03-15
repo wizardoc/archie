@@ -7,10 +7,12 @@ type Query {
   hello: String!
   userInfo(id: String): User!
   organizationInfo(id: String, name: String): Organization!
+  inviteToken(userID: String!, orgID: String!, role: Float!): String!
 }
 
 type Mutation {
-  createOrganization(organizationInfo: CreateOrganizationInfo!): Organization!
+  inviteUser(token: String!): String!
+  createOrganization(organizationInfo: CreateOrganizationInfo!): String!
   followOrganization(id: String!): String!
   unfollowOrganization(id: String!): String!
   followUser(id: String!): String!

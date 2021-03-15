@@ -2,6 +2,7 @@ package user_resolvers
 
 import (
 	"archie/services/user_service"
+	"archie/utils/jwt_utils"
 	"context"
 )
 
@@ -10,13 +11,12 @@ type UnfollowUserParams struct {
 }
 
 func (r *UserResolver) UnfollowUser(ctx context.Context, params UnfollowUserParams) (string, error) {
-	claims, err := r.Auth(ctx)
-	if err != nil {
+	var claims jwt_utils.LoginClaims
+	if err := r.Auth(ctx, &claims); err != nil {
 		return "", err
 	}
 
-	err = user_service.UnfollowUser(claims.ID, params.ID)
-	if err != nil {
+	if err := user_service.UnfollowUser(claims.ID, params.ID); err != nil {
 		return "", err
 	}
 

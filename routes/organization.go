@@ -14,7 +14,7 @@ func organizationRouter(router *gin.Engine) {
 	organization.DELETE("/remove/:name", middlewares.ValidateToken, organization_controller.RemoveOwnOrganization)
 	organization.POST("/new", organization_controller.NewOrganization)
 	organization.POST("/join", organization_controller.JoinOrganization)
-	organization.POST("/accept/:inviteToken", middlewares.ValidateToken, organization_controller.AcceptInvite)
+	//organization.POST("/accept/:inviteToken", middlewares.ValidateToken, organization_controller.AcceptInvite)
 	organization.PUT("/edit/:id", middlewares.ValidateToken, organization_controller.EditOrganization)
 	organization.PUT("/invite", middlewares.ValidateToken, organization_controller.InviteUser)
 	organization.GET("/detail/:id", middlewares.ValidateToken, organization_controller.OrganizationDetail)

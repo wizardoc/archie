@@ -2,6 +2,7 @@ package user_resolvers
 
 import (
 	"archie/models"
+	"archie/utils/jwt_utils"
 	"context"
 )
 
@@ -11,10 +12,9 @@ type UserInfoParams struct {
 
 func (r *UserResolver) UserInfo(ctx context.Context, params UserInfoParams) (*models.User, error) {
 	var parsedID string
-
+	var claims jwt_utils.LoginClaims
 	if params.ID == nil {
-		claims, err := r.Auth(ctx)
-		if err != nil {
+		if err := r.Auth(ctx, &claims); err != nil {
 			return nil, err
 		}
 
